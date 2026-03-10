@@ -1,0 +1,56 @@
+#ifndef EIGEN_SCALING_H
+#define EIGEN_SCALING_H
+
+#include "Matrix.h"
+
+namespace Eigen {
+
+template <typename Scalar_, int Dim>
+class Scaling {
+public:
+    using Scalar = Scalar_;
+    using ScalarType = Scalar_;
+
+protected:
+    Matrix<Scalar, Dim, 1> m_factors;
+
+public:
+    Scaling() {
+        m_factors = Matrix<Scalar, Dim, 1>::Ones(Dim, 1);
+    }
+
+    explicit Scaling(Scalar s) {
+        m_factors = Matrix<Scalar, Dim, 1>(Matrix<Scalar, Dim, 1>::Ones(Dim, 1).tensor() * s);
+    }
+
+    explicit Scaling(const Matrix<Scalar, Dim, 1>& vec) : m_factors(vec) {}
+
+    const Matrix<Scalar, Dim, 1>& factors() const { return m_factors; }
+
+    Matrix<Scalar, Dim, Dim> toRotationMatrix() const {
+        // Technically this is 'toLinearMatrix', scaling returns diagonal matrix
+        return Matrix<Scalar, Dim, Dim>(torch::diag(m_factors.tensor().squeeze(1)));
+    }
+
+    Matrix<Scalar, Dim, 1> operator*(const Matrix<Scalar, Dim, 1>& vec) const {
+        // Element-wise multiplication avoids dense diagonal construction
+        return Matrix<Scalar, Dim, 1>(m_factors.tensor() * vec.tensor());
+    }
+
+    Scaling operator*(const Scaling& other) const {
+        return Scaling(m_factors.tensor() * other.factors().tensor());
+    }
+
+    Scaling inverse() const {
+        return Scaling(1.0 / m_factors.tensor());
+    }
+};
+
+using Scaling2f = Scaling<float, 2>;
+using Scaling3f = Scaling<float, 3>;
+using Scaling2d = Scaling<double, 2>;
+using Scaling3d = Scaling<double, 3>;
+
+} // namespace Eigen
+
+#endif // EIGEN_SCALING_H

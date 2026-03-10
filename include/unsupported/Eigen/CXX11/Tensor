@@ -1,0 +1,82 @@
+#ifndef EIGEN_UNSUPPORTED_CXX11_TENSOR_H
+#define EIGEN_UNSUPPORTED_CXX11_TENSOR_H
+
+#include "Eigen/Core"
+#include <vector>
+
+namespace Eigen {
+
+// Eigen's original unsupported CXX11/Tensor module was built to retrofit generic 
+// N-dimensional computations natively into Eigen's 2D-restricted pipeline.
+// Given LibTorch itself is identically an N-dimensional generic structural engine,
+// our implementation of Eigen::Tensor strictly aliases down to `at::Tensor` primitives
+// granting identical surface accessibility natively via standard `Eigen::Tensor` typing.
+template <typename Scalar_, int NumIndices_>
+class Tensor {
+public:
+    using Scalar = Scalar_;
+    static constexpr int NumIndices = NumIndices_;
+
+protected:
+    at::Tensor m_tensor;
+
+public:
+    Tensor() {}
+
+    // Init from dimensions using param pack or vector
+    Tensor(const std::vector<int64_t>& dims) {
+        auto options = torch::TensorOptions()
+            .dtype(get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+
+        m_tensor = torch::empty(dims, options);
+    }
+
+    Tensor(const at::Tensor& t) : m_tensor(t) {}
+
+    static constexpr torch::ScalarType get_torch_dtype() {
+        if constexpr (std::is_same_v<Scalar, float>) return torch::kFloat32;
+        if constexpr (std::is_same_v<Scalar, double>) return torch::kFloat64;
+        if constexpr (std::is_same_v<Scalar, int32_t>) return torch::kInt32;
+        if constexpr (std::is_same_v<Scalar, int64_t>) return torch::kInt64;
+        return torch::kFloat32;
+    }
+
+    at::Tensor& tensor() { return m_tensor; }
+    const at::Tensor& tensor() const { return m_tensor; }
+
+    int dimension(int idx) const { return m_tensor.size(idx); }
+    int size() const { return m_tensor.numel(); }
+
+    Tensor setConstant(Scalar val) {
+        m_tensor.fill_(val);
+        return *this;
+    }
+
+    Tensor setRandom() {
+        // Uniform [0,1) normally for floating point
+        m_tensor.uniform_();
+        return *this;
+    }
+
+    // Elementwise mappings
+    Tensor operator+(const Tensor& other) const { return Tensor(m_tensor + other.tensor()); }
+    Tensor operator-(const Tensor& other) const { return Tensor(m_tensor - other.tensor()); }
+    Tensor operator*(const Tensor& other) const { return Tensor(m_tensor * other.tensor()); }
+    Tensor operator/(const Tensor& other) const { return Tensor(m_tensor / other.tensor()); }
+    
+    // Contraction (tensordot)
+    Tensor contract(const Tensor& other, const std::vector<std::pair<int, int>>& dims) const {
+        std::vector<int64_t> dims_A, dims_B;
+        for (const auto& p : dims) {
+            dims_A.push_back(p.first);
+            dims_B.push_back(p.second);
+        }
+        at::Tensor result = torch::tensordot(m_tensor, other.tensor(), dims_A, dims_B);
+        return Tensor(result);
+    }
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_CXX11_TENSOR_H

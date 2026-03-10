@@ -1,0 +1,48 @@
+#pragma once
+#include "Matrix.h"
+#include <tuple>
+
+namespace Eigen {
+
+template <typename MatrixType>
+class PartialPivLU {
+protected:
+    at::Tensor m_lu;
+    at::Tensor m_pivots;
+    at::Tensor m_info;
+    bool m_isInitialized = false;
+
+public:
+    PartialPivLU() {}
+
+    explicit PartialPivLU(const MatrixType& matrix) {
+        compute(matrix);
+    }
+
+    PartialPivLU& compute(const MatrixType& matrix) {
+        std::tie(m_lu, m_pivots, m_info) = torch::linalg_lu_factor_ex(matrix.tensor());
+        m_isInitialized = true;
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("PartialPivLU is not initialized.");
+        }
+        at::Tensor result = torch::linalg_lu_solve(m_lu, m_pivots, b.tensor());
+        return Rhs(result);
+    }
+    
+    MatrixType inverse() const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("PartialPivLU is not initialized.");
+        }
+        // solve A * X = I to find the inverse using LU
+        auto ident = torch::eye(m_lu.size(0), m_lu.options());
+        at::Tensor result = torch::linalg_lu_solve(m_lu, m_pivots, ident);
+        return MatrixType(result);
+    }
+};
+
+} // namespace Eigen

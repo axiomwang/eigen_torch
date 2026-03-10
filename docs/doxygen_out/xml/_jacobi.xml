@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_jacobi" kind="file" language="C++">
+    <compoundname>Jacobi</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#ifndef<sp/>EIGEN_JACOBIROTATION_H</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>EIGEN_JACOBIROTATION_H</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar_&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>JacobiRotation<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>Scalar<sp/>=<sp/>Scalar_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>ScalarType<sp/>=<sp/>Scalar_;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>m_c;<sp/>//<sp/>cosine</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>m_s;<sp/>//<sp/>sine</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>JacobiRotation()<sp/>:<sp/>m_c(1),<sp/>m_s(0)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>JacobiRotation(Scalar<sp/>c,<sp/>Scalar<sp/>s)<sp/>:<sp/>m_c(c),<sp/>m_s(s)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar&amp;<sp/>c()<sp/>{<sp/>return<sp/>m_c;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>c()<sp/>const<sp/>{<sp/>return<sp/>m_c;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar&amp;<sp/>s()<sp/>{<sp/>return<sp/>m_s;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>s()<sp/>const<sp/>{<sp/>return<sp/>m_s;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>JacobiRotation<sp/>transpose()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>JacobiRotation(m_c,<sp/>-m_s);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>JacobiRotation<sp/>inverse()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>transpose();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>MatrixType&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>makeJacobi(const<sp/>MatrixType&amp;<sp/>m,<sp/>int<sp/>p,<sp/>int<sp/>q)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Compute<sp/>the<sp/>Jacobi<sp/>rotation<sp/>from<sp/>symmetric<sp/>matrix<sp/>components<sp/>at<sp/>(p,p),<sp/>(q,q),<sp/>and<sp/>(p,q)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Simplified<sp/>generic<sp/>implementation<sp/>extracting<sp/>elements<sp/>to<sp/>native<sp/>Scalars<sp/>to<sp/>compute<sp/>c/s</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>m_pp<sp/>=<sp/>m.tensor()[p][p].template<sp/>item&lt;Scalar&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>m_qq<sp/>=<sp/>m.tensor()[q][q].template<sp/>item&lt;Scalar&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>m_pq<sp/>=<sp/>m.tensor()[p][q].template<sp/>item&lt;Scalar&gt;();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(m_pq<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_c<sp/>=<sp/>1;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_s<sp/>=<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>false;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>tau<sp/>=<sp/>(m_qq<sp/>-<sp/>m_pp)<sp/>/<sp/>(2.0<sp/>*<sp/>m_pq);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>w<sp/>=<sp/>std::sqrt(1.0<sp/>+<sp/>tau<sp/>*<sp/>tau);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>t;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(tau<sp/>&gt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t<sp/>=<sp/>1.0<sp/>/<sp/>(tau<sp/>+<sp/>w);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t<sp/>=<sp/>1.0<sp/>/<sp/>(tau<sp/>-<sp/>w);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_c<sp/>=<sp/>1.0<sp/>/<sp/>std::sqrt(1.0<sp/>+<sp/>t<sp/>*<sp/>t);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_s<sp/>=<sp/>-t<sp/>*<sp/>m_c;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>true;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>JacobiRotation<sp/>operator*(const<sp/>JacobiRotation&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>(c1<sp/><sp/>-s1)<sp/>*<sp/>(c2<sp/>-s2)<sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>(s1<sp/><sp/><sp/>c1)<sp/><sp/><sp/>(s2<sp/><sp/>c2)<sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>JacobiRotation(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_c<sp/>*<sp/>other.c()<sp/>-<sp/>m_s<sp/>*<sp/>other.s(),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_s<sp/>*<sp/>other.c()<sp/>+<sp/>m_c<sp/>*<sp/>other.s()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>JacobiRotationf<sp/>=<sp/>JacobiRotation&lt;float&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>JacobiRotationd<sp/>=<sp/>JacobiRotation&lt;double&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>EIGEN_JACOBIROTATION_H</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Jacobi"/>
+  </compounddef>
+</doxygen>

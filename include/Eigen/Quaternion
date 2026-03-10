@@ -1,0 +1,114 @@
+#pragma once
+#include "Matrix.h"
+
+namespace Eigen {
+
+template <typename Scalar>
+class Quaternion {
+protected:
+    // Layout mimicking Eigen [w, x, y, z] depending on convention. 
+    // Usually Eigen stores it internall as [x,y,z,w], but coefficients are ordered w,x,y,z in constructor.
+    // We will store as a 4-element 1D tensor [w, x, y, z].
+    at::Tensor m_coeffs;
+
+public:
+    Quaternion() {
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, 4, 1>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        // Identity quaternion: w=1, x=y=z=0
+        m_coeffs = torch::tensor({1.0, 0.0, 0.0, 0.0}, options); 
+    }
+
+    Quaternion(Scalar w, Scalar x, Scalar y, Scalar z) {
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, 4, 1>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        m_coeffs = torch::tensor({w, x, y, z}, options);
+    }
+    
+    explicit Quaternion(const at::Tensor& tensor) : m_coeffs(tensor) {}
+
+    // Vector3 constructor (representing purely imaginary quaternion)
+    // Assumes vector is a 3x1 matrix 
+    explicit Quaternion(const Matrix<Scalar, 3, 1>& vec) {
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, 4, 1>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        // Prepend w=0
+        m_coeffs = torch::cat({torch::tensor({0.0}, options), vec.tensor().flatten()});
+    }
+
+    const at::Tensor& coeffs() const { return m_coeffs; }
+    at::Tensor& coeffs() { return m_coeffs; }
+
+    Scalar w() const { return m_coeffs[0].item<Scalar>(); }
+    Scalar x() const { return m_coeffs[1].item<Scalar>(); }
+    Scalar y() const { return m_coeffs[2].item<Scalar>(); }
+    Scalar z() const { return m_coeffs[3].item<Scalar>(); }
+
+    // Normalize
+    void normalize() {
+        m_coeffs = m_coeffs / torch::linalg_vector_norm(m_coeffs);
+    }
+
+    Quaternion normalized() const {
+        return Quaternion(m_coeffs / torch::linalg_vector_norm(m_coeffs));
+    }
+
+    // Hamilton product
+    Quaternion operator*(const Quaternion& other) const {
+        Scalar aw = w(), ax = x(), ay = y(), az = z();
+        Scalar bw = other.w(), bx = other.x(), by = other.y(), bz = other.z();
+        
+        Scalar tw = aw * bw - ax * bx - ay * by - az * bz;
+        Scalar tx = aw * bx + ax * bw + ay * bz - az * by;
+        Scalar ty = aw * by - ax * bz + ay * bw + az * bx;
+        Scalar tz = aw * bz + ax * by - ay * bx + az * bw;
+        
+        return Quaternion(tw, tx, ty, tz);
+    }
+
+    // Multiply by vector (rotates the vector) v' = q * v * q^-1
+    Matrix<Scalar, 3, 1> operator*(const Matrix<Scalar, 3, 1>& vec) const {
+        Quaternion vec_q(vec);
+        Quaternion res = (*this) * vec_q * inverse();
+        
+        // Return only the imaginary part
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, 3, 1>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        return Matrix<Scalar, 3, 1>(torch::tensor({res.x(), res.y(), res.z()}, options).unsqueeze(1));
+    }
+
+    Quaternion inverse() const {
+        Scalar norm_sq = torch::dot(m_coeffs, m_coeffs).item<Scalar>();
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, 4, 1>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        at::Tensor inv_coeffs = torch::tensor({w(), -x(), -y(), -z()}, options) / norm_sq;
+        return Quaternion(inv_coeffs);
+    }
+    
+    // To Rotation Matrix
+    Matrix<Scalar, 3, 3> toRotationMatrix() const {
+        Scalar aw = w(), ax = x(), ay = y(), az = z();
+        
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, 4, 1>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+            
+        at::Tensor rot = torch::tensor({
+            1 - 2*ay*ay - 2*az*az, 2*ax*ay - 2*az*aw,     2*ax*az + 2*ay*aw,
+            2*ax*ay + 2*az*aw,     1 - 2*ax*ax - 2*az*az, 2*ay*az - 2*ax*aw,
+            2*ax*az - 2*ay*aw,     2*ay*az + 2*ax*aw,     1 - 2*ax*ax - 2*ay*ay
+        }, options).reshape({3, 3});
+        
+        return Matrix<Scalar, 3, 3>(rot);
+    }
+};
+
+using Quaternionf = Quaternion<float>;
+using Quaterniond = Quaternion<double>;
+
+} // namespace Eigen

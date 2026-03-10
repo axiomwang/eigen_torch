@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_sparse" kind="file" language="C++">
+    <compoundname>Sparse</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#ifndef<sp/>EIGEN_SPARSE_MODULE_H</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>EIGEN_SPARSE_MODULE_H</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;SparseMatrix&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;SparseLU&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;SparseQR&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;SparseCholesky&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>EIGEN_SPARSE_MODULE_H</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>This<sp/>header<sp/>is<sp/>included<sp/>by<sp/>the<sp/>user<sp/>as:</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>#include<sp/>&lt;Eigen/Sparse&gt;</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Sparse"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="dir_80413d13a7cb0b5310f57a055e743bc9" kind="dir">
+    <compoundname>/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen</compoundname>
+    <innerfile refid="_aligned_box">AlignedBox</innerfile>
+    <innerfile refid="_angle_axis">AngleAxis</innerfile>
+    <innerfile refid="_cholesky">Cholesky</innerfile>
+    <innerfile refid="_core">Core</innerfile>
+    <innerfile refid="_dense">Dense</innerfile>
+    <innerfile refid="_device_8h">Device.h</innerfile>
+    <innerfile refid="_eigenvalues">Eigenvalues</innerfile>
+    <innerfile refid="_geometry">Geometry</innerfile>
+    <innerfile refid="_hyperplane">Hyperplane</innerfile>
+    <innerfile refid="_jacobi">Jacobi</innerfile>
+    <innerfile refid="_l_u">LU</innerfile>
+    <innerfile refid="_matrix_8h">Matrix.h</innerfile>
+    <innerfile refid="_parametrized_line">ParametrizedLine</innerfile>
+    <innerfile refid="_q_r">QR</innerfile>
+    <innerfile refid="_quaternion">Quaternion</innerfile>
+    <innerfile refid="_rotation2_d">Rotation2D</innerfile>
+    <innerfile refid="_scaling">Scaling</innerfile>
+    <innerfile refid="_sparse">Sparse</innerfile>
+    <innerfile refid="_sparse_cholesky">SparseCholesky</innerfile>
+    <innerfile refid="_sparse_l_u">SparseLU</innerfile>
+    <innerfile refid="_sparse_matrix">SparseMatrix</innerfile>
+    <innerfile refid="_sparse_q_r">SparseQR</innerfile>
+    <innerfile refid="_s_v_d">SVD</innerfile>
+    <innerfile refid="_transform">Transform</innerfile>
+    <innerfile refid="_translation">Translation</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/"/>
+  </compounddef>
+</doxygen>

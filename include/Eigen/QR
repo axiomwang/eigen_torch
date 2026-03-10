@@ -1,0 +1,51 @@
+#pragma once
+#include "Matrix.h"
+#include <tuple>
+
+namespace Eigen {
+
+template <typename MatrixType>
+class HouseholderQR {
+protected:
+    at::Tensor m_q;
+    at::Tensor m_r;
+    bool m_isInitialized = false;
+
+public:
+    HouseholderQR() {}
+
+    explicit HouseholderQR(const MatrixType& matrix) {
+        compute(matrix);
+    }
+
+    HouseholderQR& compute(const MatrixType& matrix) {
+        // mode="reduced" matches Eigen's default behavior yielding thin Q and R
+        std::tie(m_q, m_r) = torch::linalg_qr(matrix.tensor(), "reduced");
+        m_isInitialized = true;
+        return *this;
+    }
+
+    MatrixType householderQ() const {
+        return MatrixType(m_q);
+    }
+
+    MatrixType matrixQR() const {
+        // This traditionally returns the combined matrix where R is upper triangular 
+        // and Householder factors below diagonal. For torch, we just return R.
+        return MatrixType(m_r);
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) const {
+        // Ax = b => QRx = b => Rx = Q^T b
+        auto rhs = torch::matmul(m_q.adjoint(), b.tensor());
+        
+        // torch::linalg::solve is general; for an upper triangular R, we could use tri_solve for performance, 
+        // but torch::linalg::solve handles general cases just fine
+        // Using solve_triangular since R is upper triangular:
+        at::Tensor result = torch::linalg_solve_triangular(m_r, rhs, /*upper=*/true, /*left=*/true);
+        return Rhs(result);
+    }
+};
+
+} // namespace Eigen

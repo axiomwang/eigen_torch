@@ -1,0 +1,64 @@
+#pragma once
+#include "Matrix.h"
+#include "Quaternion"
+#include "AngleAxis"
+#include "Translation"
+
+namespace Eigen {
+
+// Represents an affine transformation Matrix (4x4 for 3D)
+template <typename Scalar, int Dim>
+class Transform {
+protected:
+    Matrix<Scalar, Dim + 1, Dim + 1> m_matrix;
+
+public:
+    Transform() {
+        m_matrix = Matrix<Scalar, Dim + 1, Dim + 1>::Zero(Dim + 1, Dim + 1);
+        for (int i = 0; i < Dim + 1; ++i) {
+            m_matrix.tensor()[i][i] = 1.0;
+        }
+    }
+
+    explicit Transform(const Matrix<Scalar, Dim + 1, Dim + 1>& matrix) : m_matrix(matrix) {}
+
+    const Matrix<Scalar, Dim + 1, Dim + 1>& matrix() const { return m_matrix; }
+    Matrix<Scalar, Dim + 1, Dim + 1>& matrix() { return m_matrix; }
+
+    // Allows T.linear() returning the rotation/scale 3x3 block
+    Matrix<Scalar, Dim, Dim> linear() const {
+        return m_matrix.block(0, 0, Dim, Dim);
+    }
+
+    // Allows T.translation() returning the 3x1 translation block
+    Matrix<Scalar, Dim, 1> translation() const {
+        return m_matrix.block(0, Dim, Dim, 1);
+    }
+
+    Transform operator*(const Transform& other) const {
+        return Transform(m_matrix * other.matrix());
+    }
+
+    Matrix<Scalar, Dim, 1> operator*(const Matrix<Scalar, Dim, 1>& vec) const {
+        // Append homogeneous coordinate 1.0
+        auto options = vec.tensor().options();
+        auto hom_coord = torch::tensor({1.0}, options).unsqueeze(0);
+        auto vec_hom = torch::cat({vec.tensor(), hom_coord}, 0); 
+        
+        auto res_hom = m_matrix.tensor().matmul(vec_hom);
+        
+        // Return only the Dim components
+        return Matrix<Scalar, Dim, 1>(res_hom.slice(0, 0, Dim));
+    }
+    
+    Transform inverse() const {
+        return Transform(m_matrix.inverse());
+    }
+};
+
+using Affine3f = Transform<float, 3>;
+using Affine3d = Transform<double, 3>;
+using Isometry3f = Transform<float, 3>;
+using Isometry3d = Transform<double, 3>;
+
+} // namespace Eigen

@@ -1,0 +1,70 @@
+#pragma once
+#include "Matrix.h"
+#include "Quaternion"
+#include <cmath>
+
+namespace Eigen {
+
+template <typename Scalar>
+class AngleAxis {
+protected:
+    Scalar m_angle;
+    Matrix<Scalar, 3, 1> m_axis; // Should be normalized
+
+public:
+    AngleAxis() : m_angle(0) {
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, 3, 1>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        m_axis = Matrix<Scalar, 3, 1>(torch::tensor({1.0, 0.0, 0.0}, options).unsqueeze(1));
+    }
+
+    AngleAxis(Scalar angle, const Matrix<Scalar, 3, 1>& axis) : m_angle(angle), m_axis(axis) {
+        // Assume axis is already normalized, matching Eigen semantics
+    }
+    
+    Scalar angle() const { return m_angle; }
+    const Matrix<Scalar, 3, 1>& axis() const { return m_axis; }
+    
+    Scalar& angle() { return m_angle; }
+    Matrix<Scalar, 3, 1>& axis() { return m_axis; }
+
+    Matrix<Scalar, 3, 3> toRotationMatrix() const {
+        // Use Rodrigues' rotation formula
+        Scalar c = std::cos(m_angle);
+        Scalar s = std::sin(m_angle);
+        Scalar C = 1 - c;
+
+        Scalar x = m_axis.tensor()[0][0].template item<Scalar>();
+        Scalar y = m_axis.tensor()[1][0].template item<Scalar>();
+        Scalar z = m_axis.tensor()[2][0].template item<Scalar>();
+
+        auto options = m_axis.tensor().options();
+
+        at::Tensor rot = torch::tensor({
+            x*x*C + c,   x*y*C - z*s, x*z*C + y*s,
+            y*x*C + z*s, y*y*C + c,   y*z*C - x*s,
+            z*x*C - y*s, z*y*C + x*s, z*z*C + c
+        }, options).reshape({3, 3});
+
+        return Matrix<Scalar, 3, 3>(rot);
+    }
+
+    // Convert to Quaternion
+    explicit operator Quaternion<Scalar>() const {
+        Scalar half_angle = m_angle * 0.5;
+        Scalar s = std::sin(half_angle);
+        Scalar c = std::cos(half_angle);
+        
+        Scalar x = m_axis.tensor()[0][0].template item<Scalar>() * s;
+        Scalar y = m_axis.tensor()[1][0].template item<Scalar>() * s;
+        Scalar z = m_axis.tensor()[2][0].template item<Scalar>() * s;
+        
+        return Quaternion<Scalar>(c, x, y, z);
+    }
+};
+
+using AngleAxisf = AngleAxis<float>;
+using AngleAxisd = AngleAxis<double>;
+
+} // namespace Eigen

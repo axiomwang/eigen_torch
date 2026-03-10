@@ -1,0 +1,121 @@
+#pragma once
+#include "Matrix.h"
+#include <vector>
+
+namespace Eigen {
+
+// Standard Eigen has SparseMatrix<Scalar, Options, Index> and supports row/col major.
+// By default, Torch CSR is equivalent to RowMajor. We will default to CSR.
+template <typename Scalar>
+class SparseMatrix {
+protected:
+    at::Tensor m_tensor;
+    int m_rows;
+    int m_cols;
+    
+    // For incrementally filling the matrix (like Eigen's triplets)
+    struct Triplet {
+        int row;
+        int col;
+        Scalar value;
+    };
+    std::vector<Triplet> m_triplets;
+    bool m_isCompressed = false;
+
+public:
+    using ScalarType = Scalar;
+    
+    // Create an empty sparse matrix
+    SparseMatrix() : m_rows(0), m_cols(0) {}
+    
+    SparseMatrix(int rows, int cols) : m_rows(rows), m_cols(cols) {}
+    
+    // Explicit constructor from existing sparse tensor
+    explicit SparseMatrix(const at::Tensor& tensor) : m_tensor(tensor) {
+        if (tensor.is_sparse() || tensor.is_sparse_csr()) {
+            m_rows = tensor.size(0);
+            m_cols = tensor.size(1);
+            m_isCompressed = true;
+        } else {
+            throw std::runtime_error("Tensor provided to SparseMatrix is not a sparse tensor.");
+        }
+    }
+
+    int rows() const { return m_rows; }
+    int cols() const { return m_cols; }
+    int nonZeros() const { return m_isCompressed ? m_tensor._nnz() : m_triplets.size(); }
+    
+    const at::Tensor& tensor() const { return m_tensor; }
+    
+    // Inserting elements is done via triplets in Eigen.
+    // E.g. matrix.insert(i, j) = v; In dense, this is easy, in sparse it's slow.
+    // Eigen recommends setFromTriplets.
+    
+    void insert(int row, int col, Scalar value) {
+        m_triplets.push_back({row, col, value});
+        m_isCompressed = false;
+    }
+    
+    // Build the CSR tensor from the inserted triplets
+    void makeCompressed() {
+        if (m_isCompressed) return;
+        
+        // Torch needs sorted indices for CSR. Creating COO first and then converting is usually easiest.
+        std::vector<int64_t> row_indices;
+        std::vector<int64_t> col_indices;
+        std::vector<Scalar> values;
+        
+        for (const auto& t : m_triplets) {
+            row_indices.push_back(t.row);
+            col_indices.push_back(t.col);
+            values.push_back(t.value);
+        }
+        
+        auto options_idx = torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU);
+        auto options_val = torch::TensorOptions().dtype(Matrix<Scalar, Dynamic, Dynamic>::get_torch_dtype()).device(DeviceManager::get_default_device());
+
+        at::Tensor indices = torch::vstack({
+            torch::tensor(row_indices, options_idx),
+            torch::tensor(col_indices, options_idx)
+        });
+        at::Tensor vals = torch::tensor(values, options_val);
+        
+        // Ensure device is correct
+        indices = indices.to(DeviceManager::get_default_device());
+        
+        // Create COO, then convert to CSR (PyTorch 2.0+ pattern)
+        at::Tensor coo = torch::sparse_coo_tensor(indices, vals, {m_rows, m_cols}, options_val.layout(torch::kSparse));
+        m_tensor = coo.to_sparse_csr();
+        
+        m_triplets.clear();
+        m_isCompressed = true;
+    }
+
+    // Multiplication Sparse x Dense -> Dense
+    template <typename OtherScalar, int OtherRows, int OtherCols>
+    Matrix<Scalar, Dynamic, Dynamic> operator*(const Matrix<OtherScalar, OtherRows, OtherCols>& dense) const {
+        if (!m_isCompressed) throw std::runtime_error("SparseMatrix must be compressed before multiplication");
+        
+        // Torch natively dispatches matmul to sparse routine if LHS is sparse.
+        at::Tensor result = torch::matmul(m_tensor, dense.tensor());
+        return Matrix<Scalar, Dynamic, Dynamic>(result);
+    }
+    
+    // Multiplication Sparse x Sparse -> Sparse
+    SparseMatrix<Scalar> operator*(const SparseMatrix<Scalar>& other) const {
+        if (!m_isCompressed || !other.m_isCompressed) throw std::runtime_error("Both SparseMatrices must be compressed");
+        at::Tensor result = torch::matmul(m_tensor, other.tensor());
+        return SparseMatrix<Scalar>(result);
+    }
+};
+
+using SparseMatrixf = SparseMatrix<float>;
+using SparseMatrixd = SparseMatrix<double>;
+
+template <typename Scalar>
+struct Triplet {
+    int row(), col();
+    Scalar value();
+};
+
+} // namespace Eigen

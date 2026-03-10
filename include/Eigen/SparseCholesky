@@ -1,0 +1,72 @@
+#ifndef EIGEN_SPARSECHOLESKY_H
+#define EIGEN_SPARSECHOLESKY_H
+
+#include "Matrix.h"
+#include "SparseMatrix"
+#include <stdexcept>
+
+namespace Eigen {
+
+template <typename MatrixType_>
+class SimplicialLLT {
+public:
+    using MatrixType = MatrixType_;
+    using Scalar = typename MatrixType::ScalarType;
+
+protected:
+    at::Tensor m_l;
+    bool m_info = false;
+
+public:
+    SimplicialLLT() {}
+    explicit SimplicialLLT(const MatrixType& matrix) {
+        compute(matrix);
+    }
+
+    SimplicialLLT& compute(const MatrixType& matrix) {
+        try {
+            // Coerce mapping: SparseMatrix -> Dense -> cholesky
+            at::Tensor dense_mat = matrix.tensor().to_dense();
+            m_l = torch::linalg_cholesky(dense_mat);
+            m_info = true;
+        } catch (...) {
+            m_info = false;
+        }
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) const {
+        if (!m_info) {
+             throw std::runtime_error("SimplicialLLT is not initialized or decomposition failed.");
+        }
+        at::Tensor dense_b;
+        if (b.tensor().is_sparse()) {
+            dense_b = b.tensor().to_dense();
+        } else {
+            dense_b = b.tensor();
+        }
+        // Use cholesky_solve directly
+        at::Tensor result = torch::cholesky_solve(dense_b, m_l);
+        return Rhs(result);
+    }
+    
+    // Expose LLT Status
+    bool info() const { return m_info; }
+    const at::Tensor& matrixL() const { return m_l; }
+};
+
+template <typename MatrixType_>
+class SimplicialLDLT : public SimplicialLLT<MatrixType_> {
+public:
+    // PyTorch lacks a native general LDLT solver (only exposes standard cholesky LLT)
+    // For drop-in compatibility, we route SimplicialLDLT to SimplicialLLT 
+    // unless the target graph actually requires decoupled D diagonal factors.
+    using SimplicialLLT<MatrixType_>::SimplicialLLT;
+    using SimplicialLLT<MatrixType_>::compute;
+    using SimplicialLLT<MatrixType_>::solve;
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_SPARSECHOLESKY_H

@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_dense" kind="file" language="C++">
+    <compoundname>Dense</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;LU&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Cholesky&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;QR&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;SVD&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Eigenvalues&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>This<sp/>header<sp/>is<sp/>included<sp/>by<sp/>the<sp/>user<sp/>as:</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>#include<sp/>&lt;Eigen/Dense&gt;</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>It<sp/>bundles<sp/>the<sp/>entirety<sp/>of<sp/>the<sp/>Dense<sp/>Solvers<sp/>APIs</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Core&quot;</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Dense"/>
+  </compounddef>
+</doxygen>

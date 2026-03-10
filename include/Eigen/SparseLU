@@ -1,0 +1,66 @@
+#ifndef EIGEN_SPARSELU_H
+#define EIGEN_SPARSELU_H
+
+#include "Matrix.h"
+#include "SparseMatrix"
+#include <stdexcept>
+
+namespace Eigen {
+
+template <typename MatrixType_>
+class SparseLU {
+public:
+    using MatrixType = MatrixType_;
+    using Scalar = typename MatrixType::ScalarType;
+
+protected:
+    at::Tensor m_lu;
+    at::Tensor m_pivots;
+    at::Tensor m_info;
+    bool m_isInitialized = false;
+
+public:
+    SparseLU() {}
+    explicit SparseLU(const MatrixType& matrix) {
+        compute(matrix);
+    }
+
+    SparseLU& compute(const MatrixType& matrix) {
+        // LibTorch does not have a native sparse LU. We must invoke the dense fallback wrapper
+        // Coerce SparseMatrix -> Dense -> linalg_lu_factor_ex
+        at::Tensor dense_mat = matrix.tensor().to_dense();
+        std::tie(m_lu, m_pivots, m_info) = torch::linalg_lu_factor_ex(dense_mat);
+        m_isInitialized = true;
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("SparseLU is not initialized.");
+        }
+        at::Tensor dense_b;
+        if (b.tensor().is_sparse()) {
+            dense_b = b.tensor().to_dense();
+        } else {
+            dense_b = b.tensor();
+        }
+        at::Tensor result = torch::linalg_lu_solve(m_lu, m_pivots, dense_b);
+        return Rhs(result); // Result is always returned dense
+    }
+
+    SparseLU& compute(const at::Tensor& matrix) {
+        at::Tensor dense_mat = matrix.is_sparse() ? matrix.to_dense() : matrix;
+        std::tie(m_lu, m_pivots, m_info) = torch::linalg_lu_factor_ex(dense_mat);
+        m_isInitialized = true;
+        return *this;
+    }
+    
+    // Some basic compatibility hooks mapping back to Dense equivalents
+    const at::Tensor& matrixL() const { return m_lu; } // Torch packs L/U into same tensor
+    const at::Tensor& matrixU() const { return m_lu; }
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_SPARSELU_H

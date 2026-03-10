@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="class_eigen_1_1_device_manager" kind="class" language="C++" prot="public">
+    <compoundname>Eigen::DeviceManager</compoundname>
+    <includes refid="_device_8h" local="no">Device.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="class_eigen_1_1_device_manager_1a2c6ef290a459ec9dc10dfe84d94c0449" prot="public" static="yes" mutable="no">
+        <type>torch::Device</type>
+        <definition>torch::Device Eigen::DeviceManager::default_device</definition>
+        <argsstring></argsstring>
+        <name>default_device</name>
+        <qualifiedname>Eigen::DeviceManager::default_device</qualifiedname>
+        <initializer>= torch::kCPU</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Device.h" line="10" column="33" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Device.h" bodystart="10" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_eigen_1_1_device_manager_1a0bdb8b81becfa90286c02da2cacbe75a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void Eigen::DeviceManager::set_default_device</definition>
+        <argsstring>(const torch::Device &amp;device)</argsstring>
+        <name>set_default_device</name>
+        <qualifiedname>Eigen::DeviceManager::set_default_device</qualifiedname>
+        <param>
+          <type>const torch::Device &amp;</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Device.h" line="13" column="17" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Device.h" bodystart="13" bodyend="15"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_device_manager_1ae65846da7d3ebc8adc8f12eecee1a2b0" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>torch::Device</type>
+        <definition>static torch::Device Eigen::DeviceManager::get_default_device</definition>
+        <argsstring>()</argsstring>
+        <name>get_default_device</name>
+        <qualifiedname>Eigen::DeviceManager::get_default_device</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Device.h" line="18" column="26" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Device.h" bodystart="18" bodyend="20"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_device_manager_1a1166dc63851c2e5cc7f19cf582510c50" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool Eigen::DeviceManager::is_mps_available</definition>
+        <argsstring>()</argsstring>
+        <name>is_mps_available</name>
+        <qualifiedname>Eigen::DeviceManager::is_mps_available</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Device.h" line="23" column="17" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Device.h" bodystart="23" bodyend="25"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Device.h" line="7" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Device.h" bodystart="7" bodyend="26"/>
+    <listofallmembers>
+      <member refid="class_eigen_1_1_device_manager_1a2c6ef290a459ec9dc10dfe84d94c0449" prot="public" virt="non-virtual"><scope>Eigen::DeviceManager</scope><name>default_device</name></member>
+      <member refid="class_eigen_1_1_device_manager_1ae65846da7d3ebc8adc8f12eecee1a2b0" prot="public" virt="non-virtual"><scope>Eigen::DeviceManager</scope><name>get_default_device</name></member>
+      <member refid="class_eigen_1_1_device_manager_1a1166dc63851c2e5cc7f19cf582510c50" prot="public" virt="non-virtual"><scope>Eigen::DeviceManager</scope><name>is_mps_available</name></member>
+      <member refid="class_eigen_1_1_device_manager_1a0bdb8b81becfa90286c02da2cacbe75a" prot="public" virt="non-virtual"><scope>Eigen::DeviceManager</scope><name>set_default_device</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

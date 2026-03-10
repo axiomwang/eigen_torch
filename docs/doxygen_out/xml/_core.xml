@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_core" kind="file" language="C++">
+    <compoundname>Core</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Device.h&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>This<sp/>header<sp/>is<sp/>meant<sp/>to<sp/>be<sp/>included<sp/>by<sp/>the<sp/>user<sp/>as:</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>#include<sp/>&lt;Eigen/Core&gt;</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Core"/>
+  </compounddef>
+</doxygen>

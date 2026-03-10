@@ -1,0 +1,820 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="class_eigen_1_1_matrix" kind="class" language="C++" prot="public">
+    <compoundname>Eigen::Matrix</compoundname>
+    <includes refid="_matrix_8h" local="no">Matrix.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename Scalar</type>
+      </param>
+      <param>
+        <type>int</type>
+        <declname>RowsAtCompileTime</declname>
+        <defname>RowsAtCompileTime</defname>
+      </param>
+      <param>
+        <type>int</type>
+        <declname>ColsAtCompileTime</declname>
+        <defname>ColsAtCompileTime</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="class_eigen_1_1_matrix_1a33a399720f92d3c9e876918436eb6c75" prot="public" static="no">
+        <type>Scalar</type>
+        <definition>using Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::ScalarType = Scalar</definition>
+        <argsstring></argsstring>
+        <name>ScalarType</name>
+        <qualifiedname>Eigen::Matrix::ScalarType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="19" column="5" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="19" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="class_eigen_1_1_matrix_1a65689d6a2354d6f3653b981744fe33ae" prot="protected" static="no" mutable="no">
+        <type>at::Tensor</type>
+        <definition>at::Tensor Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::m_tensor</definition>
+        <argsstring></argsstring>
+        <name>m_tensor</name>
+        <qualifiedname>Eigen::Matrix::m_tensor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="15" column="16" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="15" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1af42135a5974ba06be10bec8ee2c4fd29" prot="public" static="yes" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>torch::ScalarType</type>
+        <definition>static constexpr torch::ScalarType Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::get_torch_dtype</definition>
+        <argsstring>()</argsstring>
+        <name>get_torch_dtype</name>
+        <qualifiedname>Eigen::Matrix::get_torch_dtype</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="22" column="40" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="22" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1aa926ab02c7d31339ab7f53f03fb407b1" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref></type>
+        <definition>static Matrix Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::Random</definition>
+        <argsstring>(int rows, int cols)</argsstring>
+        <name>Random</name>
+        <qualifiedname>Eigen::Matrix::Random</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>rows</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cols</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="66" column="19" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="66" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1ade09a1b6e4e8282d0c8d49f9e16880bf" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref></type>
+        <definition>static Matrix Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::Zero</definition>
+        <argsstring>(int rows, int cols)</argsstring>
+        <name>Zero</name>
+        <qualifiedname>Eigen::Matrix::Zero</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>rows</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cols</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="73" column="19" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="73" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1ab89d3464af8b635ac05dd3b9eb8dce52" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref></type>
+        <definition>static Matrix Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::Ones</definition>
+        <argsstring>(int rows, int cols)</argsstring>
+        <name>Ones</name>
+        <qualifiedname>Eigen::Matrix::Ones</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>rows</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cols</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="80" column="19" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="80" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1aef588ab5dd4a34c5015147216907b2b3" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref></type>
+        <definition>static Matrix Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::Identity</definition>
+        <argsstring>(int rows, int cols)</argsstring>
+        <name>Identity</name>
+        <qualifiedname>Eigen::Matrix::Identity</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>rows</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cols</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="88" column="19" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="88" bodyend="93"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::Matrix</definition>
+        <argsstring>()</argsstring>
+        <name>Matrix</name>
+        <qualifiedname>Eigen::Matrix::Matrix</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="31" column="5" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="31" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a129236898edc0397d39d33117c615478" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::Matrix</definition>
+        <argsstring>(const at::Tensor &amp;tensor)</argsstring>
+        <name>Matrix</name>
+        <qualifiedname>Eigen::Matrix::Matrix</qualifiedname>
+        <param>
+          <type>const at::Tensor &amp;</type>
+          <declname>tensor</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="34" column="14" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="34" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1aecc75aa6c11b766a298e34ecc73f269f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::Matrix</definition>
+        <argsstring>(int rows, int cols)</argsstring>
+        <name>Matrix</name>
+        <qualifiedname>Eigen::Matrix::Matrix</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>rows</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cols</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="37" column="5" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="37" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a86dcdd8ee7412a232f582755d6501cb2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename OtherScalar</type>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>OtherRows</declname>
+            <defname>OtherRows</defname>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>OtherCols</declname>
+            <defname>OtherCols</defname>
+          </param>
+        </templateparamlist>
+        <type></type>
+        <definition>Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::Matrix</definition>
+        <argsstring>(const Matrix&lt; OtherScalar, OtherRows, OtherCols &gt; &amp;other)</argsstring>
+        <name>Matrix</name>
+        <qualifiedname>Eigen::Matrix::Matrix</qualifiedname>
+        <param>
+          <type>const Matrix&lt; OtherScalar, OtherRows, OtherCols &gt; &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="46" column="5" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="46" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a29aeae6192121e5e2be182ee8f10c956" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>at::Tensor &amp;</type>
+        <definition>at::Tensor &amp; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::tensor</definition>
+        <argsstring>()</argsstring>
+        <name>tensor</name>
+        <qualifiedname>Eigen::Matrix::tensor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="52" column="16" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="52" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a62775901ac3573472111303306a3abbf" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const at::Tensor &amp;</type>
+        <definition>const at::Tensor &amp; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::tensor</definition>
+        <argsstring>() const</argsstring>
+        <name>tensor</name>
+        <qualifiedname>Eigen::Matrix::tensor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="53" column="22" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="53" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a9dd1bfee08e24b68d4f0394b0ac6a84f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::rows</definition>
+        <argsstring>() const</argsstring>
+        <name>rows</name>
+        <qualifiedname>Eigen::Matrix::rows</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="56" column="9" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a4a9ec573d7a98a5d7eddc9dafd43eb34" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::cols</definition>
+        <argsstring>() const</argsstring>
+        <name>cols</name>
+        <qualifiedname>Eigen::Matrix::cols</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="57" column="9" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="57" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a2f3bbeaeac2ea483a38f470cdcab67ff" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <qualifiedname>Eigen::Matrix::size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="58" column="9" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="58" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1ada9f0d93e78c578971205ee0f529bf67" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Scalar</type>
+        <definition>Scalar Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::operator()</definition>
+        <argsstring>(int row, int col) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>Eigen::Matrix::operator()</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>row</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>col</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="61" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="61" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a69c990c59c47b1295c8dffe14c7acca8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename OtherScalar</type>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>OtherRows</declname>
+            <defname>OtherRows</defname>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>OtherCols</declname>
+            <defname>OtherCols</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>Matrix&lt; Scalar, Dynamic, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::operator*</definition>
+        <argsstring>(const Matrix&lt; OtherScalar, OtherRows, OtherCols &gt; &amp;other) const</argsstring>
+        <name>operator*</name>
+        <qualifiedname>Eigen::Matrix::operator*</qualifiedname>
+        <param>
+          <type>const <ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; OtherScalar, OtherRows, OtherCols &gt; &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="97" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="97" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1adcbf6d85fcc6f80def986c46a57e0dd8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename OtherScalar</type>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>OtherRows</declname>
+            <defname>OtherRows</defname>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>OtherCols</declname>
+            <defname>OtherCols</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>Matrix&lt; Scalar, Dynamic, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::operator+</definition>
+        <argsstring>(const Matrix&lt; OtherScalar, OtherRows, OtherCols &gt; &amp;other) const</argsstring>
+        <name>operator+</name>
+        <qualifiedname>Eigen::Matrix::operator+</qualifiedname>
+        <param>
+          <type>const <ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; OtherScalar, OtherRows, OtherCols &gt; &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="105" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="105" bodyend="107"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a8560a6f5cd667e84ee1037896e6cb3b2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename OtherScalar</type>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>OtherRows</declname>
+            <defname>OtherRows</defname>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>OtherCols</declname>
+            <defname>OtherCols</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>Matrix&lt; Scalar, Dynamic, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::operator-</definition>
+        <argsstring>(const Matrix&lt; OtherScalar, OtherRows, OtherCols &gt; &amp;other) const</argsstring>
+        <name>operator-</name>
+        <qualifiedname>Eigen::Matrix::operator-</qualifiedname>
+        <param>
+          <type>const <ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; OtherScalar, OtherRows, OtherCols &gt; &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="110" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="110" bodyend="112"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a30eed44b24a5d50f7b3edec58561968b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>Matrix&lt; Scalar, Dynamic, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::transpose</definition>
+        <argsstring>() const</argsstring>
+        <name>transpose</name>
+        <qualifiedname>Eigen::Matrix::transpose</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="115" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="115" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a1fc239ff45905bd151c760de6fdf773d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>Matrix&lt; Scalar, Dynamic, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::adjoint</definition>
+        <argsstring>() const</argsstring>
+        <name>adjoint</name>
+        <qualifiedname>Eigen::Matrix::adjoint</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="120" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="120" bodyend="124"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a887081f83862fdaf03cadc5c7121cd55" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename OtherScalar</type>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>OtherRows</declname>
+            <defname>OtherRows</defname>
+          </param>
+          <param>
+            <type>int</type>
+            <declname>OtherCols</declname>
+            <defname>OtherCols</defname>
+          </param>
+        </templateparamlist>
+        <type>Scalar</type>
+        <definition>Scalar Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::dot</definition>
+        <argsstring>(const Matrix&lt; OtherScalar, OtherRows, OtherCols &gt; &amp;other) const</argsstring>
+        <name>dot</name>
+        <qualifiedname>Eigen::Matrix::dot</qualifiedname>
+        <param>
+          <type>const <ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; OtherScalar, OtherRows, OtherCols &gt; &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="128" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="128" bodyend="132"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a435f3c05e12e3a9b43b623827d2d883f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>Matrix&lt; Scalar, Dynamic, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::block</definition>
+        <argsstring>(int startRow, int startCol, int blockRows, int blockCols)</argsstring>
+        <name>block</name>
+        <qualifiedname>Eigen::Matrix::block</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>startRow</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>startCol</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>blockRows</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>blockCols</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="135" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="135" bodyend="140"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a6d08e28f841d50f630767e17959e280f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>const Matrix&lt; Scalar, Dynamic, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::block</definition>
+        <argsstring>(int startRow, int startCol, int blockRows, int blockCols) const</argsstring>
+        <name>block</name>
+        <qualifiedname>Eigen::Matrix::block</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>startRow</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>startCol</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>blockRows</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>blockCols</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="143" column="18" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="143" bodyend="148"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a576b915959c251355551ea7d2a1e3089" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, 1, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>Matrix&lt; Scalar, 1, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::row</definition>
+        <argsstring>(int i)</argsstring>
+        <name>row</name>
+        <qualifiedname>Eigen::Matrix::row</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="151" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="151" bodyend="153"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a493fc970349c56b6846a6a5a8088187d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, 1, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>const Matrix&lt; Scalar, 1, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::row</definition>
+        <argsstring>(int i) const</argsstring>
+        <name>row</name>
+        <qualifiedname>Eigen::Matrix::row</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="155" column="18" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="155" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a42b9165da82d350a6cb050ff67ce9ffb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, 1 &gt;</type>
+        <definition>Matrix&lt; Scalar, Dynamic, 1 &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::col</definition>
+        <argsstring>(int i)</argsstring>
+        <name>col</name>
+        <qualifiedname>Eigen::Matrix::col</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="160" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="160" bodyend="162"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a7edea44dcf5c6b16cd8da84b0068ab3c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, 1 &gt;</type>
+        <definition>const Matrix&lt; Scalar, Dynamic, 1 &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::col</definition>
+        <argsstring>(int i) const</argsstring>
+        <name>col</name>
+        <qualifiedname>Eigen::Matrix::col</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>i</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="164" column="18" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="164" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1abd5a0b03b250fb0d10354e722a279104" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>Matrix&lt; Scalar, Dynamic, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::cwiseProduct</definition>
+        <argsstring>(const Matrix &amp;other) const</argsstring>
+        <name>cwiseProduct</name>
+        <qualifiedname>Eigen::Matrix::cwiseProduct</qualifiedname>
+        <param>
+          <type>const <ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="169" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="169" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a07140b347c132b319b3af037113ef1b2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>Matrix&lt; Scalar, Dynamic, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::cwiseQuotient</definition>
+        <argsstring>(const Matrix &amp;other) const</argsstring>
+        <name>cwiseQuotient</name>
+        <qualifiedname>Eigen::Matrix::cwiseQuotient</qualifiedname>
+        <param>
+          <type>const <ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="173" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="173" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a115238f74f2422838ac7b2e5af9e2549" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>Matrix&lt; Scalar, Dynamic, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::cwiseAbs</definition>
+        <argsstring>() const</argsstring>
+        <name>cwiseAbs</name>
+        <qualifiedname>Eigen::Matrix::cwiseAbs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="177" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="177" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1ac418f278e904135391924699e7a54e17" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Scalar</type>
+        <definition>Scalar Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::sum</definition>
+        <argsstring>() const</argsstring>
+        <name>sum</name>
+        <qualifiedname>Eigen::Matrix::sum</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="182" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="182" bodyend="184"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1aec3e4ff2830f9f27ef866c50abdcb115" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Scalar</type>
+        <definition>Scalar Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::mean</definition>
+        <argsstring>() const</argsstring>
+        <name>mean</name>
+        <qualifiedname>Eigen::Matrix::mean</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="186" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="186" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1ac5b31815da6cae82f43d446ba7723f71" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Scalar</type>
+        <definition>Scalar Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::maxCoeff</definition>
+        <argsstring>() const</argsstring>
+        <name>maxCoeff</name>
+        <qualifiedname>Eigen::Matrix::maxCoeff</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="190" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="190" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1a02038bdbdbf367e3ce7af33776c6b8f3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Scalar</type>
+        <definition>Scalar Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::minCoeff</definition>
+        <argsstring>() const</argsstring>
+        <name>minCoeff</name>
+        <qualifiedname>Eigen::Matrix::minCoeff</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="194" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="194" bodyend="196"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1ade4f4ad6fb632b9379196410447675ae" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref>&lt; Scalar, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>Matrix&lt; Scalar, Dynamic, Dynamic &gt; Eigen::Matrix&lt; Scalar, RowsAtCompileTime, ColsAtCompileTime &gt;::inverse</definition>
+        <argsstring>() const</argsstring>
+        <name>inverse</name>
+        <qualifiedname>Eigen::Matrix::inverse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="199" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="199" bodyend="202"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="class_eigen_1_1_matrix_1a5acbf9f1ba6d871be2ad3a0cdadf8815" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::ostream &amp;</type>
+        <definition>std::ostream &amp; operator&lt;&lt;</definition>
+        <argsstring>(std::ostream &amp;os, const Matrix &amp;m)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <qualifiedname>Eigen::Matrix::operator&lt;&lt;</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>os</declname>
+        </param>
+        <param>
+          <type>const <ref refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" kindref="member">Matrix</ref> &amp;</type>
+          <declname>m</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="205" column="12" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="205" bodyend="208"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="13" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="13" bodyend="209"/>
+    <listofallmembers>
+      <member refid="class_eigen_1_1_matrix_1a1fc239ff45905bd151c760de6fdf773d" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>adjoint</name></member>
+      <member refid="class_eigen_1_1_matrix_1a435f3c05e12e3a9b43b623827d2d883f" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>block</name></member>
+      <member refid="class_eigen_1_1_matrix_1a6d08e28f841d50f630767e17959e280f" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>block</name></member>
+      <member refid="class_eigen_1_1_matrix_1a42b9165da82d350a6cb050ff67ce9ffb" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>col</name></member>
+      <member refid="class_eigen_1_1_matrix_1a7edea44dcf5c6b16cd8da84b0068ab3c" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>col</name></member>
+      <member refid="class_eigen_1_1_matrix_1a4a9ec573d7a98a5d7eddc9dafd43eb34" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>cols</name></member>
+      <member refid="class_eigen_1_1_matrix_1a115238f74f2422838ac7b2e5af9e2549" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>cwiseAbs</name></member>
+      <member refid="class_eigen_1_1_matrix_1abd5a0b03b250fb0d10354e722a279104" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>cwiseProduct</name></member>
+      <member refid="class_eigen_1_1_matrix_1a07140b347c132b319b3af037113ef1b2" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>cwiseQuotient</name></member>
+      <member refid="class_eigen_1_1_matrix_1a887081f83862fdaf03cadc5c7121cd55" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>dot</name></member>
+      <member refid="class_eigen_1_1_matrix_1af42135a5974ba06be10bec8ee2c4fd29" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>get_torch_dtype</name></member>
+      <member refid="class_eigen_1_1_matrix_1aef588ab5dd4a34c5015147216907b2b3" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>Identity</name></member>
+      <member refid="class_eigen_1_1_matrix_1ade4f4ad6fb632b9379196410447675ae" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>inverse</name></member>
+      <member refid="class_eigen_1_1_matrix_1a65689d6a2354d6f3653b981744fe33ae" prot="protected" virt="non-virtual"><scope>Eigen::Matrix</scope><name>m_tensor</name></member>
+      <member refid="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>Matrix</name></member>
+      <member refid="class_eigen_1_1_matrix_1a129236898edc0397d39d33117c615478" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>Matrix</name></member>
+      <member refid="class_eigen_1_1_matrix_1aecc75aa6c11b766a298e34ecc73f269f" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>Matrix</name></member>
+      <member refid="class_eigen_1_1_matrix_1a86dcdd8ee7412a232f582755d6501cb2" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>Matrix</name></member>
+      <member refid="class_eigen_1_1_matrix_1ac5b31815da6cae82f43d446ba7723f71" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>maxCoeff</name></member>
+      <member refid="class_eigen_1_1_matrix_1aec3e4ff2830f9f27ef866c50abdcb115" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>mean</name></member>
+      <member refid="class_eigen_1_1_matrix_1a02038bdbdbf367e3ce7af33776c6b8f3" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>minCoeff</name></member>
+      <member refid="class_eigen_1_1_matrix_1ab89d3464af8b635ac05dd3b9eb8dce52" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>Ones</name></member>
+      <member refid="class_eigen_1_1_matrix_1ada9f0d93e78c578971205ee0f529bf67" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>operator()</name></member>
+      <member refid="class_eigen_1_1_matrix_1a69c990c59c47b1295c8dffe14c7acca8" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>operator*</name></member>
+      <member refid="class_eigen_1_1_matrix_1adcbf6d85fcc6f80def986c46a57e0dd8" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>operator+</name></member>
+      <member refid="class_eigen_1_1_matrix_1a8560a6f5cd667e84ee1037896e6cb3b2" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>operator-</name></member>
+      <member refid="class_eigen_1_1_matrix_1a5acbf9f1ba6d871be2ad3a0cdadf8815" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>operator&lt;&lt;</name></member>
+      <member refid="class_eigen_1_1_matrix_1aa926ab02c7d31339ab7f53f03fb407b1" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>Random</name></member>
+      <member refid="class_eigen_1_1_matrix_1a576b915959c251355551ea7d2a1e3089" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>row</name></member>
+      <member refid="class_eigen_1_1_matrix_1a493fc970349c56b6846a6a5a8088187d" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>row</name></member>
+      <member refid="class_eigen_1_1_matrix_1a9dd1bfee08e24b68d4f0394b0ac6a84f" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>rows</name></member>
+      <member refid="class_eigen_1_1_matrix_1a33a399720f92d3c9e876918436eb6c75" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>ScalarType</name></member>
+      <member refid="class_eigen_1_1_matrix_1a2f3bbeaeac2ea483a38f470cdcab67ff" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>size</name></member>
+      <member refid="class_eigen_1_1_matrix_1ac418f278e904135391924699e7a54e17" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>sum</name></member>
+      <member refid="class_eigen_1_1_matrix_1a29aeae6192121e5e2be182ee8f10c956" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>tensor</name></member>
+      <member refid="class_eigen_1_1_matrix_1a62775901ac3573472111303306a3abbf" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>tensor</name></member>
+      <member refid="class_eigen_1_1_matrix_1a30eed44b24a5d50f7b3edec58561968b" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>transpose</name></member>
+      <member refid="class_eigen_1_1_matrix_1ade09a1b6e4e8282d0c8d49f9e16880bf" prot="public" virt="non-virtual"><scope>Eigen::Matrix</scope><name>Zero</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

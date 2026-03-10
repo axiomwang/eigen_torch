@@ -1,0 +1,88 @@
+#ifndef EIGEN_UNSUPPORTED_NNLS_H
+#define EIGEN_UNSUPPORTED_NNLS_H
+
+#include "Eigen/Core"
+
+namespace Eigen {
+
+// Non-Negative Least Squares (NNLS)
+// Solves min ||A*x - b||_2^2 subject to x >= 0
+// PyTorch `linalg` lacks a native active-set NNLS. 
+// We implement a fast Projected Gradient Descent (PGD) here 
+// using PyTorch tensor primitives to mirror the Eigen API.
+template <typename MatrixType_>
+class NNLS {
+public:
+    using MatrixType = MatrixType_;
+    using Scalar = typename MatrixType::ScalarType;
+
+protected:
+    at::Tensor m_A;
+    bool m_isInitialized = false;
+    
+    // Solver configs
+    int m_maxIters = 1000;
+    float m_tol = 1e-5;
+
+public:
+    NNLS() {}
+    explicit NNLS(const MatrixType& matrix) {
+        compute(matrix);
+    }
+
+    NNLS& setMaxIterations(int iters) { m_maxIters = iters; return *this; }
+    NNLS& setTolerance(float tol) { m_tol = tol; return *this; }
+
+    NNLS& compute(const MatrixType& matrix) {
+        m_A = matrix.tensor();
+        m_isInitialized = true;
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("NNLS is not initialized.");
+        }
+        
+        at::Tensor b_t = b.tensor();
+        // Initialize x = 0
+        at::Tensor x = torch::zeros({m_A.size(1), b_t.size(1)}, m_A.options());
+        
+        // PGD Loop
+        // Gradient of 0.5 * ||Ax - b||^2 is A^T * (Ax - b)
+        // Lipschitz constant bounds: compute max eigenvalue of A^T A roughly, or line search
+        // We use a safe static step-size from Spectral norm approximation or Adam under the hood.
+        // For simplicity, we use manual PGD with a backtracking or static scaled step.
+        at::Tensor AtA = torch::matmul(m_A.transpose(0, 1), m_A);
+        at::Tensor Atb = torch::matmul(m_A.transpose(0, 1), b_t);
+        
+        // Power iteration to get spectral radius (L) for step size t = 1/L
+        at::Tensor v = torch::randn({AtA.size(1), 1}, AtA.options());
+        for(int i = 0; i < 10; ++i) {
+            v = torch::matmul(AtA, v);
+            v = v / torch::linalg_vector_norm(v);
+        }
+        float L = torch::dot(v.view({-1}), torch::matmul(AtA, v).view({-1})).item<float>();
+        float lr = (L > 0) ? (1.0f / L) : 1e-3f;
+
+        for (int i = 0; i < m_maxIters; ++i) {
+            at::Tensor grad = torch::matmul(AtA, x) - Atb;
+            x = x - lr * grad;
+            // Project into non-negative orthant (x >= 0)
+            x = torch::relu(x);
+            
+            // Check convergence on gradient / change
+            if (i % 50 == 0) {
+                float max_grad = torch::max(torch::abs(grad)).item<float>();
+                if (max_grad < m_tol) break;
+            }
+        }
+        
+        return Rhs(x);
+    }
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_NNLS_H

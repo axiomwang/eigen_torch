@@ -1,0 +1,58 @@
+#ifndef EIGEN_HYPERPLANE_H
+#define EIGEN_HYPERPLANE_H
+
+#include "Matrix.h"
+
+namespace Eigen {
+
+template <typename Scalar_, int Dim>
+class Hyperplane {
+public:
+    using Scalar = Scalar_;
+    using ScalarType = Scalar_;
+    using VectorType = Matrix<Scalar, Dim, 1>;
+
+protected:
+    VectorType m_normal; // Normalized
+    Scalar m_offset;     // Usually stored as distance from origin dot(n, x) + d = 0
+
+public:
+    Hyperplane() : m_normal(), m_offset(0) {}
+
+    Hyperplane(const VectorType& normal, Scalar offset) 
+        : m_normal(normal), m_offset(offset) {}
+
+    Hyperplane(const VectorType& normal, const VectorType& point) {
+        m_normal = normal;
+        at::Tensor dot = torch::sum(m_normal.tensor() * point.tensor());
+        m_offset = -dot.template item<Scalar>();
+    }
+
+    const VectorType& normal() const { return m_normal; }
+    VectorType& normal() { return m_normal; }
+
+    Scalar offset() const { return m_offset; }
+    Scalar& offset() { return m_offset; }
+
+    Scalar signedDistance(const VectorType& p) const {
+        at::Tensor dot = torch::sum(m_normal.tensor() * p.tensor());
+        return dot.template item<Scalar>() + m_offset;
+    }
+
+    Scalar absDistance(const VectorType& p) const {
+        return std::abs(signedDistance(p));
+    }
+
+    VectorType projection(const VectorType& p) const {
+        return VectorType(p.tensor() - m_normal.tensor() * signedDistance(p));
+    }
+};
+
+using Hyperplane2f = Hyperplane<float, 2>;
+using Hyperplane3f = Hyperplane<float, 3>;
+using Hyperplane2d = Hyperplane<double, 2>;
+using Hyperplane3d = Hyperplane<double, 3>;
+
+} // namespace Eigen
+
+#endif // EIGEN_HYPERPLANE_H

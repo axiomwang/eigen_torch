@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_translation" kind="file" language="C++">
+    <compoundname>Translation</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar,<sp/>int<sp/>Dim&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>Translation<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;<sp/>m_translation;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Translation()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_translation<sp/>=<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;::Zero(Dim,<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Translation(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>vec)<sp/>:<sp/>m_translation(vec)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>vector()<sp/>const<sp/>{<sp/>return<sp/>m_translation;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>vector()<sp/>{<sp/>return<sp/>m_translation;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>x()<sp/>const<sp/>{<sp/>return<sp/>m_translation.tensor()[0][0].template<sp/>item&lt;Scalar&gt;();<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>y()<sp/>const<sp/>{<sp/>return<sp/>m_translation.tensor()[1][0].template<sp/>item&lt;Scalar&gt;();<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>z()<sp/>const<sp/>{<sp/>static_assert(Dim<sp/>&gt;=<sp/>3,<sp/>&quot;z()<sp/>only<sp/>for<sp/>Dim<sp/>&gt;=<sp/>3&quot;);<sp/>return<sp/>m_translation.tensor()[2][0].template<sp/>item&lt;Scalar&gt;();<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Translation<sp/>operator*(const<sp/>Translation&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Translation(m_translation<sp/>+<sp/>other.vector());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Translation<sp/>inverse()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Translation(Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;(-m_translation.tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>Translation2f<sp/>=<sp/>Translation&lt;float,<sp/>2&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Translation3f<sp/>=<sp/>Translation&lt;float,<sp/>3&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Translation2d<sp/>=<sp/>Translation&lt;double,<sp/>2&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Translation3d<sp/>=<sp/>Translation&lt;double,<sp/>3&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Translation"/>
+  </compounddef>
+</doxygen>

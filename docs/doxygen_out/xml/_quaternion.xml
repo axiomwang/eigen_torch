@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_quaternion" kind="file" language="C++">
+    <compoundname>Quaternion</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>Quaternion<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Layout<sp/>mimicking<sp/>Eigen<sp/>[w,<sp/>x,<sp/>y,<sp/>z]<sp/>depending<sp/>on<sp/>convention.<sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Usually<sp/>Eigen<sp/>stores<sp/>it<sp/>internall<sp/>as<sp/>[x,y,z,w],<sp/>but<sp/>coefficients<sp/>are<sp/>ordered<sp/>w,x,y,z<sp/>in<sp/>constructor.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>We<sp/>will<sp/>store<sp/>as<sp/>a<sp/>4-element<sp/>1D<sp/>tensor<sp/>[w,<sp/>x,<sp/>y,<sp/>z].</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>at::Tensor<sp/>m_coeffs;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Quaternion()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.dtype(Matrix&lt;Scalar,<sp/>4,<sp/>1&gt;::get_torch_dtype())</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.device(DeviceManager::get_default_device());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Identity<sp/>quaternion:<sp/>w=1,<sp/>x=y=z=0</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_coeffs<sp/>=<sp/>torch::tensor({1.0,<sp/>0.0,<sp/>0.0,<sp/>0.0},<sp/>options);<sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Quaternion(Scalar<sp/>w,<sp/>Scalar<sp/>x,<sp/>Scalar<sp/>y,<sp/>Scalar<sp/>z)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.dtype(Matrix&lt;Scalar,<sp/>4,<sp/>1&gt;::get_torch_dtype())</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.device(DeviceManager::get_default_device());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_coeffs<sp/>=<sp/>torch::tensor({w,<sp/>x,<sp/>y,<sp/>z},<sp/>options);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Quaternion(const<sp/>at::Tensor&amp;<sp/>tensor)<sp/>:<sp/>m_coeffs(tensor)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Vector3<sp/>constructor<sp/>(representing<sp/>purely<sp/>imaginary<sp/>quaternion)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Assumes<sp/>vector<sp/>is<sp/>a<sp/>3x1<sp/>matrix<sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Quaternion(const<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;&amp;<sp/>vec)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.dtype(Matrix&lt;Scalar,<sp/>4,<sp/>1&gt;::get_torch_dtype())</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.device(DeviceManager::get_default_device());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Prepend<sp/>w=0</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_coeffs<sp/>=<sp/>torch::cat({torch::tensor({0.0},<sp/>options),<sp/>vec.tensor().flatten()});</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>at::Tensor&amp;<sp/>coeffs()<sp/>const<sp/>{<sp/>return<sp/>m_coeffs;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>at::Tensor&amp;<sp/>coeffs()<sp/>{<sp/>return<sp/>m_coeffs;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>w()<sp/>const<sp/>{<sp/>return<sp/>m_coeffs[0].item&lt;Scalar&gt;();<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>x()<sp/>const<sp/>{<sp/>return<sp/>m_coeffs[1].item&lt;Scalar&gt;();<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>y()<sp/>const<sp/>{<sp/>return<sp/>m_coeffs[2].item&lt;Scalar&gt;();<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>z()<sp/>const<sp/>{<sp/>return<sp/>m_coeffs[3].item&lt;Scalar&gt;();<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Normalize</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>normalize()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_coeffs<sp/>=<sp/>m_coeffs<sp/>/<sp/>torch::linalg_vector_norm(m_coeffs);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Quaternion<sp/>normalized()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Quaternion(m_coeffs<sp/>/<sp/>torch::linalg_vector_norm(m_coeffs));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Hamilton<sp/>product</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Quaternion<sp/>operator*(const<sp/>Quaternion&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>aw<sp/>=<sp/>w(),<sp/>ax<sp/>=<sp/>x(),<sp/>ay<sp/>=<sp/>y(),<sp/>az<sp/>=<sp/>z();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>bw<sp/>=<sp/>other.w(),<sp/>bx<sp/>=<sp/>other.x(),<sp/>by<sp/>=<sp/>other.y(),<sp/>bz<sp/>=<sp/>other.z();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>tw<sp/>=<sp/>aw<sp/>*<sp/>bw<sp/>-<sp/>ax<sp/>*<sp/>bx<sp/>-<sp/>ay<sp/>*<sp/>by<sp/>-<sp/>az<sp/>*<sp/>bz;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>tx<sp/>=<sp/>aw<sp/>*<sp/>bx<sp/>+<sp/>ax<sp/>*<sp/>bw<sp/>+<sp/>ay<sp/>*<sp/>bz<sp/>-<sp/>az<sp/>*<sp/>by;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>ty<sp/>=<sp/>aw<sp/>*<sp/>by<sp/>-<sp/>ax<sp/>*<sp/>bz<sp/>+<sp/>ay<sp/>*<sp/>bw<sp/>+<sp/>az<sp/>*<sp/>bx;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>tz<sp/>=<sp/>aw<sp/>*<sp/>bz<sp/>+<sp/>ax<sp/>*<sp/>by<sp/>-<sp/>ay<sp/>*<sp/>bx<sp/>+<sp/>az<sp/>*<sp/>bw;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Quaternion(tw,<sp/>tx,<sp/>ty,<sp/>tz);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Multiply<sp/>by<sp/>vector<sp/>(rotates<sp/>the<sp/>vector)<sp/>v&apos;<sp/>=<sp/>q<sp/>*<sp/>v<sp/>*<sp/>q^-1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;<sp/>operator*(const<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;&amp;<sp/>vec)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Quaternion<sp/>vec_q(vec);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Quaternion<sp/>res<sp/>=<sp/>(*this)<sp/>*<sp/>vec_q<sp/>*<sp/>inverse();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Return<sp/>only<sp/>the<sp/>imaginary<sp/>part</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.dtype(Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;::get_torch_dtype())</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.device(DeviceManager::get_default_device());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;(torch::tensor({res.x(),<sp/>res.y(),<sp/>res.z()},<sp/>options).unsqueeze(1));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Quaternion<sp/>inverse()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>norm_sq<sp/>=<sp/>torch::dot(m_coeffs,<sp/>m_coeffs).item&lt;Scalar&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.dtype(Matrix&lt;Scalar,<sp/>4,<sp/>1&gt;::get_torch_dtype())</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.device(DeviceManager::get_default_device());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>inv_coeffs<sp/>=<sp/>torch::tensor({w(),<sp/>-x(),<sp/>-y(),<sp/>-z()},<sp/>options)<sp/>/<sp/>norm_sq;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Quaternion(inv_coeffs);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>To<sp/>Rotation<sp/>Matrix</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>3,<sp/>3&gt;<sp/>toRotationMatrix()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>aw<sp/>=<sp/>w(),<sp/>ax<sp/>=<sp/>x(),<sp/>ay<sp/>=<sp/>y(),<sp/>az<sp/>=<sp/>z();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.dtype(Matrix&lt;Scalar,<sp/>4,<sp/>1&gt;::get_torch_dtype())</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.device(DeviceManager::get_default_device());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>rot<sp/>=<sp/>torch::tensor({</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1<sp/>-<sp/>2*ay*ay<sp/>-<sp/>2*az*az,<sp/>2*ax*ay<sp/>-<sp/>2*az*aw,<sp/><sp/><sp/><sp/><sp/>2*ax*az<sp/>+<sp/>2*ay*aw,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2*ax*ay<sp/>+<sp/>2*az*aw,<sp/><sp/><sp/><sp/><sp/>1<sp/>-<sp/>2*ax*ax<sp/>-<sp/>2*az*az,<sp/>2*ay*az<sp/>-<sp/>2*ax*aw,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2*ax*az<sp/>-<sp/>2*ay*aw,<sp/><sp/><sp/><sp/><sp/>2*ay*az<sp/>+<sp/>2*ax*aw,<sp/><sp/><sp/><sp/><sp/>1<sp/>-<sp/>2*ax*ax<sp/>-<sp/>2*ay*ay</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},<sp/>options).reshape({3,<sp/>3});</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>3&gt;(rot);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>Quaternionf<sp/>=<sp/>Quaternion&lt;float&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Quaterniond<sp/>=<sp/>Quaternion&lt;double&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Quaternion"/>
+  </compounddef>
+</doxygen>

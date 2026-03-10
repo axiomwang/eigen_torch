@@ -1,0 +1,40 @@
+#ifndef EIGEN_UNSUPPORTED_FFT_H
+#define EIGEN_UNSUPPORTED_FFT_H
+
+#include "Eigen/Core"
+
+namespace Eigen {
+
+// Wrapper mapping Eigen's FFT arrays around PyTorch's native `torch::fft` library.
+template <typename Scalar_>
+class FFT {
+public:
+    using Scalar = Scalar_;
+    
+    FFT() {}
+
+    template <typename InputType, typename OutputType>
+    void fwd(OutputType& dst, const InputType& src) {
+        // Eigen's src input is usually real, dst is complex.
+        at::Tensor input_t = src.tensor();
+        // 1D Real to Complex FFT
+        at::Tensor result = torch::fft_rfft(input_t); 
+        dst = OutputType(result);
+    }
+
+    template <typename InputType, typename OutputType>
+    void inv(OutputType& dst, const InputType& src) {
+        // Complex to Real IFFT
+        at::Tensor input_t = src.tensor();
+        // PyTorch expects original size for irfft if dimension was even, we pass generic
+        at::Tensor result = torch::fft_irfft(input_t);
+        dst = OutputType(result);
+    }
+};
+
+using FFTf = FFT<float>;
+using FFTd = FFT<double>;
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_FFT_H

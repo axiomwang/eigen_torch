@@ -1,0 +1,59 @@
+#ifndef EIGEN_SPARSEQR_H
+#define EIGEN_SPARSEQR_H
+
+#include "Matrix.h"
+#include "SparseMatrix"
+#include <stdexcept>
+
+namespace Eigen {
+
+template <typename MatrixType_>
+class SparseQR {
+public:
+    using MatrixType = MatrixType_;
+    using Scalar = typename MatrixType::ScalarType;
+
+protected:
+    at::Tensor m_q;
+    at::Tensor m_r;
+    bool m_isInitialized = false;
+
+public:
+    SparseQR() {}
+    explicit SparseQR(const MatrixType& matrix) {
+        compute(matrix);
+    }
+
+    SparseQR& compute(const MatrixType& matrix) {
+        // Fallback layout: coerce SparseMatrix -> Dense -> linalg_qr
+        at::Tensor dense_mat = matrix.tensor().to_dense();
+        std::tie(m_q, m_r) = torch::linalg_qr(dense_mat, "reduced");
+        m_isInitialized = true;
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("SparseQR is not initialized.");
+        }
+        at::Tensor dense_b;
+        if (b.tensor().is_sparse()) {
+            dense_b = b.tensor().to_dense();
+        } else {
+            dense_b = b.tensor();
+        }
+        
+        // solve(R, Q^T * B)
+        at::Tensor rhs = torch::matmul(m_q.transpose(-2, -1), dense_b);
+        at::Tensor result = torch::linalg_solve_triangular(m_r, rhs, /*upper=*/true, /*left=*/true);
+        return Rhs(result);
+    }
+
+    const at::Tensor& matrixQ() const { return m_q; }
+    const at::Tensor& matrixR() const { return m_r; }
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_SPARSEQR_H

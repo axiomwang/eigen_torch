@@ -1,0 +1,57 @@
+#ifndef EIGEN_UNSUPPORTED_EULERANGLES_H
+#define EIGEN_UNSUPPORTED_EULERANGLES_H
+
+#include "Eigen/Core"
+#include <cmath>
+
+namespace Eigen {
+
+// We implement standard Euler Angles (Roll, Pitch, Yaw -> X, Y, Z conventions typically)
+template <typename Scalar_>
+class EulerAngles {
+public:
+    using Scalar = Scalar_;
+
+protected:
+    Scalar m_alpha;
+    Scalar m_beta;
+    Scalar m_gamma;
+
+public:
+    EulerAngles() : m_alpha(0), m_beta(0), m_gamma(0) {}
+
+    EulerAngles(Scalar alpha, Scalar beta, Scalar gamma) 
+        : m_alpha(alpha), m_beta(beta), m_gamma(gamma) {}
+
+    Scalar alpha() const { return m_alpha; }
+    Scalar beta() const { return m_beta; }
+    Scalar gamma() const { return m_gamma; }
+
+    // Generates a proper rotation matrix from ZYX convention typically
+    // alpha = Z (yaw), beta = Y (pitch), gamma = X (roll)
+    Matrix<Scalar, 3, 3> toRotationMatrix() const {
+        Scalar ca = std::cos(m_alpha), sa = std::sin(m_alpha);
+        Scalar cb = std::cos(m_beta), sb = std::sin(m_beta);
+        Scalar cg = std::cos(m_gamma), sg = std::sin(m_gamma);
+
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, 3, 3>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+
+        // Standard ZYX Matrix composition
+        at::Tensor mat = torch::tensor({
+            {ca*cb, ca*sb*sg - sa*cg, ca*sb*cg + sa*sg},
+            {sa*cb, sa*sb*sg + ca*cg, sa*sb*cg - ca*sg},
+            {-sb,   cb*sg,            cb*cg}
+        }, options);
+
+        return Matrix<Scalar, 3, 3>(mat);
+    }
+};
+
+using EulerAnglesf = EulerAngles<float>;
+using EulerAnglesd = EulerAngles<double>;
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_EULERANGLES_H

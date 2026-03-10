@@ -1,0 +1,53 @@
+#pragma once
+#include "Matrix.h"
+#include <tuple>
+
+namespace Eigen {
+
+template <typename MatrixType>
+class EigenSolver {
+protected:
+    at::Tensor m_eigenvalues;
+    at::Tensor m_eigenvectors;
+    bool m_isInitialized = false;
+
+public:
+    EigenSolver() {}
+
+    explicit EigenSolver(const MatrixType& matrix, bool computeEigenvectors = true) {
+        compute(matrix, computeEigenvectors);
+    }
+
+    EigenSolver& compute(const MatrixType& matrix, bool computeEigenvectors = true) {
+        if (computeEigenvectors) {
+            std::tie(m_eigenvalues, m_eigenvectors) = torch::linalg_eig(matrix.tensor());
+        } else {
+            m_eigenvalues = torch::linalg_eigvals(matrix.tensor());
+        }
+        m_isInitialized = true;
+        return *this;
+    }
+
+    // PyTorch's eig values always returns a Complex tensor, we must map this appropriately
+    // To match exact Eigen signature, true Eigen::MatrixXcf complex types would be needed.
+    // For simplicity, we expose the underlying tensor directly or cast to floats if requested
+    
+    // Returning the raw complex tensor internally packed into Matrix
+    // Note: If MatrixType is float, storing complex here is mathematically risky but Torch absorbs it into at::Tensor. 
+    MatrixType eigenvalues() const {
+        // We ensure we cast back to the real if the user only considers real components, 
+        // to conform to typical MatrixXf output unless they truly compiled for Complex.
+        return MatrixType(torch::real(m_eigenvalues).unsqueeze(1));
+    }
+
+    MatrixType eigenvectors() const {
+        return MatrixType(torch::real(m_eigenvectors));
+    }
+    
+    // For pure complex access
+    const at::Tensor& complexEigenvalues() const {
+        return m_eigenvalues;
+    }
+};
+
+} // namespace Eigen

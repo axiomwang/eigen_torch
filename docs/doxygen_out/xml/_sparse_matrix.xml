@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_sparse_matrix" kind="file" language="C++">
+    <compoundname>SparseMatrix</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;vector&gt;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Standard<sp/>Eigen<sp/>has<sp/>SparseMatrix&lt;Scalar,<sp/>Options,<sp/>Index&gt;<sp/>and<sp/>supports<sp/>row/col<sp/>major.</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>By<sp/>default,<sp/>Torch<sp/>CSR<sp/>is<sp/>equivalent<sp/>to<sp/>RowMajor.<sp/>We<sp/>will<sp/>default<sp/>to<sp/>CSR.</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>SparseMatrix<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>at::Tensor<sp/>m_tensor;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>m_rows;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>m_cols;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>For<sp/>incrementally<sp/>filling<sp/>the<sp/>matrix<sp/>(like<sp/>Eigen&apos;s<sp/>triplets)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>struct<sp/>Triplet<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>row;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int<sp/>col;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>value;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;Triplet&gt;<sp/>m_triplets;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>m_isCompressed<sp/>=<sp/>false;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>ScalarType<sp/>=<sp/>Scalar;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Create<sp/>an<sp/>empty<sp/>sparse<sp/>matrix</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>SparseMatrix()<sp/>:<sp/>m_rows(0),<sp/>m_cols(0)<sp/>{}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>SparseMatrix(int<sp/>rows,<sp/>int<sp/>cols)<sp/>:<sp/>m_rows(rows),<sp/>m_cols(cols)<sp/>{}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Explicit<sp/>constructor<sp/>from<sp/>existing<sp/>sparse<sp/>tensor</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>SparseMatrix(const<sp/>at::Tensor&amp;<sp/>tensor)<sp/>:<sp/>m_tensor(tensor)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(tensor.is_sparse()<sp/>||<sp/>tensor.is_sparse_csr())<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_rows<sp/>=<sp/>tensor.size(0);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_cols<sp/>=<sp/>tensor.size(1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_isCompressed<sp/>=<sp/>true;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>throw<sp/>std::runtime_error(&quot;Tensor<sp/>provided<sp/>to<sp/>SparseMatrix<sp/>is<sp/>not<sp/>a<sp/>sparse<sp/>tensor.&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>rows()<sp/>const<sp/>{<sp/>return<sp/>m_rows;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>cols()<sp/>const<sp/>{<sp/>return<sp/>m_cols;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>nonZeros()<sp/>const<sp/>{<sp/>return<sp/>m_isCompressed<sp/>?<sp/>m_tensor._nnz()<sp/>:<sp/>m_triplets.size();<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>at::Tensor&amp;<sp/>tensor()<sp/>const<sp/>{<sp/>return<sp/>m_tensor;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Inserting<sp/>elements<sp/>is<sp/>done<sp/>via<sp/>triplets<sp/>in<sp/>Eigen.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>E.g.<sp/>matrix.insert(i,<sp/>j)<sp/>=<sp/>v;<sp/>In<sp/>dense,<sp/>this<sp/>is<sp/>easy,<sp/>in<sp/>sparse<sp/>it&apos;s<sp/>slow.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Eigen<sp/>recommends<sp/>setFromTriplets.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>insert(int<sp/>row,<sp/>int<sp/>col,<sp/>Scalar<sp/>value)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_triplets.push_back({row,<sp/>col,<sp/>value});</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_isCompressed<sp/>=<sp/>false;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Build<sp/>the<sp/>CSR<sp/>tensor<sp/>from<sp/>the<sp/>inserted<sp/>triplets</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>makeCompressed()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(m_isCompressed)<sp/>return;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Torch<sp/>needs<sp/>sorted<sp/>indices<sp/>for<sp/>CSR.<sp/>Creating<sp/>COO<sp/>first<sp/>and<sp/>then<sp/>converting<sp/>is<sp/>usually<sp/>easiest.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;<sp/>row_indices;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;<sp/>col_indices;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;Scalar&gt;<sp/>values;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(const<sp/>auto&amp;<sp/>t<sp/>:<sp/>m_triplets)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>row_indices.push_back(t.row);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>col_indices.push_back(t.col);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>values.push_back(t.value);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options_idx<sp/>=<sp/>torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options_val<sp/>=<sp/>torch::TensorOptions().dtype(Matrix&lt;Scalar,<sp/>Dynamic,<sp/>Dynamic&gt;::get_torch_dtype()).device(DeviceManager::get_default_device());</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>indices<sp/>=<sp/>torch::vstack({</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>torch::tensor(row_indices,<sp/>options_idx),</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>torch::tensor(col_indices,<sp/>options_idx)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>vals<sp/>=<sp/>torch::tensor(values,<sp/>options_val);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Ensure<sp/>device<sp/>is<sp/>correct</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>indices<sp/>=<sp/>indices.to(DeviceManager::get_default_device());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Create<sp/>COO,<sp/>then<sp/>convert<sp/>to<sp/>CSR<sp/>(PyTorch<sp/>2.0+<sp/>pattern)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>coo<sp/>=<sp/>torch::sparse_coo_tensor(indices,<sp/>vals,<sp/>{m_rows,<sp/>m_cols},<sp/>options_val.layout(torch::kSparse));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_tensor<sp/>=<sp/>coo.to_sparse_csr();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_triplets.clear();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_isCompressed<sp/>=<sp/>true;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Multiplication<sp/>Sparse<sp/>x<sp/>Dense<sp/>-&gt;<sp/>Dense</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherScalar,<sp/>int<sp/>OtherRows,<sp/>int<sp/>OtherCols&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>operator*(const<sp/>Matrix&lt;OtherScalar,<sp/>OtherRows,<sp/>OtherCols&gt;&amp;<sp/>dense)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!m_isCompressed)<sp/>throw<sp/>std::runtime_error(&quot;SparseMatrix<sp/>must<sp/>be<sp/>compressed<sp/>before<sp/>multiplication&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Torch<sp/>natively<sp/>dispatches<sp/>matmul<sp/>to<sp/>sparse<sp/>routine<sp/>if<sp/>LHS<sp/>is<sp/>sparse.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>result<sp/>=<sp/>torch::matmul(m_tensor,<sp/>dense.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Matrix&lt;Scalar,<sp/>Dynamic,<sp/>Dynamic&gt;(result);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Multiplication<sp/>Sparse<sp/>x<sp/>Sparse<sp/>-&gt;<sp/>Sparse</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>SparseMatrix&lt;Scalar&gt;<sp/>operator*(const<sp/>SparseMatrix&lt;Scalar&gt;&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!m_isCompressed<sp/>||<sp/>!other.m_isCompressed)<sp/>throw<sp/>std::runtime_error(&quot;Both<sp/>SparseMatrices<sp/>must<sp/>be<sp/>compressed&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>result<sp/>=<sp/>torch::matmul(m_tensor,<sp/>other.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>SparseMatrix&lt;Scalar&gt;(result);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>SparseMatrixf<sp/>=<sp/>SparseMatrix&lt;float&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>SparseMatrixd<sp/>=<sp/>SparseMatrix&lt;double&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>Triplet<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>row(),<sp/>col();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>value();</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/SparseMatrix"/>
+  </compounddef>
+</doxygen>

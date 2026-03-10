@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_parametrized_line" kind="file" language="C++">
+    <compoundname>ParametrizedLine</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#ifndef<sp/>EIGEN_PARAMETRIZEDLINE_H</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>EIGEN_PARAMETRIZEDLINE_H</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar_,<sp/>int<sp/>Dim&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>ParametrizedLine<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>Scalar<sp/>=<sp/>Scalar_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>ScalarType<sp/>=<sp/>Scalar_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>VectorType<sp/>=<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType<sp/>m_origin;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType<sp/>m_direction;<sp/>//<sp/>Expected<sp/>to<sp/>be<sp/>normalized</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>ParametrizedLine()<sp/>:<sp/>m_origin(),<sp/>m_direction()<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>ParametrizedLine(const<sp/>VectorType&amp;<sp/>origin,<sp/>const<sp/>VectorType&amp;<sp/>direction)<sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>m_origin(origin),<sp/>m_direction(direction)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>VectorType&amp;<sp/>origin()<sp/>const<sp/>{<sp/>return<sp/>m_origin;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType&amp;<sp/>origin()<sp/>{<sp/>return<sp/>m_origin;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>VectorType&amp;<sp/>direction()<sp/>const<sp/>{<sp/>return<sp/>m_direction;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType&amp;<sp/>direction()<sp/>{<sp/>return<sp/>m_direction;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType<sp/>pointAt(Scalar<sp/>t)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>VectorType(m_origin.tensor()<sp/>+<sp/>m_direction.tensor()<sp/>*<sp/>t);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>projection(const<sp/>VectorType&amp;<sp/>p)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>t<sp/>=<sp/>(p<sp/>-<sp/>origin)<sp/>dot<sp/>direction</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>diff<sp/>=<sp/>p.tensor()<sp/>-<sp/>m_origin.tensor();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>dot<sp/>=<sp/>torch::sum(diff<sp/>*<sp/>m_direction.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>dot.template<sp/>item&lt;Scalar&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType<sp/>projectionPoint(const<sp/>VectorType&amp;<sp/>p)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>pointAt(projection(p));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>distance(const<sp/>VectorType&amp;<sp/>p)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>proj<sp/>=<sp/>projectionPoint(p).tensor();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>torch::linalg_vector_norm(p.tensor()<sp/>-<sp/>proj).template<sp/>item&lt;Scalar&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>ParametrizedLine2f<sp/>=<sp/>ParametrizedLine&lt;float,<sp/>2&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>ParametrizedLine3f<sp/>=<sp/>ParametrizedLine&lt;float,<sp/>3&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>ParametrizedLine2d<sp/>=<sp/>ParametrizedLine&lt;double,<sp/>2&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>ParametrizedLine3d<sp/>=<sp/>ParametrizedLine&lt;double,<sp/>3&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>EIGEN_PARAMETRIZEDLINE_H</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/ParametrizedLine"/>
+  </compounddef>
+</doxygen>

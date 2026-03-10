@@ -1,0 +1,47 @@
+#pragma once
+#include "Matrix.h"
+
+namespace Eigen {
+
+template <typename MatrixType>
+class LLT {
+protected:
+    at::Tensor m_l;
+    bool m_isInitialized = false;
+    bool m_info = false;
+
+public:
+    LLT() {}
+
+    explicit LLT(const MatrixType& matrix) {
+        compute(matrix);
+    }
+
+    LLT& compute(const MatrixType& matrix) {
+        try {
+            m_l = torch::linalg_cholesky(matrix.tensor());
+            m_info = true;
+        } catch (...) {
+            m_info = false;
+        }
+        m_isInitialized = true;
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) const {
+        // cholesky_solve takes the Cholesky factor 'L' and a RHS matrix 'B', equivalent to A * X = B
+        at::Tensor result = torch::cholesky_solve(b.tensor(), m_l);
+        return Rhs(result);
+    }
+
+    bool info() const {
+        return m_info;
+    }
+    
+    MatrixType matrixL() const {
+        return MatrixType(m_l);
+    }
+};
+
+} // namespace Eigen

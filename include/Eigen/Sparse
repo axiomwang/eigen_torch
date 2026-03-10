@@ -1,0 +1,12 @@
+#ifndef EIGEN_SPARSE_MODULE_H
+#define EIGEN_SPARSE_MODULE_H
+
+#include "SparseMatrix"
+#include "SparseLU"
+#include "SparseQR"
+#include "SparseCholesky"
+
+#endif // EIGEN_SPARSE_MODULE_H
+
+// This header is included by the user as:
+// #include <Eigen/Sparse>

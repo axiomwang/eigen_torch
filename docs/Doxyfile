@@ -1,0 +1,18 @@
+# Doxyfile 1.9.0
+
+PROJECT_NAME           = "EigenTorch"
+OUTPUT_DIRECTORY       = doxygen_out
+GENERATE_XML           = YES
+GENERATE_HTML          = NO
+GENERATE_LATEX         = NO
+WARNINGS               = YES
+
+INPUT                  = ../include/Eigen
+RECURSIVE              = YES
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+FILE_PATTERNS          = *.h * AngleAxis Cholesky Core Dense Eigenvalues Geometry LU Matrix QR Quaternion SVD Sparse SparseMatrix Transform Translation
+
+MACRO_EXPANSION        = YES
+ENABLE_PREPROCESSING   = YES

@@ -1,0 +1,67 @@
+#ifndef EIGEN_UNSUPPORTED_AUTODIFF_H
+#define EIGEN_UNSUPPORTED_AUTODIFF_H
+
+#include "Eigen/Core"
+
+namespace Eigen {
+
+// PyTorch provides an extremely powerful Autograd C++ engine natively.
+// Standard Eigen implements AutoDiff scalar via Dual Numbers mapping internal Jacobians.
+// We provide AutoDiffScalar wrapping standard Torch differentiable tensors.
+template <typename DerType_>
+class AutoDiffScalar {
+public:
+    using DerType = DerType_;
+    using Scalar = typename DerType::ScalarType;
+
+protected:
+    at::Tensor m_value;
+
+public:
+    AutoDiffScalar() {}
+
+    explicit AutoDiffScalar(Scalar v) {
+        // Instantiate a differentiable 0-D scalar
+        auto options = torch::TensorOptions()
+            .dtype(DerType::get_torch_dtype())
+            .device(DeviceManager::get_default_device())
+            .requires_grad(true);
+        m_value = torch::tensor({v}, options);
+    }
+
+    explicit AutoDiffScalar(const at::Tensor& t) : m_value(t) {}
+
+    Scalar value() const { return m_value.template item<Scalar>(); }
+    at::Tensor& tensor() { return m_value; }
+    const at::Tensor& tensor() const { return m_value; }
+
+    // Trigger backward pass natively
+    void backward() {
+        m_value.backward();
+    }
+
+    // Retrieve gradient after backward() is called
+    at::Tensor grad() const {
+        return m_value.grad();
+    }
+
+    AutoDiffScalar operator+(const AutoDiffScalar& other) const {
+        return AutoDiffScalar(m_value + other.tensor());
+    }
+
+    AutoDiffScalar operator-(const AutoDiffScalar& other) const {
+        return AutoDiffScalar(m_value - other.tensor());
+    }
+
+    AutoDiffScalar operator*(const AutoDiffScalar& other) const {
+        return AutoDiffScalar(m_value * other.tensor());
+    }
+
+    AutoDiffScalar operator/(const AutoDiffScalar& other) const {
+        return AutoDiffScalar(m_value / other.tensor());
+    }
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_AUTODIFF_H

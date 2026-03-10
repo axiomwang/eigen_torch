@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_angle_axis" kind="file" language="C++">
+    <compoundname>AngleAxis</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Quaternion&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;cmath&gt;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>AngleAxis<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>m_angle;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;<sp/>m_axis;<sp/>//<sp/>Should<sp/>be<sp/>normalized</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>AngleAxis()<sp/>:<sp/>m_angle(0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.dtype(Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;::get_torch_dtype())</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.device(DeviceManager::get_default_device());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_axis<sp/>=<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;(torch::tensor({1.0,<sp/>0.0,<sp/>0.0},<sp/>options).unsqueeze(1));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>AngleAxis(Scalar<sp/>angle,<sp/>const<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;&amp;<sp/>axis)<sp/>:<sp/>m_angle(angle),<sp/>m_axis(axis)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Assume<sp/>axis<sp/>is<sp/>already<sp/>normalized,<sp/>matching<sp/>Eigen<sp/>semantics</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>angle()<sp/>const<sp/>{<sp/>return<sp/>m_angle;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;&amp;<sp/>axis()<sp/>const<sp/>{<sp/>return<sp/>m_axis;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar&amp;<sp/>angle()<sp/>{<sp/>return<sp/>m_angle;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;&amp;<sp/>axis()<sp/>{<sp/>return<sp/>m_axis;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>3,<sp/>3&gt;<sp/>toRotationMatrix()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Use<sp/>Rodrigues&apos;<sp/>rotation<sp/>formula</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>c<sp/>=<sp/>std::cos(m_angle);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>s<sp/>=<sp/>std::sin(m_angle);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>C<sp/>=<sp/>1<sp/>-<sp/>c;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>x<sp/>=<sp/>m_axis.tensor()[0][0].template<sp/>item&lt;Scalar&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>y<sp/>=<sp/>m_axis.tensor()[1][0].template<sp/>item&lt;Scalar&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>z<sp/>=<sp/>m_axis.tensor()[2][0].template<sp/>item&lt;Scalar&gt;();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>m_axis.tensor().options();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>rot<sp/>=<sp/>torch::tensor({</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>x*x*C<sp/>+<sp/>c,<sp/><sp/><sp/>x*y*C<sp/>-<sp/>z*s,<sp/>x*z*C<sp/>+<sp/>y*s,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>y*x*C<sp/>+<sp/>z*s,<sp/>y*y*C<sp/>+<sp/>c,<sp/><sp/><sp/>y*z*C<sp/>-<sp/>x*s,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>z*x*C<sp/>-<sp/>y*s,<sp/>z*y*C<sp/>+<sp/>x*s,<sp/>z*z*C<sp/>+<sp/>c</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},<sp/>options).reshape({3,<sp/>3});</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>3&gt;(rot);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Convert<sp/>to<sp/>Quaternion</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>operator<sp/>Quaternion&lt;Scalar&gt;()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>half_angle<sp/>=<sp/>m_angle<sp/>*<sp/>0.5;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>s<sp/>=<sp/>std::sin(half_angle);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>c<sp/>=<sp/>std::cos(half_angle);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>x<sp/>=<sp/>m_axis.tensor()[0][0].template<sp/>item&lt;Scalar&gt;()<sp/>*<sp/>s;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>y<sp/>=<sp/>m_axis.tensor()[1][0].template<sp/>item&lt;Scalar&gt;()<sp/>*<sp/>s;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>z<sp/>=<sp/>m_axis.tensor()[2][0].template<sp/>item&lt;Scalar&gt;()<sp/>*<sp/>s;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Quaternion&lt;Scalar&gt;(c,<sp/>x,<sp/>y,<sp/>z);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>AngleAxisf<sp/>=<sp/>AngleAxis&lt;float&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>AngleAxisd<sp/>=<sp/>AngleAxis&lt;double&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/AngleAxis"/>
+  </compounddef>
+</doxygen>

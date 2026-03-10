@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_scaling" kind="file" language="C++">
+    <compoundname>Scaling</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#ifndef<sp/>EIGEN_SCALING_H</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>EIGEN_SCALING_H</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar_,<sp/>int<sp/>Dim&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>Scaling<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>Scalar<sp/>=<sp/>Scalar_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>ScalarType<sp/>=<sp/>Scalar_;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;<sp/>m_factors;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scaling()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_factors<sp/>=<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;::Ones(Dim,<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Scaling(Scalar<sp/>s)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_factors<sp/>=<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;(Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;::Ones(Dim,<sp/>1).tensor()<sp/>*<sp/>s);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Scaling(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>vec)<sp/>:<sp/>m_factors(vec)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>factors()<sp/>const<sp/>{<sp/>return<sp/>m_factors;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>Dim&gt;<sp/>toRotationMatrix()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Technically<sp/>this<sp/>is<sp/>&apos;toLinearMatrix&apos;,<sp/>scaling<sp/>returns<sp/>diagonal<sp/>matrix</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>Dim&gt;(torch::diag(m_factors.tensor().squeeze(1)));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;<sp/>operator*(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>vec)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Element-wise<sp/>multiplication<sp/>avoids<sp/>dense<sp/>diagonal<sp/>construction</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;(m_factors.tensor()<sp/>*<sp/>vec.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scaling<sp/>operator*(const<sp/>Scaling&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Scaling(m_factors.tensor()<sp/>*<sp/>other.factors().tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scaling<sp/>inverse()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Scaling(1.0<sp/>/<sp/>m_factors.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>Scaling2f<sp/>=<sp/>Scaling&lt;float,<sp/>2&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Scaling3f<sp/>=<sp/>Scaling&lt;float,<sp/>3&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Scaling2d<sp/>=<sp/>Scaling&lt;double,<sp/>2&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Scaling3d<sp/>=<sp/>Scaling&lt;double,<sp/>3&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>EIGEN_SCALING_H</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Scaling"/>
+  </compounddef>
+</doxygen>

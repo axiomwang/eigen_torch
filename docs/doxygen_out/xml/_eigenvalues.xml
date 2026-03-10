@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_eigenvalues" kind="file" language="C++">
+    <compoundname>Eigenvalues</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;tuple&gt;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>MatrixType&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>EigenSolver<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>at::Tensor<sp/>m_eigenvalues;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>at::Tensor<sp/>m_eigenvectors;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>m_isInitialized<sp/>=<sp/>false;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>EigenSolver()<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>EigenSolver(const<sp/>MatrixType&amp;<sp/>matrix,<sp/>bool<sp/>computeEigenvectors<sp/>=<sp/>true)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>compute(matrix,<sp/>computeEigenvectors);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>EigenSolver&amp;<sp/>compute(const<sp/>MatrixType&amp;<sp/>matrix,<sp/>bool<sp/>computeEigenvectors<sp/>=<sp/>true)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(computeEigenvectors)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::tie(m_eigenvalues,<sp/>m_eigenvectors)<sp/>=<sp/>torch::linalg_eig(matrix.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_eigenvalues<sp/>=<sp/>torch::linalg_eigvals(matrix.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_isInitialized<sp/>=<sp/>true;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>PyTorch&apos;s<sp/>eig<sp/>values<sp/>always<sp/>returns<sp/>a<sp/>Complex<sp/>tensor,<sp/>we<sp/>must<sp/>map<sp/>this<sp/>appropriately</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>To<sp/>match<sp/>exact<sp/>Eigen<sp/>signature,<sp/>true<sp/>Eigen::MatrixXcf<sp/>complex<sp/>types<sp/>would<sp/>be<sp/>needed.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>For<sp/>simplicity,<sp/>we<sp/>expose<sp/>the<sp/>underlying<sp/>tensor<sp/>directly<sp/>or<sp/>cast<sp/>to<sp/>floats<sp/>if<sp/>requested</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Returning<sp/>the<sp/>raw<sp/>complex<sp/>tensor<sp/>internally<sp/>packed<sp/>into<sp/>Matrix</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Note:<sp/>If<sp/>MatrixType<sp/>is<sp/>float,<sp/>storing<sp/>complex<sp/>here<sp/>is<sp/>mathematically<sp/>risky<sp/>but<sp/>Torch<sp/>absorbs<sp/>it<sp/>into<sp/>at::Tensor.<sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>MatrixType<sp/>eigenvalues()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>We<sp/>ensure<sp/>we<sp/>cast<sp/>back<sp/>to<sp/>the<sp/>real<sp/>if<sp/>the<sp/>user<sp/>only<sp/>considers<sp/>real<sp/>components,<sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>to<sp/>conform<sp/>to<sp/>typical<sp/>MatrixXf<sp/>output<sp/>unless<sp/>they<sp/>truly<sp/>compiled<sp/>for<sp/>Complex.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>MatrixType(torch::real(m_eigenvalues).unsqueeze(1));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>MatrixType<sp/>eigenvectors()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>MatrixType(torch::real(m_eigenvectors));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>For<sp/>pure<sp/>complex<sp/>access</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>at::Tensor&amp;<sp/>complexEigenvalues()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>m_eigenvalues;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Eigenvalues"/>
+  </compounddef>
+</doxygen>

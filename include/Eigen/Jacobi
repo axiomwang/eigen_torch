@@ -1,0 +1,80 @@
+#ifndef EIGEN_JACOBIROTATION_H
+#define EIGEN_JACOBIROTATION_H
+
+#include "Matrix.h"
+
+namespace Eigen {
+
+template <typename Scalar_>
+class JacobiRotation {
+public:
+    using Scalar = Scalar_;
+    using ScalarType = Scalar_;
+
+protected:
+    Scalar m_c; // cosine
+    Scalar m_s; // sine
+
+public:
+    JacobiRotation() : m_c(1), m_s(0) {}
+
+    JacobiRotation(Scalar c, Scalar s) : m_c(c), m_s(s) {}
+
+    Scalar& c() { return m_c; }
+    Scalar c() const { return m_c; }
+
+    Scalar& s() { return m_s; }
+    Scalar s() const { return m_s; }
+
+    JacobiRotation transpose() const {
+        return JacobiRotation(m_c, -m_s);
+    }
+
+    JacobiRotation inverse() const {
+        return transpose();
+    }
+
+    template <typename MatrixType>
+    bool makeJacobi(const MatrixType& m, int p, int q) {
+        // Compute the Jacobi rotation from symmetric matrix components at (p,p), (q,q), and (p,q)
+        // Simplified generic implementation extracting elements to native Scalars to compute c/s
+        Scalar m_pp = m.tensor()[p][p].template item<Scalar>();
+        Scalar m_qq = m.tensor()[q][q].template item<Scalar>();
+        Scalar m_pq = m.tensor()[p][q].template item<Scalar>();
+
+        if (m_pq == 0) {
+            m_c = 1;
+            m_s = 0;
+            return false;
+        }
+
+        Scalar tau = (m_qq - m_pp) / (2.0 * m_pq);
+        Scalar w = std::sqrt(1.0 + tau * tau);
+        Scalar t;
+        if (tau > 0) {
+            t = 1.0 / (tau + w);
+        } else {
+            t = 1.0 / (tau - w);
+        }
+
+        m_c = 1.0 / std::sqrt(1.0 + t * t);
+        m_s = -t * m_c;
+        return true;
+    }
+
+    JacobiRotation operator*(const JacobiRotation& other) const {
+        // (c1  -s1) * (c2 -s2) 
+        // (s1   c1)   (s2  c2) 
+        return JacobiRotation(
+            m_c * other.c() - m_s * other.s(),
+            m_s * other.c() + m_c * other.s()
+        );
+    }
+};
+
+using JacobiRotationf = JacobiRotation<float>;
+using JacobiRotationd = JacobiRotation<double>;
+
+} // namespace Eigen
+
+#endif // EIGEN_JACOBIROTATION_H

@@ -1,0 +1,14 @@
+#pragma once
+
+#include "Quaternion"
+#include "AngleAxis"
+#include "Translation"
+#include "Transform"
+#include "Rotation2D"
+#include "Scaling"
+#include "ParametrizedLine"
+#include "Hyperplane"
+#include "AlignedBox"
+
+// This header is included by the user as:
+// #include <Eigen/Geometry>

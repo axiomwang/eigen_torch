@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_transform" kind="file" language="C++">
+    <compoundname>Transform</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Quaternion&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;AngleAxis&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Translation&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Represents<sp/>an<sp/>affine<sp/>transformation<sp/>Matrix<sp/>(4x4<sp/>for<sp/>3D)</highlight></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar,<sp/>int<sp/>Dim&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>Transform<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim<sp/>+<sp/>1,<sp/>Dim<sp/>+<sp/>1&gt;<sp/>m_matrix;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_matrix<sp/>=<sp/>Matrix&lt;Scalar,<sp/>Dim<sp/>+<sp/>1,<sp/>Dim<sp/>+<sp/>1&gt;::Zero(Dim<sp/>+<sp/>1,<sp/>Dim<sp/>+<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>(int<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>Dim<sp/>+<sp/>1;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_matrix.tensor()[i][i]<sp/>=<sp/>1.0;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Transform(const<sp/>Matrix&lt;Scalar,<sp/>Dim<sp/>+<sp/>1,<sp/>Dim<sp/>+<sp/>1&gt;&amp;<sp/>matrix)<sp/>:<sp/>m_matrix(matrix)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>Matrix&lt;Scalar,<sp/>Dim<sp/>+<sp/>1,<sp/>Dim<sp/>+<sp/>1&gt;&amp;<sp/>matrix()<sp/>const<sp/>{<sp/>return<sp/>m_matrix;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim<sp/>+<sp/>1,<sp/>Dim<sp/>+<sp/>1&gt;&amp;<sp/>matrix()<sp/>{<sp/>return<sp/>m_matrix;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Allows<sp/>T.linear()<sp/>returning<sp/>the<sp/>rotation/scale<sp/>3x3<sp/>block</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>Dim&gt;<sp/>linear()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>m_matrix.block(0,<sp/>0,<sp/>Dim,<sp/>Dim);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Allows<sp/>T.translation()<sp/>returning<sp/>the<sp/>3x1<sp/>translation<sp/>block</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;<sp/>translation()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>m_matrix.block(0,<sp/>Dim,<sp/>Dim,<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform<sp/>operator*(const<sp/>Transform&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Transform(m_matrix<sp/>*<sp/>other.matrix());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;<sp/>operator*(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>vec)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Append<sp/>homogeneous<sp/>coordinate<sp/>1.0</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>vec.tensor().options();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>hom_coord<sp/>=<sp/>torch::tensor({1.0},<sp/>options).unsqueeze(0);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>vec_hom<sp/>=<sp/>torch::cat({vec.tensor(),<sp/>hom_coord},<sp/>0);<sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>res_hom<sp/>=<sp/>m_matrix.tensor().matmul(vec_hom);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Return<sp/>only<sp/>the<sp/>Dim<sp/>components</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;(res_hom.slice(0,<sp/>0,<sp/>Dim));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform<sp/>inverse()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Transform(m_matrix.inverse());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>Affine3f<sp/>=<sp/>Transform&lt;float,<sp/>3&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Affine3d<sp/>=<sp/>Transform&lt;double,<sp/>3&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Isometry3f<sp/>=<sp/>Transform&lt;float,<sp/>3&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Isometry3d<sp/>=<sp/>Transform&lt;double,<sp/>3&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Transform"/>
+  </compounddef>
+</doxygen>

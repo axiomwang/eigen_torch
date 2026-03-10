@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_sparse_l_u" kind="file" language="C++">
+    <compoundname>SparseLU</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#ifndef<sp/>EIGEN_SPARSELU_H</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>EIGEN_SPARSELU_H</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;SparseMatrix&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;stdexcept&gt;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>MatrixType_&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>SparseLU<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>MatrixType<sp/>=<sp/>MatrixType_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>Scalar<sp/>=<sp/>typename<sp/>MatrixType::ScalarType;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>at::Tensor<sp/>m_lu;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>at::Tensor<sp/>m_pivots;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>at::Tensor<sp/>m_info;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>bool<sp/>m_isInitialized<sp/>=<sp/>false;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>SparseLU()<sp/>{}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>SparseLU(const<sp/>MatrixType&amp;<sp/>matrix)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>compute(matrix);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>SparseLU&amp;<sp/>compute(const<sp/>MatrixType&amp;<sp/>matrix)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>LibTorch<sp/>does<sp/>not<sp/>have<sp/>a<sp/>native<sp/>sparse<sp/>LU.<sp/>We<sp/>must<sp/>invoke<sp/>the<sp/>dense<sp/>fallback<sp/>wrapper</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Coerce<sp/>SparseMatrix<sp/>-&gt;<sp/>Dense<sp/>-&gt;<sp/>linalg_lu_factor_ex</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>dense_mat<sp/>=<sp/>matrix.tensor().to_dense();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::tie(m_lu,<sp/>m_pivots,<sp/>m_info)<sp/>=<sp/>torch::linalg_lu_factor_ex(dense_mat);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_isInitialized<sp/>=<sp/>true;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>Rhs&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Rhs<sp/>solve(const<sp/>Rhs&amp;<sp/>b)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(!m_isInitialized)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>throw<sp/>std::runtime_error(&quot;SparseLU<sp/>is<sp/>not<sp/>initialized.&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>dense_b;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(b.tensor().is_sparse())<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dense_b<sp/>=<sp/>b.tensor().to_dense();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dense_b<sp/>=<sp/>b.tensor();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>result<sp/>=<sp/>torch::linalg_lu_solve(m_lu,<sp/>m_pivots,<sp/>dense_b);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Rhs(result);<sp/>//<sp/>Result<sp/>is<sp/>always<sp/>returned<sp/>dense</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>SparseLU&amp;<sp/>compute(const<sp/>at::Tensor&amp;<sp/>matrix)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>dense_mat<sp/>=<sp/>matrix.is_sparse()<sp/>?<sp/>matrix.to_dense()<sp/>:<sp/>matrix;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::tie(m_lu,<sp/>m_pivots,<sp/>m_info)<sp/>=<sp/>torch::linalg_lu_factor_ex(dense_mat);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_isInitialized<sp/>=<sp/>true;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Some<sp/>basic<sp/>compatibility<sp/>hooks<sp/>mapping<sp/>back<sp/>to<sp/>Dense<sp/>equivalents</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>at::Tensor&amp;<sp/>matrixL()<sp/>const<sp/>{<sp/>return<sp/>m_lu;<sp/>}<sp/>//<sp/>Torch<sp/>packs<sp/>L/U<sp/>into<sp/>same<sp/>tensor</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>at::Tensor&amp;<sp/>matrixU()<sp/>const<sp/>{<sp/>return<sp/>m_lu;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>EIGEN_SPARSELU_H</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/SparseLU"/>
+  </compounddef>
+</doxygen>

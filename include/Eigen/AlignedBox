@@ -1,0 +1,83 @@
+#ifndef EIGEN_ALIGNEDBOX_H
+#define EIGEN_ALIGNEDBOX_H
+
+#include "Matrix.h"
+#include <limits>
+
+namespace Eigen {
+
+template <typename Scalar_, int Dim>
+class AlignedBox {
+public:
+    using Scalar = Scalar_;
+    using ScalarType = Scalar_;
+    using VectorType = Matrix<Scalar, Dim, 1>;
+
+protected:
+    VectorType m_min;
+    VectorType m_max;
+    bool m_isEmpty;
+
+public:
+    AlignedBox() : m_isEmpty(true) {}
+
+    AlignedBox(const VectorType& point) : m_min(point), m_max(point), m_isEmpty(false) {}
+
+    AlignedBox(const VectorType& min, const VectorType& max) 
+        : m_min(min), m_max(max), m_isEmpty(false) {}
+
+    bool isEmpty() const { return m_isEmpty; }
+    void setEmpty() { m_isEmpty = true; }
+
+    const VectorType& min() const { return m_min; }
+    VectorType& min() { return m_min; }
+
+    const VectorType& max() const { return m_max; }
+    VectorType& max() { return m_max; }
+
+    VectorType center() const {
+        return VectorType((m_min.tensor() + m_max.tensor()) * 0.5);
+    }
+
+    VectorType sizes() const {
+        return VectorType(m_max.tensor() - m_min.tensor());
+    }
+
+    void extend(const VectorType& point) {
+        if (m_isEmpty) {
+            m_min = point;
+            m_max = point;
+            m_isEmpty = false;
+        } else {
+            m_min = VectorType(torch::minimum(m_min.tensor(), point.tensor()));
+            m_max = VectorType(torch::maximum(m_max.tensor(), point.tensor()));
+        }
+    }
+
+    void extend(const AlignedBox& box) {
+        if (box.isEmpty()) return;
+        if (m_isEmpty) {
+            *this = box;
+        } else {
+            m_min = VectorType(torch::minimum(m_min.tensor(), box.min().tensor()));
+            m_max = VectorType(torch::maximum(m_max.tensor(), box.max().tensor()));
+        }
+    }
+
+    bool contains(const VectorType& point) const {
+        if (m_isEmpty) return false;
+        at::Tensor is_ge = torch::ge(point.tensor(), m_min.tensor());
+        at::Tensor is_le = torch::le(point.tensor(), m_max.tensor());
+        at::Tensor combined = torch::logical_and(is_ge, is_le);
+        return torch::all(combined).template item<bool>();
+    }
+};
+
+using AlignedBox2f = AlignedBox<float, 2>;
+using AlignedBox3f = AlignedBox<float, 3>;
+using AlignedBox2d = AlignedBox<double, 2>;
+using AlignedBox3d = AlignedBox<double, 3>;
+
+} // namespace Eigen
+
+#endif // EIGEN_ALIGNEDBOX_H

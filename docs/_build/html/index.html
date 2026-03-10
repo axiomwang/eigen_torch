@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>EigenTorch API Reference &#8212; EigenTorch 0.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="eigentorch-api-reference">
+<h1>EigenTorch API Reference<a class="headerlink" href="#eigentorch-api-reference" title="Link to this heading">¶</a></h1>
+<p>The following API exposes the comprehensive capabilities of the <strong>Eigen</strong> drop-in replacement library, seamlessly scaling matrix operations to massive GPU topologies via PyTorch.</p>
+<div class="toctree-wrapper compound">
+</div>
+<section id="device-management">
+<h2>Device Management<a class="headerlink" href="#device-management" title="Link to this heading">¶</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen13DeviceManagerE">
+<span id="_CPPv3N5Eigen13DeviceManagerE"></span><span id="_CPPv2N5Eigen13DeviceManagerE"></span><span id="Eigen::DeviceManager"></span><span class="target" id="class_eigen_1_1_device_manager"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeviceManager</span></span></span><a class="headerlink" href="#_CPPv4N5Eigen13DeviceManagerE" title="Link to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen13DeviceManager18set_default_deviceERKN5torch6DeviceE">
+<span id="_CPPv3N5Eigen13DeviceManager18set_default_deviceERKN5torch6DeviceE"></span><span id="_CPPv2N5Eigen13DeviceManager18set_default_deviceERKN5torch6DeviceE"></span><span id="Eigen::DeviceManager::set_default_device__torch::DeviceCR"></span><span class="target" id="class_eigen_1_1_device_manager_1a0bdb8b81becfa90286c02da2cacbe75a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_default_device</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">torch</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Device</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">device</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen13DeviceManager18set_default_deviceERKN5torch6DeviceE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen13DeviceManager18get_default_deviceEv">
+<span id="_CPPv3N5Eigen13DeviceManager18get_default_deviceEv"></span><span id="_CPPv2N5Eigen13DeviceManager18get_default_deviceEv"></span><span id="Eigen::DeviceManager::get_default_device"></span><span class="target" id="class_eigen_1_1_device_manager_1ae65846da7d3ebc8adc8f12eecee1a2b0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">torch</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Device</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_default_device</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen13DeviceManager18get_default_deviceEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen13DeviceManager16is_mps_availableEv">
+<span id="_CPPv3N5Eigen13DeviceManager16is_mps_availableEv"></span><span id="_CPPv2N5Eigen13DeviceManager16is_mps_availableEv"></span><span id="Eigen::DeviceManager::is_mps_available"></span><span class="target" id="class_eigen_1_1_device_manager_1a1166dc63851c2e5cc7f19cf582510c50"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_mps_available</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen13DeviceManager16is_mps_availableEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen13DeviceManager14default_deviceE">
+<span id="_CPPv3N5Eigen13DeviceManager14default_deviceE"></span><span id="_CPPv2N5Eigen13DeviceManager14default_deviceE"></span><span id="Eigen::DeviceManager::default_device__torch::Device"></span><span class="target" id="class_eigen_1_1_device_manager_1a2c6ef290a459ec9dc10dfe84d94c0449"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">torch</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Device</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">default_device</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">torch</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">kCPU</span></span><a class="headerlink" href="#_CPPv4N5Eigen13DeviceManager14default_deviceE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+<section id="core-linear-algebra">
+<h2>Core Linear Algebra<a class="headerlink" href="#core-linear-algebra" title="Link to this heading">¶</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0_i_iEN5Eigen6MatrixE">
+<span id="_CPPv3I0_i_iEN5Eigen6MatrixE"></span><span id="_CPPv2I0_i_iEN5Eigen6MatrixE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Scalar</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RowsAtCompileTime</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ColsAtCompileTime</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_eigen_1_1_matrix"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Matrix</span></span></span><a class="headerlink" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Link to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix10ScalarTypeE">
+<span id="_CPPv3N5Eigen6Matrix10ScalarTypeE"></span><span id="_CPPv2N5Eigen6Matrix10ScalarTypeE"></span><span class="target" id="class_eigen_1_1_matrix_1a33a399720f92d3c9e876918436eb6c75"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ScalarType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><a class="headerlink" href="#_CPPv4N5Eigen6Matrix10ScalarTypeE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix6MatrixEv">
+<span id="_CPPv3N5Eigen6Matrix6MatrixEv"></span><span id="_CPPv2N5Eigen6Matrix6MatrixEv"></span><span id="Eigen::Matrix::Matrix"></span><span class="target" id="class_eigen_1_1_matrix_1a2cbfd9337249097b25f43ca90e0d01ab"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Matrix</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6Matrix6MatrixEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix6MatrixERKN2at6TensorE">
+<span id="_CPPv3N5Eigen6Matrix6MatrixERKN2at6TensorE"></span><span id="_CPPv2N5Eigen6Matrix6MatrixERKN2at6TensorE"></span><span id="Eigen::Matrix::Matrix__at::TensorCR"></span><span class="target" id="class_eigen_1_1_matrix_1a129236898edc0397d39d33117c615478"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Matrix</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">at</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tensor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6Matrix6MatrixERKN2at6TensorE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix6MatrixEii">
+<span id="_CPPv3N5Eigen6Matrix6MatrixEii"></span><span id="_CPPv2N5Eigen6Matrix6MatrixEii"></span><span id="Eigen::Matrix::Matrix__i.i"></span><span class="target" id="class_eigen_1_1_matrix_1aecc75aa6c11b766a298e34ecc73f269f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Matrix</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rows</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cols</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6Matrix6MatrixEii" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_i_iEN5Eigen6Matrix6MatrixERK6MatrixI11OtherScalar9OtherRows9OtherColsE">
+<span id="_CPPv3I0_i_iEN5Eigen6Matrix6MatrixERK6MatrixI11OtherScalar9OtherRows9OtherColsE"></span><span id="_CPPv2I0_i_iEN5Eigen6Matrix6MatrixERK6MatrixI11OtherScalar9OtherRows9OtherColsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherScalar</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherRows</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherCols</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_eigen_1_1_matrix_1a86dcdd8ee7412a232f582755d6501cb2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Matrix</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6Matrix6MatrixERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6Matrix6MatrixERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::Matrix::OtherScalar"><span class="n"><span class="pre">OtherScalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6Matrix6MatrixERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::Matrix::OtherRows"><span class="n"><span class="pre">OtherRows</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6Matrix6MatrixERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::Matrix::OtherCols"><span class="n"><span class="pre">OtherCols</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0_i_iEN5Eigen6Matrix6MatrixERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix6tensorEv">
+<span id="_CPPv3N5Eigen6Matrix6tensorEv"></span><span id="_CPPv2N5Eigen6Matrix6tensorEv"></span><span id="Eigen::Matrix::tensor"></span><span class="target" id="class_eigen_1_1_matrix_1a29aeae6192121e5e2be182ee8f10c956"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">at</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">tensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6Matrix6tensorEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix6tensorEv">
+<span id="_CPPv3NK5Eigen6Matrix6tensorEv"></span><span id="_CPPv2NK5Eigen6Matrix6tensorEv"></span><span id="Eigen::Matrix::tensorC"></span><span class="target" id="class_eigen_1_1_matrix_1a62775901ac3573472111303306a3abbf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">at</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Tensor</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">tensor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix6tensorEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix4rowsEv">
+<span id="_CPPv3NK5Eigen6Matrix4rowsEv"></span><span id="_CPPv2NK5Eigen6Matrix4rowsEv"></span><span id="Eigen::Matrix::rowsC"></span><span class="target" id="class_eigen_1_1_matrix_1a9dd1bfee08e24b68d4f0394b0ac6a84f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rows</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix4rowsEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix4colsEv">
+<span id="_CPPv3NK5Eigen6Matrix4colsEv"></span><span id="_CPPv2NK5Eigen6Matrix4colsEv"></span><span id="Eigen::Matrix::colsC"></span><span class="target" id="class_eigen_1_1_matrix_1a4a9ec573d7a98a5d7eddc9dafd43eb34"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cols</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix4colsEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix4sizeEv">
+<span id="_CPPv3NK5Eigen6Matrix4sizeEv"></span><span id="_CPPv2NK5Eigen6Matrix4sizeEv"></span><span id="Eigen::Matrix::sizeC"></span><span class="target" id="class_eigen_1_1_matrix_1a2f3bbeaeac2ea483a38f470cdcab67ff"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix4sizeEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6MatrixclEii">
+<span id="_CPPv3NK5Eigen6MatrixclEii"></span><span id="_CPPv2NK5Eigen6MatrixclEii"></span><span id="Eigen::Matrix::call-operator__i.iC"></span><span class="target" id="class_eigen_1_1_matrix_1ada9f0d93e78c578971205ee0f529bf67"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">row</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">col</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6MatrixclEii" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_i_iENK5Eigen6MatrixmlE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE">
+<span id="_CPPv3I0_i_iENK5Eigen6MatrixmlERK6MatrixI11OtherScalar9OtherRows9OtherColsE"></span><span id="_CPPv2I0_i_iENK5Eigen6MatrixmlERK6MatrixI11OtherScalar9OtherRows9OtherColsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherScalar</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherRows</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherCols</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_eigen_1_1_matrix_1a69c990c59c47b1295c8dffe14c7acca8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iENK5Eigen6MatrixmlE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::operator*::OtherScalar"><span class="n"><span class="pre">OtherScalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iENK5Eigen6MatrixmlE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::operator*::OtherRows"><span class="n"><span class="pre">OtherRows</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iENK5Eigen6MatrixmlE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::operator*::OtherCols"><span class="n"><span class="pre">OtherCols</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0_i_iENK5Eigen6MatrixmlE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_i_iENK5Eigen6MatrixplE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE">
+<span id="_CPPv3I0_i_iENK5Eigen6MatrixplERK6MatrixI11OtherScalar9OtherRows9OtherColsE"></span><span id="_CPPv2I0_i_iENK5Eigen6MatrixplERK6MatrixI11OtherScalar9OtherRows9OtherColsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherScalar</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherRows</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherCols</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_eigen_1_1_matrix_1adcbf6d85fcc6f80def986c46a57e0dd8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iENK5Eigen6MatrixplE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::operator+::OtherScalar"><span class="n"><span class="pre">OtherScalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iENK5Eigen6MatrixplE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::operator+::OtherRows"><span class="n"><span class="pre">OtherRows</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iENK5Eigen6MatrixplE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::operator+::OtherCols"><span class="n"><span class="pre">OtherCols</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0_i_iENK5Eigen6MatrixplE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_i_iENK5Eigen6MatrixmiE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE">
+<span id="_CPPv3I0_i_iENK5Eigen6MatrixmiERK6MatrixI11OtherScalar9OtherRows9OtherColsE"></span><span id="_CPPv2I0_i_iENK5Eigen6MatrixmiERK6MatrixI11OtherScalar9OtherRows9OtherColsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherScalar</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherRows</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherCols</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_eigen_1_1_matrix_1a8560a6f5cd667e84ee1037896e6cb3b2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iENK5Eigen6MatrixmiE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::operator-::OtherScalar"><span class="n"><span class="pre">OtherScalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iENK5Eigen6MatrixmiE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::operator-::OtherRows"><span class="n"><span class="pre">OtherRows</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iENK5Eigen6MatrixmiE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::operator-::OtherCols"><span class="n"><span class="pre">OtherCols</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0_i_iENK5Eigen6MatrixmiE6MatrixI6Scalar7Dynamic7DynamicERK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix9transposeEv">
+<span id="_CPPv3NK5Eigen6Matrix9transposeEv"></span><span id="_CPPv2NK5Eigen6Matrix9transposeEv"></span><span id="Eigen::Matrix::transposeC"></span><span class="target" id="class_eigen_1_1_matrix_1a30eed44b24a5d50f7b3edec58561968b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">transpose</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix9transposeEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix7adjointEv">
+<span id="_CPPv3NK5Eigen6Matrix7adjointEv"></span><span id="_CPPv2NK5Eigen6Matrix7adjointEv"></span><span id="Eigen::Matrix::adjointC"></span><span class="target" id="class_eigen_1_1_matrix_1a1fc239ff45905bd151c760de6fdf773d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">adjoint</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix7adjointEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_i_iENK5Eigen6Matrix3dotE6ScalarRK6MatrixI11OtherScalar9OtherRows9OtherColsE">
+<span id="_CPPv3I0_i_iENK5Eigen6Matrix3dotERK6MatrixI11OtherScalar9OtherRows9OtherColsE"></span><span id="_CPPv2I0_i_iENK5Eigen6Matrix3dotERK6MatrixI11OtherScalar9OtherRows9OtherColsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherScalar</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherRows</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OtherCols</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_eigen_1_1_matrix_1a887081f83862fdaf03cadc5c7121cd55"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dot</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iENK5Eigen6Matrix3dotE6ScalarRK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::dot::OtherScalar"><span class="n"><span class="pre">OtherScalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iENK5Eigen6Matrix3dotE6ScalarRK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::dot::OtherRows"><span class="n"><span class="pre">OtherRows</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iENK5Eigen6Matrix3dotE6ScalarRK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Eigen::Matrix::dot::OtherCols"><span class="n"><span class="pre">OtherCols</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0_i_iENK5Eigen6Matrix3dotE6ScalarRK6MatrixI11OtherScalar9OtherRows9OtherColsE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix5blockEiiii">
+<span id="_CPPv3N5Eigen6Matrix5blockEiiii"></span><span id="_CPPv2N5Eigen6Matrix5blockEiiii"></span><span id="Eigen::Matrix::block__i.i.i.i"></span><span class="target" id="class_eigen_1_1_matrix_1a435f3c05e12e3a9b43b623827d2d883f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">block</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startRow</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startCol</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">blockRows</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">blockCols</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6Matrix5blockEiiii" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix5blockEiiii">
+<span id="_CPPv3NK5Eigen6Matrix5blockEiiii"></span><span id="_CPPv2NK5Eigen6Matrix5blockEiiii"></span><span id="Eigen::Matrix::block__i.i.i.iC"></span><span class="target" id="class_eigen_1_1_matrix_1a6d08e28f841d50f630767e17959e280f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">block</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startRow</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">startCol</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">blockRows</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">blockCols</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix5blockEiiii" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix3rowEi">
+<span id="_CPPv3N5Eigen6Matrix3rowEi"></span><span id="_CPPv2N5Eigen6Matrix3rowEi"></span><span id="Eigen::Matrix::row__i"></span><span class="target" id="class_eigen_1_1_matrix_1a576b915959c251355551ea7d2a1e3089"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">row</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6Matrix3rowEi" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix3rowEi">
+<span id="_CPPv3NK5Eigen6Matrix3rowEi"></span><span id="_CPPv2NK5Eigen6Matrix3rowEi"></span><span id="Eigen::Matrix::row__iC"></span><span class="target" id="class_eigen_1_1_matrix_1a493fc970349c56b6846a6a5a8088187d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">row</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix3rowEi" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix3colEi">
+<span id="_CPPv3N5Eigen6Matrix3colEi"></span><span id="_CPPv2N5Eigen6Matrix3colEi"></span><span id="Eigen::Matrix::col__i"></span><span class="target" id="class_eigen_1_1_matrix_1a42b9165da82d350a6cb050ff67ce9ffb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">col</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6Matrix3colEi" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix3colEi">
+<span id="_CPPv3NK5Eigen6Matrix3colEi"></span><span id="_CPPv2NK5Eigen6Matrix3colEi"></span><span id="Eigen::Matrix::col__iC"></span><span class="target" id="class_eigen_1_1_matrix_1a7edea44dcf5c6b16cd8da84b0068ab3c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">col</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix3colEi" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix12cwiseProductERK6Matrix">
+<span id="_CPPv3NK5Eigen6Matrix12cwiseProductERK6Matrix"></span><span id="_CPPv2NK5Eigen6Matrix12cwiseProductERK6Matrix"></span><span id="Eigen::Matrix::cwiseProduct__MatrixCRC"></span><span class="target" id="class_eigen_1_1_matrix_1abd5a0b03b250fb0d10354e722a279104"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cwiseProduct</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix12cwiseProductERK6Matrix" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix13cwiseQuotientERK6Matrix">
+<span id="_CPPv3NK5Eigen6Matrix13cwiseQuotientERK6Matrix"></span><span id="_CPPv2NK5Eigen6Matrix13cwiseQuotientERK6Matrix"></span><span id="Eigen::Matrix::cwiseQuotient__MatrixCRC"></span><span class="target" id="class_eigen_1_1_matrix_1a07140b347c132b319b3af037113ef1b2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cwiseQuotient</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix13cwiseQuotientERK6Matrix" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix8cwiseAbsEv">
+<span id="_CPPv3NK5Eigen6Matrix8cwiseAbsEv"></span><span id="_CPPv2NK5Eigen6Matrix8cwiseAbsEv"></span><span id="Eigen::Matrix::cwiseAbsC"></span><span class="target" id="class_eigen_1_1_matrix_1a115238f74f2422838ac7b2e5af9e2549"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cwiseAbs</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix8cwiseAbsEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix3sumEv">
+<span id="_CPPv3NK5Eigen6Matrix3sumEv"></span><span id="_CPPv2NK5Eigen6Matrix3sumEv"></span><span id="Eigen::Matrix::sumC"></span><span class="target" id="class_eigen_1_1_matrix_1ac418f278e904135391924699e7a54e17"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sum</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix3sumEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix4meanEv">
+<span id="_CPPv3NK5Eigen6Matrix4meanEv"></span><span id="_CPPv2NK5Eigen6Matrix4meanEv"></span><span id="Eigen::Matrix::meanC"></span><span class="target" id="class_eigen_1_1_matrix_1aec3e4ff2830f9f27ef866c50abdcb115"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mean</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix4meanEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix8maxCoeffEv">
+<span id="_CPPv3NK5Eigen6Matrix8maxCoeffEv"></span><span id="_CPPv2NK5Eigen6Matrix8maxCoeffEv"></span><span id="Eigen::Matrix::maxCoeffC"></span><span class="target" id="class_eigen_1_1_matrix_1ac5b31815da6cae82f43d446ba7723f71"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">maxCoeff</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix8maxCoeffEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix8minCoeffEv">
+<span id="_CPPv3NK5Eigen6Matrix8minCoeffEv"></span><span id="_CPPv2NK5Eigen6Matrix8minCoeffEv"></span><span id="Eigen::Matrix::minCoeffC"></span><span class="target" id="class_eigen_1_1_matrix_1a02038bdbdbf367e3ce7af33776c6b8f3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">minCoeff</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix8minCoeffEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5Eigen6Matrix7inverseEv">
+<span id="_CPPv3NK5Eigen6Matrix7inverseEv"></span><span id="_CPPv2NK5Eigen6Matrix7inverseEv"></span><span id="Eigen::Matrix::inverseC"></span><span class="target" id="class_eigen_1_1_matrix_1ade4f4ad6fb632b9379196410447675ae"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix::Scalar"><span class="n"><span class="pre">Scalar</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">Dynamic</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inverse</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5Eigen6Matrix7inverseEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix15get_torch_dtypeEv">
+<span id="_CPPv3N5Eigen6Matrix15get_torch_dtypeEv"></span><span id="_CPPv2N5Eigen6Matrix15get_torch_dtypeEv"></span><span id="Eigen::Matrix::get_torch_dtype"></span><span class="target" id="class_eigen_1_1_matrix_1af42135a5974ba06be10bec8ee2c4fd29"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">torch</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ScalarType</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_torch_dtype</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6Matrix15get_torch_dtypeEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix6RandomEii">
+<span id="_CPPv3N5Eigen6Matrix6RandomEii"></span><span id="_CPPv2N5Eigen6Matrix6RandomEii"></span><span id="Eigen::Matrix::Random__i.i"></span><span class="target" id="class_eigen_1_1_matrix_1aa926ab02c7d31339ab7f53f03fb407b1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Random</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rows</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cols</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6Matrix6RandomEii" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix4ZeroEii">
+<span id="_CPPv3N5Eigen6Matrix4ZeroEii"></span><span id="_CPPv2N5Eigen6Matrix4ZeroEii"></span><span id="Eigen::Matrix::Zero__i.i"></span><span class="target" id="class_eigen_1_1_matrix_1ade09a1b6e4e8282d0c8d49f9e16880bf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Zero</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rows</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cols</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6Matrix4ZeroEii" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix4OnesEii">
+<span id="_CPPv3N5Eigen6Matrix4OnesEii"></span><span id="_CPPv2N5Eigen6Matrix4OnesEii"></span><span id="Eigen::Matrix::Ones__i.i"></span><span class="target" id="class_eigen_1_1_matrix_1ab89d3464af8b635ac05dd3b9eb8dce52"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Ones</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rows</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cols</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6Matrix4OnesEii" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6Matrix8IdentityEii">
+<span id="_CPPv3N5Eigen6Matrix8IdentityEii"></span><span id="_CPPv2N5Eigen6Matrix8IdentityEii"></span><span id="Eigen::Matrix::Identity__i.i"></span><span class="target" id="class_eigen_1_1_matrix_1aef588ab5dd4a34c5015147216907b2b3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Identity</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rows</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cols</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6Matrix8IdentityEii" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5Eigen6MatrixlsERNSt7ostreamERK6Matrix">
+<span id="_CPPv3N5Eigen6MatrixlsERNSt7ostreamERK6Matrix"></span><span id="_CPPv2N5Eigen6MatrixlsERNSt7ostreamERK6Matrix"></span><span id="Eigen::Matrix::lshift-operator__osR.MatrixCR"></span><span class="target" id="class_eigen_1_1_matrix_1a5acbf9f1ba6d871be2ad3a0cdadf8815"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">friend</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">&lt;&lt;</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">os</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_i_iEN5Eigen6MatrixE" title="Eigen::Matrix"><span class="n"><span class="pre">Matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5Eigen6MatrixlsERNSt7ostreamERK6Matrix" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+<section id="solvers">
+<h2>Solvers<a class="headerlink" href="#solvers" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::PartialPivLU” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::LLT” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::HouseholderQR” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::JacobiSVD” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::EigenSolver” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+</section>
+<section id="geometry">
+<h2>Geometry<a class="headerlink" href="#geometry" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::Quaternion” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::AngleAxis” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::Translation” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::Transform” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::Rotation2D” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::Scaling” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::ParametrizedLine” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::Hyperplane” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::AlignedBox” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+</section>
+<section id="sparse-operations">
+<h2>Sparse Operations<a class="headerlink" href="#sparse-operations" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::SparseMatrix” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::SparseLU” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::SparseQR” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::SimplicialLLT” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::SimplicialLDLT” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+</section>
+<section id="jacobi-internal-iterators">
+<h2>Jacobi Internal Iterators<a class="headerlink" href="#jacobi-internal-iterators" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenclass: Cannot find class “Eigen::JacobiRotation” in doxygen xml output for project “EigenTorch” from directory: ./doxygen_out/xml</p>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">EigenTorch</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2026, Antigravity.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

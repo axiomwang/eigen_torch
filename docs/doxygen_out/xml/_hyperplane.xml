@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_hyperplane" kind="file" language="C++">
+    <compoundname>Hyperplane</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#ifndef<sp/>EIGEN_HYPERPLANE_H</highlight></codeline>
+<codeline><highlight class="normal">#define<sp/>EIGEN_HYPERPLANE_H</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar_,<sp/>int<sp/>Dim&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>Hyperplane<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>Scalar<sp/>=<sp/>Scalar_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>ScalarType<sp/>=<sp/>Scalar_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>VectorType<sp/>=<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">protected:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType<sp/>m_normal;<sp/>//<sp/>Normalized</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>m_offset;<sp/><sp/><sp/><sp/><sp/>//<sp/>Usually<sp/>stored<sp/>as<sp/>distance<sp/>from<sp/>origin<sp/>dot(n,<sp/>x)<sp/>+<sp/>d<sp/>=<sp/>0</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Hyperplane()<sp/>:<sp/>m_normal(),<sp/>m_offset(0)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Hyperplane(const<sp/>VectorType&amp;<sp/>normal,<sp/>Scalar<sp/>offset)<sp/></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>m_normal(normal),<sp/>m_offset(offset)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Hyperplane(const<sp/>VectorType&amp;<sp/>normal,<sp/>const<sp/>VectorType&amp;<sp/>point)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_normal<sp/>=<sp/>normal;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>dot<sp/>=<sp/>torch::sum(m_normal.tensor()<sp/>*<sp/>point.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_offset<sp/>=<sp/>-dot.template<sp/>item&lt;Scalar&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>VectorType&amp;<sp/>normal()<sp/>const<sp/>{<sp/>return<sp/>m_normal;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType&amp;<sp/>normal()<sp/>{<sp/>return<sp/>m_normal;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>offset()<sp/>const<sp/>{<sp/>return<sp/>m_offset;<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar&amp;<sp/>offset()<sp/>{<sp/>return<sp/>m_offset;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>signedDistance(const<sp/>VectorType&amp;<sp/>p)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>dot<sp/>=<sp/>torch::sum(m_normal.tensor()<sp/>*<sp/>p.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>dot.template<sp/>item&lt;Scalar&gt;()<sp/>+<sp/>m_offset;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>absDistance(const<sp/>VectorType&amp;<sp/>p)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>std::abs(signedDistance(p));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType<sp/>projection(const<sp/>VectorType&amp;<sp/>p)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>VectorType(p.tensor()<sp/>-<sp/>m_normal.tensor()<sp/>*<sp/>signedDistance(p));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>Hyperplane2f<sp/>=<sp/>Hyperplane&lt;float,<sp/>2&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Hyperplane3f<sp/>=<sp/>Hyperplane&lt;float,<sp/>3&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Hyperplane2d<sp/>=<sp/>Hyperplane&lt;double,<sp/>2&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Hyperplane3d<sp/>=<sp/>Hyperplane&lt;double,<sp/>3&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#endif<sp/>//<sp/>EIGEN_HYPERPLANE_H</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Hyperplane"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,59 @@
+#ifndef EIGEN_PARAMETRIZEDLINE_H
+#define EIGEN_PARAMETRIZEDLINE_H
+
+#include "Matrix.h"
+
+namespace Eigen {
+
+template <typename Scalar_, int Dim>
+class ParametrizedLine {
+public:
+    using Scalar = Scalar_;
+    using ScalarType = Scalar_;
+    using VectorType = Matrix<Scalar, Dim, 1>;
+
+protected:
+    VectorType m_origin;
+    VectorType m_direction; // Expected to be normalized
+
+public:
+    ParametrizedLine() : m_origin(), m_direction() {}
+
+    ParametrizedLine(const VectorType& origin, const VectorType& direction) 
+        : m_origin(origin), m_direction(direction) {}
+
+    const VectorType& origin() const { return m_origin; }
+    VectorType& origin() { return m_origin; }
+
+    const VectorType& direction() const { return m_direction; }
+    VectorType& direction() { return m_direction; }
+
+    VectorType pointAt(Scalar t) const {
+        return VectorType(m_origin.tensor() + m_direction.tensor() * t);
+    }
+
+    Scalar projection(const VectorType& p) const {
+        // t = (p - origin) dot direction
+        at::Tensor diff = p.tensor() - m_origin.tensor();
+        at::Tensor dot = torch::sum(diff * m_direction.tensor());
+        return dot.template item<Scalar>();
+    }
+
+    VectorType projectionPoint(const VectorType& p) const {
+        return pointAt(projection(p));
+    }
+    
+    Scalar distance(const VectorType& p) const {
+        at::Tensor proj = projectionPoint(p).tensor();
+        return torch::linalg_vector_norm(p.tensor() - proj).template item<Scalar>();
+    }
+};
+
+using ParametrizedLine2f = ParametrizedLine<float, 2>;
+using ParametrizedLine3f = ParametrizedLine<float, 3>;
+using ParametrizedLine2d = ParametrizedLine<double, 2>;
+using ParametrizedLine3d = ParametrizedLine<double, 3>;
+
+} // namespace Eigen
+
+#endif // EIGEN_PARAMETRIZEDLINE_H

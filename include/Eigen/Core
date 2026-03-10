@@ -1,0 +1,7 @@
+#pragma once
+
+#include "Device.h"
+#include "Matrix.h"
+
+// This header is meant to be included by the user as:
+// #include <Eigen/Core>

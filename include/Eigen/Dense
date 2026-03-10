@@ -1,0 +1,12 @@
+#pragma once
+
+#include "LU"
+#include "Cholesky"
+#include "QR"
+#include "SVD"
+#include "Eigenvalues"
+
+// This header is included by the user as:
+// #include <Eigen/Dense>
+// It bundles the entirety of the Dense Solvers APIs
+#include "Core"
