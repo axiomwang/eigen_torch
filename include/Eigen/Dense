@@ -10,3 +10,6 @@
 // #include <Eigen/Dense>
 // It bundles the entirety of the Dense Solvers APIs
 #include "Core"
+
+// Eigen-style decomposition chaining methods on Matrix
+#include "MatrixDecompositions.h"

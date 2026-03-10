@@ -48,4 +48,82 @@ public:
     }
 };
 
+template <typename MatrixType>
+class ColPivHouseholderQR {
+protected:
+    at::Tensor m_a;
+    bool m_isInitialized = false;
+
+public:
+    ColPivHouseholderQR() {}
+
+    explicit ColPivHouseholderQR(const MatrixType& matrix) {
+        compute(matrix);
+    }
+
+    ColPivHouseholderQR& compute(const MatrixType& matrix) {
+        m_a = matrix.tensor();
+        m_isInitialized = true;
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("ColPivHouseholderQR is not initialized.");
+        }
+
+        // Use CPU's default driver (gelsy) for QR with column pivoting.
+        // On CUDA, PyTorch only supports 'gels' (assumes full-rank).
+        std::optional<c10::string_view> driver;
+        if (!m_a.is_cuda()) {
+            driver = c10::string_view("gelsy");
+        } else {
+            driver = c10::string_view("gels");
+        }
+
+        auto out = at::linalg_lstsq(m_a, b.tensor(), /*rcond=*/std::nullopt, driver);
+        return Rhs(std::get<0>(out)); // solution
+    }
+};
+
+template <typename MatrixType>
+class FullPivHouseholderQR {
+protected:
+    at::Tensor m_a;
+    bool m_isInitialized = false;
+
+public:
+    FullPivHouseholderQR() {}
+
+    explicit FullPivHouseholderQR(const MatrixType& matrix) {
+        compute(matrix);
+    }
+
+    FullPivHouseholderQR& compute(const MatrixType& matrix) {
+        m_a = matrix.tensor();
+        m_isInitialized = true;
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("FullPivHouseholderQR is not initialized.");
+        }
+
+        // Full pivoting is not directly exposed by libtorch; provide Eigen-compatible solve()
+        // via a rank-aware least-squares backend.
+        std::optional<c10::string_view> driver;
+        if (!m_a.is_cuda()) {
+            driver = c10::string_view("gelsy");
+        } else {
+            driver = c10::string_view("gels");
+        }
+
+        auto out = at::linalg_lstsq(m_a, b.tensor(), /*rcond=*/std::nullopt, driver);
+        return Rhs(std::get<0>(out)); // solution
+    }
+};
+
 } // namespace Eigen

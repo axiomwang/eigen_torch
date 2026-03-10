@@ -9,6 +9,11 @@ namespace Eigen {
 // Forward declarations equivalent to Eigen's Dynamic
 constexpr int Dynamic = -1;
 
+// Forward declarations for decomposition chaining (defined in Dense)
+template <typename MatrixType> class FullPivLU;
+template <typename MatrixType> class ColPivHouseholderQR;
+template <typename MatrixType> class FullPivHouseholderQR;
+
 template <typename Scalar, int RowsAtCompileTime, int ColsAtCompileTime>
 class Matrix {
 protected:
@@ -200,6 +205,11 @@ public:
         // Note: torch::inverse expects float or double
         return Matrix<Scalar, Dynamic, Dynamic>(torch::inverse(m_tensor));
     }
+
+    // Eigen-style decomposition chaining (available when including <Eigen/Dense>)
+    FullPivLU<Matrix> fullPivLu() const;
+    ColPivHouseholderQR<Matrix> colPivHouseholderQr() const;
+    FullPivHouseholderQR<Matrix> fullPivHouseholderQr() const;
 
     // Stream operator for printing
     friend std::ostream& operator<<(std::ostream& os, const Matrix& m) {

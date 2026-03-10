@@ -24,6 +24,10 @@ int main() {
     Eigen::VectorXf x_lu = lusolver.solve(b);
     std::cout << "LU Solution Error: " << (A * x_lu - b).cwiseAbs().maxCoeff() << " (Expected ~0)" << std::endl;
 
+    std::cout << "\n--- Eigen-style Chaining: FullPivLU ---" << std::endl;
+    Eigen::VectorXf x_fullpivlu = A.fullPivLu().solve(b);
+    std::cout << "FullPivLU Solution Error: " << (A * x_fullpivlu - b).cwiseAbs().maxCoeff() << " (Expected ~0)" << std::endl;
+
     std::cout << "\n--- Cholesky Decomposition ---" << std::endl;
     Eigen::MatrixXf A_sym = A.transpose() * A + Eigen::MatrixXf::Identity(3,3); // Ensure pos-def
     Eigen::LLT<Eigen::MatrixXf> lltsolver(A_sym);
@@ -34,6 +38,23 @@ int main() {
     Eigen::HouseholderQR<Eigen::MatrixXf> qrsolver(A);
     Eigen::VectorXf x_qr = qrsolver.solve(b);
     std::cout << "QR Solution Error: " << (A * x_qr - b).cwiseAbs().maxCoeff() << " (Expected ~0)" << std::endl;
+
+    std::cout << "\n--- Eigen-style Chaining: ColPivHouseholderQR ---" << std::endl;
+    Eigen::VectorXf x_colpiv = A.colPivHouseholderQr().solve(b);
+    std::cout << "ColPivHouseholderQR Solution Error: " << (A * x_colpiv - b).cwiseAbs().maxCoeff() << " (Expected ~0)" << std::endl;
+
+    std::cout << "\n--- Eigen-style Chaining: FullPivHouseholderQR ---" << std::endl;
+    Eigen::VectorXf x_fullpivqr = A.fullPivHouseholderQr().solve(b);
+    std::cout << "FullPivHouseholderQR Solution Error: " << (A * x_fullpivqr - b).cwiseAbs().maxCoeff() << " (Expected ~0)" << std::endl;
+
+    std::cout << "\n--- Rank-deficient solve (pivoted QR) ---" << std::endl;
+    // Make A_rankdef rank-deficient by duplicating a column.
+    Eigen::MatrixXf A_rankdef = Eigen::MatrixXf::Random(3, 3);
+    A_rankdef.tensor().select(1, 2).copy_(A_rankdef.tensor().select(1, 1));
+    Eigen::VectorXf b_rankdef = Eigen::VectorXf::Random(3, 1);
+    Eigen::VectorXf x_rankdef = A_rankdef.colPivHouseholderQr().solve(b_rankdef);
+    auto residual = (A_rankdef * x_rankdef - b_rankdef).cwiseAbs().maxCoeff();
+    std::cout << "Rank-deficient residual (ColPivHouseholderQR): " << residual << " (Expected small-ish)" << std::endl;
 
     std::cout << "\n--- SVD Decomposition ---" << std::endl;
     Eigen::JacobiSVD<Eigen::MatrixXf> svd(A, Eigen::ComputeFullU | Eigen::ComputeFullV);

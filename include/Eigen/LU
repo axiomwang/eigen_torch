@@ -45,4 +45,52 @@ public:
     }
 };
 
+template <typename MatrixType>
+class FullPivLU {
+protected:
+    at::Tensor m_a;
+    bool m_isInitialized = false;
+
+public:
+    FullPivLU() {}
+
+    explicit FullPivLU(const MatrixType& matrix) {
+        compute(matrix);
+    }
+
+    FullPivLU& compute(const MatrixType& matrix) {
+        m_a = matrix.tensor();
+        m_isInitialized = true;
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("FullPivLU is not initialized.");
+        }
+
+        // Full pivoting is not directly exposed by libtorch; provide Eigen-compatible solve()
+        // via a robust backend. Prefer direct solve; fall back to least-squares if singular.
+        at::Tensor result;
+        try {
+            result = torch::linalg_solve(m_a, b.tensor());
+        } catch (const std::exception&) {
+            auto out = at::linalg_lstsq(m_a, b.tensor(), /*rcond=*/std::nullopt, /*driver=*/std::nullopt);
+            result = std::get<0>(out); // solution
+        }
+
+        return Rhs(result);
+    }
+
+    MatrixType inverse() const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("FullPivLU is not initialized.");
+        }
+        auto ident = torch::eye(m_a.size(0), m_a.options());
+        auto out = at::linalg_lstsq(m_a, ident, /*rcond=*/std::nullopt, /*driver=*/std::nullopt);
+        return MatrixType(std::get<0>(out));
+    }
+};
+
 } // namespace Eigen
