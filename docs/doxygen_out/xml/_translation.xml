@@ -22,6 +22,22 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_translation<sp/>=<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;::Zero(Dim,<sp/>1);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Translation(Scalar<sp/>x,<sp/>Scalar<sp/>y)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(Dim<sp/>==<sp/>2,<sp/>&quot;Translation(x,<sp/>y)<sp/>is<sp/>only<sp/>valid<sp/>for<sp/>2D<sp/>translations&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.dtype(Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;::get_torch_dtype())</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.device(DeviceManager::get_default_device());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_translation<sp/>=<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;(torch::tensor({x,<sp/>y},<sp/>options).unsqueeze(1));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Translation(Scalar<sp/>x,<sp/>Scalar<sp/>y,<sp/>Scalar<sp/>z)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(Dim<sp/>==<sp/>3,<sp/>&quot;Translation(x,<sp/>y,<sp/>z)<sp/>is<sp/>only<sp/>valid<sp/>for<sp/>3D<sp/>translations&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.dtype(Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;::get_torch_dtype())</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.device(DeviceManager::get_default_device());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_translation<sp/>=<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;(torch::tensor({x,<sp/>y,<sp/>z},<sp/>options).unsqueeze(1));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Translation(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>vec)<sp/>:<sp/>m_translation(vec)<sp/>{}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>vector()<sp/>const<sp/>{<sp/>return<sp/>m_translation;<sp/>}</highlight></codeline>
@@ -33,6 +49,10 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Translation<sp/>operator*(const<sp/>Translation&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Translation(m_translation<sp/>+<sp/>other.vector());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;<sp/>operator*(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>vec)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;(vec.tensor()<sp/>+<sp/>m_translation.tensor());</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Translation<sp/>inverse()<sp/>const<sp/>{</highlight></codeline>

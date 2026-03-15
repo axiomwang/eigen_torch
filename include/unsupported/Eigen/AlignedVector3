@@ -1,0 +1,112 @@
+#ifndef EIGEN_UNSUPPORTED_ALIGNEDVECTOR3_H
+#define EIGEN_UNSUPPORTED_ALIGNEDVECTOR3_H
+
+#include "Eigen/Core"
+
+namespace Eigen {
+
+template <typename Scalar>
+class AlignedVector3 {
+private:
+    Matrix<Scalar, 3, 1> m_vector;
+
+public:
+    AlignedVector3()
+        : m_vector(Matrix<Scalar, 3, 1>::Zero(3, 1)) {}
+
+    AlignedVector3(Scalar x, Scalar y, Scalar z) {
+        m_vector = Matrix<Scalar, 3, 1>::Zero(3, 1);
+        m_vector(0) = x;
+        m_vector(1) = y;
+        m_vector(2) = z;
+    }
+
+    explicit AlignedVector3(const Matrix<Scalar, 3, 1>& vector)
+        : m_vector(vector) {}
+
+    Scalar x() const { return m_vector(0); }
+    Scalar y() const { return m_vector(1); }
+    Scalar z() const { return m_vector(2); }
+
+    AlignedVector3& setX(Scalar value) {
+        m_vector(0) = value;
+        return *this;
+    }
+
+    AlignedVector3& setY(Scalar value) {
+        m_vector(1) = value;
+        return *this;
+    }
+
+    AlignedVector3& setZ(Scalar value) {
+        m_vector(2) = value;
+        return *this;
+    }
+
+    Matrix<Scalar, 3, 1> vector() const {
+        return m_vector;
+    }
+
+    Scalar norm() const {
+        return m_vector.norm();
+    }
+
+    AlignedVector3 normalized() const {
+        return AlignedVector3(m_vector.normalized());
+    }
+
+    Scalar dot(const AlignedVector3& other) const {
+        return m_vector.dot(other.m_vector);
+    }
+
+    AlignedVector3 cross(const AlignedVector3& other) const {
+        return AlignedVector3(m_vector.cross(other.m_vector));
+    }
+
+    AlignedVector3 operator+(const AlignedVector3& other) const {
+        return AlignedVector3(m_vector + other.m_vector);
+    }
+
+    AlignedVector3 operator-(const AlignedVector3& other) const {
+        return AlignedVector3(m_vector - other.m_vector);
+    }
+
+    AlignedVector3 operator*(Scalar scalar) const {
+        return AlignedVector3(m_vector * scalar);
+    }
+
+    AlignedVector3 operator/(Scalar scalar) const {
+        return AlignedVector3(m_vector / scalar);
+    }
+
+    AlignedVector3& operator+=(const AlignedVector3& other) {
+        m_vector += other.m_vector;
+        return *this;
+    }
+
+    AlignedVector3& operator-=(const AlignedVector3& other) {
+        m_vector -= other.m_vector;
+        return *this;
+    }
+
+    AlignedVector3& operator*=(Scalar scalar) {
+        m_vector *= scalar;
+        return *this;
+    }
+
+    AlignedVector3& operator/=(Scalar scalar) {
+        m_vector /= scalar;
+        return *this;
+    }
+
+    operator Matrix<Scalar, 3, 1>() const {
+        return m_vector;
+    }
+};
+
+using AlignedVector3f = AlignedVector3<float>;
+using AlignedVector3d = AlignedVector3<double>;
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_ALIGNEDVECTOR3_H

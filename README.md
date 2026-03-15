@@ -1,89 +1,129 @@
-# EigenTorch (Drop-in Eigen API with PyTorch Backend)
+# EigenTorch
 
-This library serves as a computationally accelerated, drop-in replacement for standard [Eigen](http://eigen.tuxfamily.org/). It exposes the exact same syntax, headers, and namespaces (`Eigen::MatrixXf`, `#include <Eigen/Dense>`, etc.) but implements all math logic securely over PyTorch `at::Tensor` objects. This allows leveraging massive tensor optimization and heterogeneous hardware (like CUDA or Apple Silicon MPS) seamlessly within legacy Eigen-dependent C++ systems.
+EigenTorch is a header-only Eigen-compatible API layer backed by libtorch tensors.
+It is designed for projects that want Eigen-style C++ APIs while executing calculations
+through PyTorch (CPU, CUDA, or Apple MPS).
 
-## 📦 Installation & CMake Discovery
+## What Is Implemented
 
-We provide full export configurations for CMake so building and distributing is extremely easy.
+- Core matrix/vector operations (`Eigen::Matrix`, dense arithmetic, blocks, maps, arrays)
+- Dense decompositions and solvers (LU, QR, SVD, eigenvalue methods, LLT/LDLT)
+- Geometry stack (`Quaternion`, `AngleAxis`, `Transform`, `Translation`, `Rotation2D`,
+  `Scaling`, `ParametrizedLine`, `Hyperplane`, `AlignedBox`)
+- Sparse stack (`SparseMatrix`, `SparseVector`, `SparseLU`, `SparseQR`,
+  `SimplicialLLT`, `SimplicialLDLT`)
+- Expanded unsupported modules with libtorch-backed calculations:
+  - `AdolcForward`
+  - `AlignedVector3`
+  - `ArpackSupport`
+  - `AutoDiff`
+  - `BVH`
+  - `EulerAngles`
+  - `FFT`
+  - `IterativeSolvers`
+  - `KroneckerProduct`
+  - `LevenbergMarquardt`
+  - `MatrixFunctions`
+  - `MPRealSupport`
+  - `NNLS`
+  - `NonLinearOptimization`
+  - `NumericalDiff`
+  - `OpenGLSupport`
+  - `Polynomials`
+  - `SparseExtra`
+  - `SpecialFunctions`
+  - `Splines`
+  - `CXX11/Tensor`
+  - `CXX11/TensorSymmetry`
+  - `CXX11/ThreadPool`
 
-### 1. Build & Install Locally
-Compile the standalone library and install its headers into your standard system paths (or a prefix of your choosing):
+## Build
+
+From repository root:
 
 ```bash
-mkdir build && cd build
-cmake .. 
-make install
+cmake -S . -B build
+cmake --build build -j8
 ```
 
-### 2. Finding the Library in Your Project
-In your consuming project's `CMakeLists.txt`, locate the library via `find_package`. The library is installed as CMake module `Eigen` and exports the target `Eigen::Eigen`:
+## Install
+
+```bash
+cmake --install build
+```
+
+Then from a consumer CMake project:
 
 ```cmake
-cmake_minimum_required(VERSION 3.14)
-project(MyApp)
-
-# Essential: Eigen depends on LibTorch
 find_package(Torch REQUIRED)
-
-# Find the installed header-only library
 find_package(Eigen REQUIRED)
 
-add_executable(my_app main.cpp)
-
-# Link the dropped-in target
 target_link_libraries(my_app PRIVATE Eigen::Eigen)
 ```
 
-## 🚀 Usage & Device Selection
-
-Include standard Eigen headers identically as you would traditionally.
+## Basic Usage
 
 ```cpp
-#include <iostream>
 #include <Eigen/Dense>
 
 int main() {
-    // 1. Initializations
-    Eigen::MatrixXf a = Eigen::MatrixXf::Random(3, 3);
-    Eigen::MatrixXf b = Eigen::MatrixXf::Ones(3, 3);
+    Eigen::MatrixXf A = Eigen::MatrixXf::Random(3, 3);
+    Eigen::VectorXf b = Eigen::VectorXf::Ones(3, 1);
 
-    // Standard Math behaves perfectly
-    Eigen::MatrixXf c = a * b;
-    std::cout << c.mean() << std::endl;
-
-    // Advanced features 
-    Eigen::PartialPivLU<Eigen::MatrixXf> lu(a);
-    Eigen::VectorXf x = lu.solve(Eigen::VectorXf::Ones(3, 1));
+    Eigen::VectorXf x = A.partialPivLu().solve(b);
+    Eigen::MatrixXf C = A * A.inverse();
+    (void)x;
+    (void)C;
+    return 0;
 }
 ```
 
-### 🖥 Choosing the Device (CPU vs GPU)
+## Device Selection
 
-By default, the internal **DeviceManager** places all tensors on the **CPU** transparently. 
-
-If you wish to offload computations to a GPU (CUDA) or an Apple Silicon MPS core natively, you simply need to configure the global pointer identically *before* instantiating any Eigen matrices.
+Set the global default device before constructing matrices:
 
 ```cpp
 #include <Eigen/Core>
 
 int main() {
-    // Optional: Globally reroute Eigen mathematical allocations to CUDA natively
     if (torch::cuda::is_available()) {
         Eigen::DeviceManager::set_default_device(torch::kCUDA);
-        std::cout << "Accelerating Eigen with CUDA." << std::endl;
-    } 
-    // Or MPS on Apple Silicon
-    else if (Eigen::DeviceManager::is_mps_available()) {
+    } else if (Eigen::DeviceManager::is_mps_available()) {
         Eigen::DeviceManager::set_default_device(torch::kMPS);
-        std::cout << "Accelerating Eigen with MPS." << std::endl;
-    }
-    else {
-        // Defaults to torch::kCPU otherwise
+    } else {
         Eigen::DeviceManager::set_default_device(torch::kCPU);
     }
-
-    // Now, all subsequent allocations and mathematics pipeline exactly to the configured hardware!
-    Eigen::MatrixXf data = Eigen::MatrixXf::Random(1000, 1000); 
-    Eigen::MatrixXf res = data * data.inverse(); 
+    return 0;
 }
 ```
+
+## Test Suite
+
+Run all tests:
+
+```bash
+cd build
+ctest --output-on-failure
+```
+
+Current test targets:
+
+- `core_test`
+- `sparse_linalg_test`
+- `api_compat_test`
+- `unsupported_compat_test`
+- `unsupported_full_modules_test`
+
+## Documentation
+
+Sphinx sources are in `docs/`.
+
+Generate docs:
+
+```bash
+cd docs
+doxygen Doxyfile
+make html
+```
+
+Main page after build: `docs/_build/html/index.html`.

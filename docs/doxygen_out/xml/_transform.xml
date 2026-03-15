@@ -12,6 +12,7 @@
 <codeline><highlight class="normal">#include<sp/>&quot;Quaternion&quot;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;AngleAxis&quot;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;Translation&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Scaling&quot;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
 <codeline></codeline>
@@ -29,7 +30,16 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>Transform<sp/>Identity()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Transform();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Transform(const<sp/>Matrix&lt;Scalar,<sp/>Dim<sp/>+<sp/>1,<sp/>Dim<sp/>+<sp/>1&gt;&amp;<sp/>matrix)<sp/>:<sp/>m_matrix(matrix)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>setIdentity()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_matrix.setIdentity(Dim<sp/>+<sp/>1,<sp/>Dim<sp/>+<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>Matrix&lt;Scalar,<sp/>Dim<sp/>+<sp/>1,<sp/>Dim<sp/>+<sp/>1&gt;&amp;<sp/>matrix()<sp/>const<sp/>{<sp/>return<sp/>m_matrix;<sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim<sp/>+<sp/>1,<sp/>Dim<sp/>+<sp/>1&gt;&amp;<sp/>matrix()<sp/>{<sp/>return<sp/>m_matrix;<sp/>}</highlight></codeline>
@@ -39,13 +49,44 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>m_matrix.block(0,<sp/>0,<sp/>Dim,<sp/>Dim);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>linear(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>Dim&gt;&amp;<sp/>l)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>0,<sp/>Dim).copy_(l.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>//<sp/>Allows<sp/>T.translation()<sp/>returning<sp/>the<sp/>3x1<sp/>translation<sp/>block</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;<sp/>translation()<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>m_matrix.block(0,<sp/>Dim,<sp/>Dim,<sp/>1);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>translation(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>t)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>Dim,<sp/>Dim<sp/>+<sp/>1).copy_(t.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform<sp/>operator*(const<sp/>Transform&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Transform(m_matrix<sp/>*<sp/>other.matrix());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform<sp/>operator*(const<sp/>Translation&lt;Scalar,<sp/>Dim&gt;&amp;<sp/>t)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Transform<sp/>out(*this);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out.translate(t);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform<sp/>operator*(const<sp/>Quaternion&lt;Scalar&gt;&amp;<sp/>q)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Transform<sp/>out(*this);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out.rotate(q);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform<sp/>operator*(const<sp/>AngleAxis&lt;Scalar&gt;&amp;<sp/>aa)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Transform<sp/>out(*this);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>out.rotate(aa);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>out;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>operator*=(const<sp/>Transform&amp;<sp/>other)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_matrix<sp/>=<sp/>m_matrix<sp/>*<sp/>other.matrix();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;<sp/>operator*(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>vec)<sp/>const<sp/>{</highlight></codeline>
@@ -58,6 +99,101 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Return<sp/>only<sp/>the<sp/>Dim<sp/>components</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;(res_hom.slice(0,<sp/>0,<sp/>Dim));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>translate(const<sp/>Translation&lt;Scalar,<sp/>Dim&gt;&amp;<sp/>t)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>translate(t.vector());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>translate(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Right-multiply<sp/>by<sp/>translation:<sp/>t_new<sp/>=<sp/>t_old<sp/>+<sp/>R<sp/>*<sp/>v</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>rot<sp/>=<sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>0,<sp/>Dim);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>trans<sp/>=<sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>Dim,<sp/>Dim<sp/>+<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>trans.copy_(trans<sp/>+<sp/>torch::matmul(rot,<sp/>v.tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>pretranslate(const<sp/>Translation&lt;Scalar,<sp/>Dim&gt;&amp;<sp/>t)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>pretranslate(t.vector());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>pretranslate(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>v)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Left-multiply<sp/>by<sp/>translation:<sp/>t_new<sp/>=<sp/>t_old<sp/>+<sp/>v</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>trans<sp/>=<sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>Dim,<sp/>Dim<sp/>+<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>trans.copy_(trans<sp/>+<sp/>v.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>rotate(const<sp/>Quaternion&lt;Scalar&gt;&amp;<sp/>q)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>Dim&gt;<sp/>r<sp/>=<sp/>q.toRotationMatrix();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>rotate(r);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>rotate(const<sp/>AngleAxis&lt;Scalar&gt;&amp;<sp/>aa)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>Dim&gt;<sp/>r<sp/>=<sp/>aa.toRotationMatrix();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>rotate(r);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>rotate(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>Dim&gt;&amp;<sp/>r)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>rot<sp/>=<sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>0,<sp/>Dim);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rot.copy_(torch::matmul(rot,<sp/>r.tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>prerotate(const<sp/>Quaternion&lt;Scalar&gt;&amp;<sp/>q)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>Dim&gt;<sp/>r<sp/>=<sp/>q.toRotationMatrix();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>prerotate(r);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>prerotate(const<sp/>AngleAxis&lt;Scalar&gt;&amp;<sp/>aa)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>Dim&gt;<sp/>r<sp/>=<sp/>aa.toRotationMatrix();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>prerotate(r);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>prerotate(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>Dim&gt;&amp;<sp/>r)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>rot<sp/>=<sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>0,<sp/>Dim);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>trans<sp/>=<sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>Dim,<sp/>Dim<sp/>+<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rot.copy_(torch::matmul(r.tensor(),<sp/>rot));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>trans.copy_(torch::matmul(r.tensor(),<sp/>trans));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>scale(Scalar<sp/>s)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>rot<sp/>=<sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>0,<sp/>Dim);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rot.copy_(rot<sp/>*<sp/>s);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>scale(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>factors)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>rot<sp/>=<sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>0,<sp/>Dim);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>d<sp/>=<sp/>torch::diag(factors.tensor().reshape({-1}));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rot.copy_(torch::matmul(rot,<sp/>d));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>scale(const<sp/>Scaling&lt;Scalar,<sp/>Dim&gt;&amp;<sp/>s)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>scale(s.factors());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>prescale(Scalar<sp/>s)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>rot<sp/>=<sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>0,<sp/>Dim);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>trans<sp/>=<sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>Dim,<sp/>Dim<sp/>+<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rot.copy_(s<sp/>*<sp/>rot);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>trans.copy_(s<sp/>*<sp/>trans);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>prescale(const<sp/>Matrix&lt;Scalar,<sp/>Dim,<sp/>1&gt;&amp;<sp/>factors)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>rot<sp/>=<sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>0,<sp/>Dim);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>trans<sp/>=<sp/>m_matrix.tensor().slice(0,<sp/>0,<sp/>Dim).slice(1,<sp/>Dim,<sp/>Dim<sp/>+<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>d<sp/>=<sp/>torch::diag(factors.tensor().reshape({-1}));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rot.copy_(torch::matmul(d,<sp/>rot));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>trans.copy_(torch::matmul(d,<sp/>trans));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform&amp;<sp/>prescale(const<sp/>Scaling&lt;Scalar,<sp/>Dim&gt;&amp;<sp/>s)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>prescale(s.factors());</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Transform<sp/>inverse()<sp/>const<sp/>{</highlight></codeline>

@@ -1,0 +1,46 @@
+#ifndef EIGEN_UNSUPPORTED_KRONECKERPRODUCT_H
+#define EIGEN_UNSUPPORTED_KRONECKERPRODUCT_H
+
+#include "Eigen/Core"
+
+namespace Eigen {
+
+template <typename LhsType, typename RhsType>
+auto kroneckerProduct(const LhsType& lhs, const RhsType& rhs)
+    -> Matrix<typename LhsType::ScalarType, Dynamic, Dynamic> {
+    using Scalar = typename LhsType::ScalarType;
+    at::Tensor product = torch::kron(lhs.tensor(), rhs.tensor());
+    return Matrix<Scalar, Dynamic, Dynamic>(product);
+}
+
+template <typename LhsType, typename RhsType>
+class KroneckerProduct {
+public:
+    using Scalar = typename LhsType::ScalarType;
+    using ReturnType = Matrix<Scalar, Dynamic, Dynamic>;
+
+private:
+    LhsType m_lhs;
+    RhsType m_rhs;
+
+public:
+    KroneckerProduct(const LhsType& lhs, const RhsType& rhs)
+        : m_lhs(lhs), m_rhs(rhs) {}
+
+    ReturnType eval() const {
+        return kroneckerProduct(m_lhs, m_rhs);
+    }
+
+    operator ReturnType() const {
+        return eval();
+    }
+};
+
+template <typename LhsType, typename RhsType>
+KroneckerProduct<LhsType, RhsType> makeKroneckerProduct(const LhsType& lhs, const RhsType& rhs) {
+    return KroneckerProduct<LhsType, RhsType>(lhs, rhs);
+}
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_KRONECKERPRODUCT_H

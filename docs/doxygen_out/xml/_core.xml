@@ -11,6 +11,8 @@
 <codeline></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;Device.h&quot;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Array&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Map&quot;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>This<sp/>header<sp/>is<sp/>meant<sp/>to<sp/>be<sp/>included<sp/>by<sp/>the<sp/>user<sp/>as:</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>#include<sp/>&lt;Eigen/Core&gt;</highlight></codeline>

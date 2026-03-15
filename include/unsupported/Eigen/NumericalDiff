@@ -1,0 +1,75 @@
+#ifndef EIGEN_UNSUPPORTED_NUMERICALDIFF_H
+#define EIGEN_UNSUPPORTED_NUMERICALDIFF_H
+
+#include "Eigen/Core"
+
+#include <type_traits>
+
+namespace Eigen {
+
+template <typename FunctorType>
+class NumericalDiff {
+private:
+    FunctorType m_functor;
+    double m_step;
+
+public:
+    explicit NumericalDiff(const FunctorType& functor, double step = 1e-6)
+        : m_functor(functor), m_step(step) {}
+
+    FunctorType& functor() { return m_functor; }
+    const FunctorType& functor() const { return m_functor; }
+
+    double stepSize() const { return m_step; }
+    NumericalDiff& setStepSize(double step) {
+        m_step = step;
+        return *this;
+    }
+
+    template <typename InputType>
+    auto values(const InputType& x) const {
+        return m_functor(x);
+    }
+
+    template <typename InputType>
+    Matrix<typename InputType::ScalarType, Dynamic, Dynamic> jacobian(const InputType& x) const {
+        using Scalar = typename InputType::ScalarType;
+
+        auto fx = m_functor(x);
+        int residual_dim = fx.size();
+        int variable_dim = x.size();
+
+        at::Tensor J_tensor = torch::zeros(
+            {residual_dim, variable_dim},
+            x.tensor().options());
+        Scalar h = static_cast<Scalar>(m_step);
+
+        for (int col = 0; col < variable_dim; ++col) {
+            at::Tensor x_plus_flat = x.tensor().reshape({-1}).clone();
+            at::Tensor x_minus_flat = x.tensor().reshape({-1}).clone();
+            Scalar base_plus = x_plus_flat.index({col}).template item<Scalar>();
+            Scalar base_minus = x_minus_flat.index({col}).template item<Scalar>();
+            x_plus_flat.index_put_({col}, base_plus + h);
+            x_minus_flat.index_put_({col}, base_minus - h);
+
+            at::Tensor x_plus_tensor = x_plus_flat.reshape(x.tensor().sizes());
+            at::Tensor x_minus_tensor = x_minus_flat.reshape(x.tensor().sizes());
+
+            InputType x_plus(x_plus_tensor);
+            InputType x_minus(x_minus_tensor);
+
+            auto f_plus = m_functor(x_plus);
+            auto f_minus = m_functor(x_minus);
+            at::Tensor diff =
+                (f_plus.tensor().reshape({-1}) - f_minus.tensor().reshape({-1})) /
+                static_cast<Scalar>(2 * h);
+            J_tensor.index_put_({torch::indexing::Slice(), col}, diff);
+        }
+
+        return Matrix<Scalar, Dynamic, Dynamic>(J_tensor);
+    }
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_NUMERICALDIFF_H

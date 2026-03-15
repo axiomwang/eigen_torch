@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_map" kind="file" language="C++">
+    <compoundname>Map</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;int<sp/>Value<sp/>=<sp/>Dynamic&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>InnerStride<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>InnerStride(int<sp/>stride<sp/>=<sp/>Value)<sp/>:<sp/>value(stride)<sp/>{}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>value;</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;int<sp/>Value<sp/>=<sp/>Dynamic&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>OuterStride<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>OuterStride(int<sp/>stride<sp/>=<sp/>Value)<sp/>:<sp/>value(stride)<sp/>{}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>value;</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;int<sp/>Outer<sp/>=<sp/>Dynamic,<sp/>int<sp/>Inner<sp/>=<sp/>Dynamic&gt;</highlight></codeline>
+<codeline><highlight class="normal">struct<sp/>Stride<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Stride(int<sp/>outer_stride<sp/>=<sp/>Outer,<sp/>int<sp/>inner_stride<sp/>=<sp/>Inner)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>outer(outer_stride),<sp/>inner(inner_stride)<sp/>{}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>outer;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>int<sp/>inner;</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>PlainObjectType,<sp/>int<sp/>MapOptions<sp/>=<sp/>0,<sp/>typename<sp/>StrideType<sp/>=<sp/>Stride&lt;&gt;&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>Map;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar,<sp/>int<sp/>RowsAtCompileTime,<sp/>int<sp/>ColsAtCompileTime,<sp/>int<sp/>MapOptions,<sp/>typename<sp/>StrideType&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>Map&lt;Matrix&lt;Scalar,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime&gt;,<sp/>MapOptions,<sp/>StrideType&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/>public<sp/>Matrix&lt;Scalar,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">private:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>Base<sp/>=<sp/>Matrix&lt;Scalar,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>bind(Scalar*<sp/>data,<sp/>int<sp/>rows,<sp/>int<sp/>cols)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Base::validate_resize(rows,<sp/>cols);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions().dtype(Base::get_torch_dtype()).device(torch::kCPU);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;m_tensor<sp/>=<sp/>torch::from_blob(static_cast&lt;void*&gt;(data),<sp/>{rows,<sp/>cols},<sp/>options);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Map(Scalar*<sp/>data,<sp/>int<sp/>rows,<sp/>int<sp/>cols)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bind(data,<sp/>rows,<sp/>cols);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Map(Scalar*<sp/>data,<sp/>int<sp/>rows,<sp/>int<sp/>cols,<sp/>const<sp/>StrideType&amp;)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bind(data,<sp/>rows,<sp/>cols);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Map(Scalar*<sp/>data,<sp/>int<sp/>size)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>constexpr<sp/>(RowsAtCompileTime<sp/>==<sp/>1<sp/>&amp;&amp;<sp/>ColsAtCompileTime<sp/>!=<sp/>1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bind(data,<sp/>1,<sp/>size);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bind(data,<sp/>size,<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Map(Scalar*<sp/>data)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>constexpr<sp/>(RowsAtCompileTime<sp/>==<sp/>Dynamic<sp/>||<sp/>ColsAtCompileTime<sp/>==<sp/>Dynamic)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>throw<sp/>std::invalid_argument(&quot;Dynamic<sp/>Map<sp/>requires<sp/>explicit<sp/>dimensions.&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bind(data,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar,<sp/>int<sp/>RowsAtCompileTime,<sp/>int<sp/>ColsAtCompileTime,<sp/>int<sp/>MapOptions,<sp/>typename<sp/>StrideType&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>Map&lt;const<sp/>Matrix&lt;Scalar,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime&gt;,<sp/>MapOptions,<sp/>StrideType&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/>public<sp/>Matrix&lt;Scalar,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">private:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>Base<sp/>=<sp/>Matrix&lt;Scalar,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>void<sp/>bind(const<sp/>Scalar*<sp/>data,<sp/>int<sp/>rows,<sp/>int<sp/>cols)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Base::validate_resize(rows,<sp/>cols);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions().dtype(Base::get_torch_dtype()).device(torch::kCPU);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;m_tensor<sp/>=<sp/>torch::from_blob(const_cast&lt;void*&gt;(static_cast&lt;const<sp/>void*&gt;(data)),<sp/>{rows,<sp/>cols},<sp/>options);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Map(const<sp/>Scalar*<sp/>data,<sp/>int<sp/>rows,<sp/>int<sp/>cols)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bind(data,<sp/>rows,<sp/>cols);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Map(const<sp/>Scalar*<sp/>data,<sp/>int<sp/>rows,<sp/>int<sp/>cols,<sp/>const<sp/>StrideType&amp;)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bind(data,<sp/>rows,<sp/>cols);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Map(const<sp/>Scalar*<sp/>data,<sp/>int<sp/>size)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>constexpr<sp/>(RowsAtCompileTime<sp/>==<sp/>1<sp/>&amp;&amp;<sp/>ColsAtCompileTime<sp/>!=<sp/>1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bind(data,<sp/>1,<sp/>size);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bind(data,<sp/>size,<sp/>1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Map(const<sp/>Scalar*<sp/>data)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>constexpr<sp/>(RowsAtCompileTime<sp/>==<sp/>Dynamic<sp/>||<sp/>ColsAtCompileTime<sp/>==<sp/>Dynamic)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>throw<sp/>std::invalid_argument(&quot;Dynamic<sp/>Map<sp/>requires<sp/>explicit<sp/>dimensions.&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bind(data,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Map"/>
+  </compounddef>
+</doxygen>

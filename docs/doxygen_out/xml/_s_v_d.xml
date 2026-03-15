@@ -2,6 +2,19 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
   <compounddef id="_s_v_d" kind="file" language="C++">
     <compoundname>SVD</compoundname>
+    <includedby refid="_matrix_decompositions_8h" local="yes">/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/MatrixDecompositions.h</includedby>
+    <invincdepgraph>
+      <node id="2">
+        <label>/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/MatrixDecompositions.h</label>
+        <link refid="_matrix_decompositions_8h"/>
+      </node>
+      <node id="1">
+        <label>/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/SVD</label>
+        <link refid="_s_v_d"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -59,7 +72,7 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;typename<sp/>MatrixType::ScalarType,<sp/>Dynamic,<sp/>1&gt;<sp/>singularValues()<sp/>const<sp/>{</highlight></codeline>
-<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Matrix&lt;typename<sp/>MatrixType::Scalar,<sp/>Dynamic,<sp/>1&gt;(m_s.unsqueeze(1));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Matrix&lt;typename<sp/>MatrixType::ScalarType,<sp/>Dynamic,<sp/>1&gt;(m_s.unsqueeze(1));</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>MatrixType<sp/>matrixU()<sp/>const<sp/>{</highlight></codeline>
@@ -69,6 +82,21 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>MatrixType<sp/>matrixV()<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>MatrixType(m_vh.adjoint());</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>MatrixType&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>BDCSVD<sp/>:<sp/>public<sp/>JacobiSVD&lt;MatrixType&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>BDCSVD()<sp/>:<sp/>JacobiSVD&lt;MatrixType&gt;()<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>BDCSVD(const<sp/>MatrixType&amp;<sp/>matrix,<sp/>unsigned<sp/>int<sp/>computationOptions<sp/>=<sp/>0)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>JacobiSVD&lt;MatrixType&gt;(matrix,<sp/>computationOptions)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>JacobiSVD&lt;MatrixType&gt;::compute;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>JacobiSVD&lt;MatrixType&gt;::solve;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>JacobiSVD&lt;MatrixType&gt;::singularValues;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>JacobiSVD&lt;MatrixType&gt;::matrixU;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>JacobiSVD&lt;MatrixType&gt;::matrixV;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>

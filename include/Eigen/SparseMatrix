@@ -476,7 +476,13 @@ public:
             throw std::runtime_error("Both SparseMatrices must be compressed");
         }
 
-        at::Tensor result = torch::matmul(m_tensor, other.tensor());
+        at::Tensor result;
+        try {
+            result = torch::matmul(m_tensor, other.tensor());
+        } catch (const c10::Error&) {
+            at::Tensor dense_result = torch::matmul(m_tensor.to_dense(), other.tensor().to_dense());
+            result = dense_result.to_sparse_csr();
+        }
         if (!result.is_sparse_csr()) {
             result = result.to_sparse_csr();
         }

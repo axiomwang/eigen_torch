@@ -1,0 +1,58 @@
+#ifndef EIGEN_UNSUPPORTED_OPENGLSUPPORT_H
+#define EIGEN_UNSUPPORTED_OPENGLSUPPORT_H
+
+#include "Eigen/Core"
+
+#include <array>
+
+namespace Eigen {
+
+template <typename Scalar>
+std::array<Scalar, 16> toOpenGLArray(const Matrix<Scalar, 4, 4>& matrix) {
+    std::array<Scalar, 16> result{};
+    for (int col = 0; col < 4; ++col) {
+        for (int row = 0; row < 4; ++row) {
+            result[static_cast<size_t>(col * 4 + row)] = matrix(row, col);
+        }
+    }
+    return result;
+}
+
+template <typename Scalar>
+Matrix<Scalar, 4, 4> fromOpenGLArray(const std::array<Scalar, 16>& values) {
+    Matrix<Scalar, 4, 4> matrix = Matrix<Scalar, 4, 4>::Zero(4, 4);
+    for (int col = 0; col < 4; ++col) {
+        for (int row = 0; row < 4; ++row) {
+            matrix(row, col) = values[static_cast<size_t>(col * 4 + row)];
+        }
+    }
+    return matrix;
+}
+
+template <typename Scalar>
+Matrix<Scalar, 4, 1> transformOpenGLVector(
+    const Matrix<Scalar, 4, 4>& matrix,
+    const Matrix<Scalar, 4, 1>& vector) {
+    return matrix * vector;
+}
+
+template <typename Scalar>
+Matrix<Scalar, 4, 4> openGLPerspective(
+    Scalar fov_y_radians,
+    Scalar aspect,
+    Scalar z_near,
+    Scalar z_far) {
+    Scalar tan_half_fov = std::tan(fov_y_radians / static_cast<Scalar>(2));
+    Matrix<Scalar, 4, 4> projection = Matrix<Scalar, 4, 4>::Zero(4, 4);
+
+    projection(0, 0) = static_cast<Scalar>(1) / (aspect * tan_half_fov);
+    projection(1, 1) = static_cast<Scalar>(1) / tan_half_fov;
+    projection(2, 2) = -(z_far + z_near) / (z_far - z_near);
+    projection(2, 3) = -static_cast<Scalar>(1);
+    projection(3, 2) = -(static_cast<Scalar>(2) * z_far * z_near) / (z_far - z_near);
+    return projection;
+}
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_OPENGLSUPPORT_H

@@ -1,0 +1,94 @@
+#ifndef EIGEN_UNSUPPORTED_MATRIXFUNCTIONS_H
+#define EIGEN_UNSUPPORTED_MATRIXFUNCTIONS_H
+
+#include "Eigen/Core"
+
+#include <functional>
+
+namespace Eigen {
+
+namespace internal {
+
+template <typename MatrixType, typename UnaryTensorFn>
+Matrix<typename MatrixType::ScalarType, Dynamic, Dynamic>
+matrixFunctionByEigen(const MatrixType& matrix, UnaryTensorFn fn) {
+    using Scalar = typename MatrixType::ScalarType;
+
+    at::Tensor input = matrix.tensor();
+    auto eig = torch::linalg_eig(input);
+    at::Tensor eigenvalues = std::get<0>(eig);
+    at::Tensor eigenvectors = std::get<1>(eig);
+
+    at::Tensor transformed = fn(eigenvalues);
+    at::Tensor diagonal = torch::diag(transformed);
+    at::Tensor inverse_vectors = torch::linalg_inv(eigenvectors);
+    at::Tensor result = torch::matmul(torch::matmul(eigenvectors, diagonal), inverse_vectors);
+
+    at::Tensor real_result = torch::real(result).to(input.scalar_type());
+    return Matrix<Scalar, Dynamic, Dynamic>(real_result);
+}
+
+} // namespace internal
+
+template <typename MatrixType>
+Matrix<typename MatrixType::ScalarType, Dynamic, Dynamic> matrixExp(const MatrixType& matrix) {
+    using Scalar = typename MatrixType::ScalarType;
+    return Matrix<Scalar, Dynamic, Dynamic>(torch::linalg_matrix_exp(matrix.tensor()));
+}
+
+template <typename MatrixType>
+Matrix<typename MatrixType::ScalarType, Dynamic, Dynamic> matrixPower(const MatrixType& matrix, int exponent) {
+    using Scalar = typename MatrixType::ScalarType;
+    return Matrix<Scalar, Dynamic, Dynamic>(torch::linalg_matrix_power(matrix.tensor(), exponent));
+}
+
+template <typename MatrixType>
+Matrix<typename MatrixType::ScalarType, Dynamic, Dynamic> matrixLog(const MatrixType& matrix) {
+    return internal::matrixFunctionByEigen(matrix, [](const at::Tensor& x) {
+        return torch::log(x);
+    });
+}
+
+template <typename MatrixType>
+Matrix<typename MatrixType::ScalarType, Dynamic, Dynamic> matrixSqrt(const MatrixType& matrix) {
+    return internal::matrixFunctionByEigen(matrix, [](const at::Tensor& x) {
+        return torch::sqrt(x);
+    });
+}
+
+template <typename MatrixType>
+Matrix<typename MatrixType::ScalarType, Dynamic, Dynamic> matrixPow(const MatrixType& matrix, double exponent) {
+    return internal::matrixFunctionByEigen(matrix, [exponent](const at::Tensor& x) {
+        return torch::pow(x, exponent);
+    });
+}
+
+template <typename MatrixType>
+class MatrixExponentialReturnValue {
+public:
+    using Scalar = typename MatrixType::ScalarType;
+
+private:
+    const MatrixType& m_matrix;
+
+public:
+    explicit MatrixExponentialReturnValue(const MatrixType& matrix)
+        : m_matrix(matrix) {}
+
+    Matrix<Scalar, Dynamic, Dynamic> eval() const {
+        return matrixExp(m_matrix);
+    }
+
+    operator Matrix<Scalar, Dynamic, Dynamic>() const {
+        return eval();
+    }
+};
+
+template <typename MatrixType>
+MatrixExponentialReturnValue<MatrixType> matrixFunctionExp(const MatrixType& matrix) {
+    return MatrixExponentialReturnValue<MatrixType>(matrix);
+}
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_MATRIXFUNCTIONS_H

@@ -1,0 +1,272 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_array" kind="file" language="C++">
+    <compoundname>Array</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar_,<sp/>int<sp/>RowsAtCompileTime_,<sp/>int<sp/>ColsAtCompileTime_&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>Array<sp/>:<sp/>public<sp/>Matrix&lt;Scalar_,<sp/>RowsAtCompileTime_,<sp/>ColsAtCompileTime_&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>Base<sp/>=<sp/>Matrix&lt;Scalar_,<sp/>RowsAtCompileTime_,<sp/>ColsAtCompileTime_&gt;;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>Scalar<sp/>=<sp/>Scalar_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>ScalarType<sp/>=<sp/>Scalar_;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>RowsAtCompileTime<sp/>=<sp/>RowsAtCompileTime_;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>constexpr<sp/>int<sp/>ColsAtCompileTime<sp/>=<sp/>ColsAtCompileTime_;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array()<sp/>:<sp/>Base()<sp/>{}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>Base::Base;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array(const<sp/>Base&amp;<sp/>matrix_view)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Base(matrix_view.tensor())<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array(const<sp/>at::Tensor&amp;<sp/>tensor)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Base(tensor)<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherScalar,<sp/>int<sp/>OtherRows,<sp/>int<sp/>OtherCols&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array(const<sp/>Matrix&lt;OtherScalar,<sp/>OtherRows,<sp/>OtherCols&gt;&amp;<sp/>other)</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>Base(other.tensor())<sp/>{}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>Array<sp/>Random(int<sp/>rows,<sp/>int<sp/>cols)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array(Base::Random(rows,<sp/>cols));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>Array<sp/>Zero(int<sp/>rows,<sp/>int<sp/>cols)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array(Base::Zero(rows,<sp/>cols));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>Array<sp/>Ones(int<sp/>rows,<sp/>int<sp/>cols)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array(Base::Ones(rows,<sp/>cols));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>Array<sp/>Constant(int<sp/>rows,<sp/>int<sp/>cols,<sp/>Scalar_<sp/>value)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array(Base::Constant(rows,<sp/>cols,<sp/>value));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>Array<sp/>Identity(int<sp/>rows,<sp/>int<sp/>cols)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array(Base::Identity(rows,<sp/>cols));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&amp;<sp/>operator=(const<sp/>Base&amp;<sp/>matrix_view)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;m_tensor<sp/>=<sp/>matrix_view.tensor();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Base<sp/>matrix()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Base(this-&gt;tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array<sp/>array()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherScalar,<sp/>int<sp/>OtherRows,<sp/>int<sp/>OtherCols&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>operator*(const<sp/>Array&lt;OtherScalar,<sp/>OtherRows,<sp/>OtherCols&gt;&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(this-&gt;tensor()<sp/>*<sp/>other.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherScalar,<sp/>int<sp/>OtherRows,<sp/>int<sp/>OtherCols&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>operator/(const<sp/>Array&lt;OtherScalar,<sp/>OtherRows,<sp/>OtherCols&gt;&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(this-&gt;tensor()<sp/>/<sp/>other.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherScalar,<sp/>int<sp/>OtherRows,<sp/>int<sp/>OtherCols&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>operator+(const<sp/>Array&lt;OtherScalar,<sp/>OtherRows,<sp/>OtherCols&gt;&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(this-&gt;tensor()<sp/>+<sp/>other.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherScalar,<sp/>int<sp/>OtherRows,<sp/>int<sp/>OtherCols&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>operator-(const<sp/>Array&lt;OtherScalar,<sp/>OtherRows,<sp/>OtherCols&gt;&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(this-&gt;tensor()<sp/>-<sp/>other.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>operator*(Scalar_<sp/>scalar)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(this-&gt;tensor()<sp/>*<sp/>scalar);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>operator/(Scalar_<sp/>scalar)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(this-&gt;tensor()<sp/>/<sp/>scalar);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>operator+(Scalar_<sp/>scalar)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(this-&gt;tensor()<sp/>+<sp/>scalar);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>operator-(Scalar_<sp/>scalar)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(this-&gt;tensor()<sp/>-<sp/>scalar);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>operator-()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(-this-&gt;tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>friend<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>operator*(Scalar_<sp/>scalar,<sp/>const<sp/>Array&amp;<sp/>a)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(scalar<sp/>*<sp/>a.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherScalar,<sp/>int<sp/>OtherRows,<sp/>int<sp/>OtherCols&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&amp;<sp/>operator*=(const<sp/>Array&lt;OtherScalar,<sp/>OtherRows,<sp/>OtherCols&gt;&amp;<sp/>other)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;m_tensor<sp/>=<sp/>this-&gt;tensor()<sp/>*<sp/>other.tensor();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherScalar,<sp/>int<sp/>OtherRows,<sp/>int<sp/>OtherCols&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&amp;<sp/>operator/=(const<sp/>Array&lt;OtherScalar,<sp/>OtherRows,<sp/>OtherCols&gt;&amp;<sp/>other)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;m_tensor<sp/>=<sp/>this-&gt;tensor()<sp/>/<sp/>other.tensor();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&amp;<sp/>operator*=(Scalar_<sp/>scalar)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;m_tensor<sp/>=<sp/>this-&gt;tensor()<sp/>*<sp/>scalar;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&amp;<sp/>operator/=(Scalar_<sp/>scalar)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;m_tensor<sp/>=<sp/>this-&gt;tensor()<sp/>/<sp/>scalar;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>abs()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::abs(this-&gt;tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>abs2()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>a<sp/>=<sp/>torch::abs(this-&gt;tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(a<sp/>*<sp/>a);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>sqrt()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::sqrt(this-&gt;tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>log()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::log(this-&gt;tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>log10()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::log10(this-&gt;tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>exp()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::exp(this-&gt;tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>sin()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::sin(this-&gt;tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>cos()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::cos(this-&gt;tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>tan()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::tan(this-&gt;tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherScalar,<sp/>int<sp/>OtherRows,<sp/>int<sp/>OtherCols&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>min(const<sp/>Array&lt;OtherScalar,<sp/>OtherRows,<sp/>OtherCols&gt;&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::minimum(this-&gt;tensor(),<sp/>other.tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherScalar,<sp/>int<sp/>OtherRows,<sp/>int<sp/>OtherCols&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>max(const<sp/>Array&lt;OtherScalar,<sp/>OtherRows,<sp/>OtherCols&gt;&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::maximum(this-&gt;tensor(),<sp/>other.tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>min(Scalar_<sp/>scalar)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>torch::minimum(this-&gt;tensor(),<sp/>torch::full_like(this-&gt;tensor(),<sp/>scalar)));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>max(Scalar_<sp/>scalar)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>torch::maximum(this-&gt;tensor(),<sp/>torch::full_like(this-&gt;tensor(),<sp/>scalar)));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>square()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(this-&gt;tensor()<sp/>*<sp/>this-&gt;tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>cube()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(this-&gt;tensor()<sp/>*<sp/>this-&gt;tensor()<sp/>*<sp/>this-&gt;tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>inverse()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::reciprocal(this-&gt;tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>template<sp/>&lt;typename<sp/>OtherScalar,<sp/>int<sp/>OtherRows,<sp/>int<sp/>OtherCols&gt;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>pow(const<sp/>Array&lt;OtherScalar,<sp/>OtherRows,<sp/>OtherCols&gt;&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::pow(this-&gt;tensor(),<sp/>other.tensor()));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;<sp/>pow(Scalar_<sp/>exponent)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar_,<sp/>Dynamic,<sp/>Dynamic&gt;(torch::pow(this-&gt;tensor(),<sp/>exponent));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar,<sp/>int<sp/>RowsAtCompileTime,<sp/>int<sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>Array&lt;Scalar,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline><highlight class="normal">Matrix&lt;Scalar,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime&gt;::array()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime&gt;(this-&gt;tensor());</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>Scalar,<sp/>int<sp/>RowsAtCompileTime,<sp/>int<sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline><highlight class="normal">inline<sp/>const<sp/>Array&lt;Scalar,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline><highlight class="normal">Matrix&lt;Scalar,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime&gt;::array()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>return<sp/>Array&lt;Scalar,<sp/>RowsAtCompileTime,<sp/>ColsAtCompileTime&gt;(this-&gt;tensor());</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>ArrayXXf<sp/>=<sp/>Array&lt;float,<sp/>Dynamic,<sp/>Dynamic&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>ArrayXXd<sp/>=<sp/>Array&lt;double,<sp/>Dynamic,<sp/>Dynamic&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>ArrayXXi<sp/>=<sp/>Array&lt;int32_t,<sp/>Dynamic,<sp/>Dynamic&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>ArrayXf<sp/>=<sp/>Array&lt;float,<sp/>Dynamic,<sp/>1&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>ArrayXd<sp/>=<sp/>Array&lt;double,<sp/>Dynamic,<sp/>1&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>ArrayXi<sp/>=<sp/>Array&lt;int32_t,<sp/>Dynamic,<sp/>1&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>ArrayXcf<sp/>=<sp/>Array&lt;std::complex&lt;float&gt;,<sp/>Dynamic,<sp/>1&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>ArrayXcd<sp/>=<sp/>Array&lt;std::complex&lt;double&gt;,<sp/>Dynamic,<sp/>1&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>Array2f<sp/>=<sp/>Array&lt;float,<sp/>2,<sp/>1&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Array3f<sp/>=<sp/>Array&lt;float,<sp/>3,<sp/>1&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Array4f<sp/>=<sp/>Array&lt;float,<sp/>4,<sp/>1&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>Array22f<sp/>=<sp/>Array&lt;float,<sp/>2,<sp/>2&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Array33f<sp/>=<sp/>Array&lt;float,<sp/>3,<sp/>3&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Array44f<sp/>=<sp/>Array&lt;float,<sp/>4,<sp/>4&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>Array2d<sp/>=<sp/>Array&lt;double,<sp/>2,<sp/>1&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Array3d<sp/>=<sp/>Array&lt;double,<sp/>3,<sp/>1&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Array4d<sp/>=<sp/>Array&lt;double,<sp/>4,<sp/>1&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>Array22d<sp/>=<sp/>Array&lt;double,<sp/>2,<sp/>2&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Array33d<sp/>=<sp/>Array&lt;double,<sp/>3,<sp/>3&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>Array44d<sp/>=<sp/>Array&lt;double,<sp/>4,<sp/>4&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>RowArrayXf<sp/>=<sp/>Array&lt;float,<sp/>1,<sp/>Dynamic&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>RowArrayXd<sp/>=<sp/>Array&lt;double,<sp/>1,<sp/>Dynamic&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>RowArrayXi<sp/>=<sp/>Array&lt;int32_t,<sp/>1,<sp/>Dynamic&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>RowArray2f<sp/>=<sp/>Array&lt;float,<sp/>1,<sp/>2&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>RowArray3f<sp/>=<sp/>Array&lt;float,<sp/>1,<sp/>3&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>RowArray4f<sp/>=<sp/>Array&lt;float,<sp/>1,<sp/>4&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>RowArray2d<sp/>=<sp/>Array&lt;double,<sp/>1,<sp/>2&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>RowArray3d<sp/>=<sp/>Array&lt;double,<sp/>1,<sp/>3&gt;;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>RowArray4d<sp/>=<sp/>Array&lt;double,<sp/>1,<sp/>4&gt;;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Array"/>
+  </compounddef>
+</doxygen>

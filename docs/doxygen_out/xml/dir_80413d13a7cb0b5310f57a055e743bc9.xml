@@ -4,16 +4,20 @@
     <compoundname>/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen</compoundname>
     <innerfile refid="_aligned_box">AlignedBox</innerfile>
     <innerfile refid="_angle_axis">AngleAxis</innerfile>
+    <innerfile refid="_array">Array</innerfile>
     <innerfile refid="_cholesky">Cholesky</innerfile>
     <innerfile refid="_core">Core</innerfile>
     <innerfile refid="_dense">Dense</innerfile>
     <innerfile refid="_device_8h">Device.h</innerfile>
+    <innerfile refid="_eigen">Eigen</innerfile>
     <innerfile refid="_eigenvalues">Eigenvalues</innerfile>
     <innerfile refid="_geometry">Geometry</innerfile>
     <innerfile refid="_hyperplane">Hyperplane</innerfile>
     <innerfile refid="_jacobi">Jacobi</innerfile>
     <innerfile refid="_l_u">LU</innerfile>
+    <innerfile refid="_map">Map</innerfile>
     <innerfile refid="_matrix_8h">Matrix.h</innerfile>
+    <innerfile refid="_matrix_decompositions_8h">MatrixDecompositions.h</innerfile>
     <innerfile refid="_parametrized_line">ParametrizedLine</innerfile>
     <innerfile refid="_q_r">QR</innerfile>
     <innerfile refid="_quaternion">Quaternion</innerfile>
@@ -21,9 +25,11 @@
     <innerfile refid="_scaling">Scaling</innerfile>
     <innerfile refid="_sparse">Sparse</innerfile>
     <innerfile refid="_sparse_cholesky">SparseCholesky</innerfile>
+    <innerfile refid="_sparse_common">SparseCommon</innerfile>
     <innerfile refid="_sparse_l_u">SparseLU</innerfile>
     <innerfile refid="_sparse_matrix">SparseMatrix</innerfile>
     <innerfile refid="_sparse_q_r">SparseQR</innerfile>
+    <innerfile refid="_sparse_vector">SparseVector</innerfile>
     <innerfile refid="_s_v_d">SVD</innerfile>
     <innerfile refid="_transform">Transform</innerfile>
     <innerfile refid="_translation">Translation</innerfile>

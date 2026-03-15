@@ -2,6 +2,19 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
   <compounddef id="_cholesky" kind="file" language="C++">
     <compoundname>Cholesky</compoundname>
+    <includedby refid="_matrix_decompositions_8h" local="yes">/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/MatrixDecompositions.h</includedby>
+    <invincdepgraph>
+      <node id="1">
+        <label>/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Cholesky</label>
+        <link refid="_cholesky"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/MatrixDecompositions.h</label>
+        <link refid="_matrix_decompositions_8h"/>
+      </node>
+    </invincdepgraph>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -51,6 +64,16 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>MatrixType<sp/>matrixL()<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>MatrixType(m_l);</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">template<sp/>&lt;typename<sp/>MatrixType&gt;</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>LDLT<sp/>:<sp/>public<sp/>LLT&lt;MatrixType&gt;<sp/>{</highlight></codeline>
+<codeline><highlight class="normal">public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>LLT&lt;MatrixType&gt;::LLT;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>LLT&lt;MatrixType&gt;::compute;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>LLT&lt;MatrixType&gt;::solve;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>LLT&lt;MatrixType&gt;::info;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>using<sp/>LLT&lt;MatrixType&gt;::matrixL;</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">}<sp/>//<sp/>namespace<sp/>Eigen</highlight></codeline>

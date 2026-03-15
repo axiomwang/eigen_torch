@@ -1,0 +1,67 @@
+#ifndef EIGEN_UNSUPPORTED_ARPACKSUPPORT_H
+#define EIGEN_UNSUPPORTED_ARPACKSUPPORT_H
+
+#include "Eigen/Core"
+
+#include <algorithm>
+#include <vector>
+
+namespace Eigen {
+
+template <typename MatrixType>
+class ArpackSelfAdjointEigenSolver {
+public:
+    using Scalar = typename MatrixType::ScalarType;
+
+private:
+    Matrix<Scalar, Dynamic, 1> m_eigenvalues;
+    Matrix<Scalar, Dynamic, Dynamic> m_eigenvectors;
+    bool m_isInitialized = false;
+
+public:
+    ArpackSelfAdjointEigenSolver() {}
+
+    explicit ArpackSelfAdjointEigenSolver(const MatrixType& matrix, int k = -1) {
+        compute(matrix, k);
+    }
+
+    ArpackSelfAdjointEigenSolver& compute(const MatrixType& matrix, int k = -1) {
+        auto eigh = torch::linalg_eigh(matrix.tensor());
+        at::Tensor values = std::get<0>(eigh);
+        at::Tensor vectors = std::get<1>(eigh);
+
+        int n = static_cast<int>(values.numel());
+        int use_k = (k <= 0 || k > n) ? n : k;
+
+        at::Tensor selected_values = values.slice(0, n - use_k, n);
+        at::Tensor selected_vectors = vectors.slice(1, n - use_k, n);
+
+        m_eigenvalues = Matrix<Scalar, Dynamic, 1>(selected_values.unsqueeze(1));
+        m_eigenvectors = Matrix<Scalar, Dynamic, Dynamic>(selected_vectors);
+        m_isInitialized = true;
+        return *this;
+    }
+
+    bool info() const { return m_isInitialized; }
+
+    Matrix<Scalar, Dynamic, 1> eigenvalues() const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("ArpackSelfAdjointEigenSolver is not initialized");
+        }
+        return m_eigenvalues;
+    }
+
+    Matrix<Scalar, Dynamic, Dynamic> eigenvectors() const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("ArpackSelfAdjointEigenSolver is not initialized");
+        }
+        return m_eigenvectors;
+    }
+};
+
+template <typename MatrixType>
+using ArpackGeneralizedSelfAdjointEigenSolver = ArpackSelfAdjointEigenSolver<MatrixType>;
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_ARPACKSUPPORT_H

@@ -1,21 +1,27 @@
 #ifndef EIGEN_UNSUPPORTED_EULERANGLES_H
 #define EIGEN_UNSUPPORTED_EULERANGLES_H
 
+#include "Eigen/Quaternion"
 #include "Eigen/Core"
 #include <cmath>
 
 namespace Eigen {
 
-// We implement standard Euler Angles (Roll, Pitch, Yaw -> X, Y, Z conventions typically)
 template <typename Scalar_>
 class EulerAngles {
 public:
     using Scalar = Scalar_;
+    using Vector3 = Matrix<Scalar, 3, 1>;
+    using Matrix3 = Matrix<Scalar, 3, 3>;
 
 protected:
     Scalar m_alpha;
     Scalar m_beta;
     Scalar m_gamma;
+
+    static Scalar clamp_unit(Scalar value) {
+        return std::max(static_cast<Scalar>(-1), std::min(static_cast<Scalar>(1), value));
+    }
 
 public:
     EulerAngles() : m_alpha(0), m_beta(0), m_gamma(0) {}
@@ -23,13 +29,56 @@ public:
     EulerAngles(Scalar alpha, Scalar beta, Scalar gamma) 
         : m_alpha(alpha), m_beta(beta), m_gamma(gamma) {}
 
+    explicit EulerAngles(const Matrix3& rotation) {
+        fromRotationMatrix(rotation);
+    }
+
+    explicit EulerAngles(const Quaternion<Scalar>& quaternion) {
+        fromQuaternion(quaternion);
+    }
+
     Scalar alpha() const { return m_alpha; }
     Scalar beta() const { return m_beta; }
     Scalar gamma() const { return m_gamma; }
 
-    // Generates a proper rotation matrix from ZYX convention typically
-    // alpha = Z (yaw), beta = Y (pitch), gamma = X (roll)
-    Matrix<Scalar, 3, 3> toRotationMatrix() const {
+    Scalar& alpha() { return m_alpha; }
+    Scalar& beta() { return m_beta; }
+    Scalar& gamma() { return m_gamma; }
+
+    Vector3 angles() const {
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, 3, 1>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        return Vector3(torch::tensor({m_alpha, m_beta, m_gamma}, options).unsqueeze(1));
+    }
+
+    EulerAngles& setIdentity() {
+        m_alpha = static_cast<Scalar>(0);
+        m_beta = static_cast<Scalar>(0);
+        m_gamma = static_cast<Scalar>(0);
+        return *this;
+    }
+
+    EulerAngles& fromQuaternion(const Quaternion<Scalar>& quaternion) {
+        return fromRotationMatrix(quaternion.toRotationMatrix());
+    }
+
+    EulerAngles& fromRotationMatrix(const Matrix3& rotation) {
+        Scalar sy = clamp_unit(-rotation(2, 0));
+        m_beta = std::asin(sy);
+
+        Scalar cos_beta = std::cos(m_beta);
+        if (std::abs(cos_beta) > static_cast<Scalar>(1e-6)) {
+            m_alpha = std::atan2(rotation(1, 0), rotation(0, 0));
+            m_gamma = std::atan2(rotation(2, 1), rotation(2, 2));
+        } else {
+            m_alpha = std::atan2(-rotation(0, 1), rotation(1, 1));
+            m_gamma = static_cast<Scalar>(0);
+        }
+        return *this;
+    }
+
+    Matrix3 toRotationMatrix() const {
         Scalar ca = std::cos(m_alpha), sa = std::sin(m_alpha);
         Scalar cb = std::cos(m_beta), sb = std::sin(m_beta);
         Scalar cg = std::cos(m_gamma), sg = std::sin(m_gamma);
@@ -38,14 +87,43 @@ public:
             .dtype(Matrix<Scalar, 3, 3>::get_torch_dtype())
             .device(DeviceManager::get_default_device());
 
-        // Standard ZYX Matrix composition
         at::Tensor mat = torch::tensor({
             {ca*cb, ca*sb*sg - sa*cg, ca*sb*cg + sa*sg},
             {sa*cb, sa*sb*sg + ca*cg, sa*sb*cg - ca*sg},
             {-sb,   cb*sg,            cb*cg}
         }, options);
 
-        return Matrix<Scalar, 3, 3>(mat);
+        return Matrix3(mat);
+    }
+
+    Matrix3 matrix() const {
+        return toRotationMatrix();
+    }
+
+    Quaternion<Scalar> toQuaternion() const {
+        Scalar half_alpha = static_cast<Scalar>(0.5) * m_alpha;
+        Scalar half_beta = static_cast<Scalar>(0.5) * m_beta;
+        Scalar half_gamma = static_cast<Scalar>(0.5) * m_gamma;
+
+        Quaternion<Scalar> qz(std::cos(half_alpha), static_cast<Scalar>(0), static_cast<Scalar>(0), std::sin(half_alpha));
+        Quaternion<Scalar> qy(std::cos(half_beta), static_cast<Scalar>(0), std::sin(half_beta), static_cast<Scalar>(0));
+        Quaternion<Scalar> qx(std::cos(half_gamma), std::sin(half_gamma), static_cast<Scalar>(0), static_cast<Scalar>(0));
+        return qz * qy * qx;
+    }
+
+    explicit operator Quaternion<Scalar>() const {
+        return toQuaternion();
+    }
+
+    EulerAngles inverse() const {
+        Matrix3 rotation_inverse(toRotationMatrix().transpose().tensor());
+        EulerAngles result;
+        result.fromRotationMatrix(rotation_inverse);
+        return result;
+    }
+
+    Vector3 operator*(const Vector3& vector) const {
+        return Vector3((toRotationMatrix() * vector).tensor());
     }
 };
 

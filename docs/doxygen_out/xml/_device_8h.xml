@@ -25,6 +25,12 @@
       <node id="2">
         <label>/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h</label>
         <link refid="_matrix_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/MatrixDecompositions.h</label>
+        <link refid="_matrix_decompositions_8h"/>
       </node>
     </invincdepgraph>
     <innerclass refid="class_eigen_1_1_device_manager" prot="public">Eigen::DeviceManager</innerclass>

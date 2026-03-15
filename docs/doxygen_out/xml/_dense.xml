@@ -14,11 +14,15 @@
 <codeline><highlight class="normal">#include<sp/>&quot;QR&quot;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;SVD&quot;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;Eigenvalues&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;Geometry&quot;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">//<sp/>This<sp/>header<sp/>is<sp/>included<sp/>by<sp/>the<sp/>user<sp/>as:</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>#include<sp/>&lt;Eigen/Dense&gt;</highlight></codeline>
 <codeline><highlight class="normal">//<sp/>It<sp/>bundles<sp/>the<sp/>entirety<sp/>of<sp/>the<sp/>Dense<sp/>Solvers<sp/>APIs</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;Core&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">//<sp/>Eigen-style<sp/>decomposition<sp/>chaining<sp/>methods<sp/>on<sp/>Matrix</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;MatrixDecompositions.h&quot;</highlight></codeline>
     </programlisting>
     <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Dense"/>
   </compounddef>

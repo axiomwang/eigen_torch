@@ -1,0 +1,61 @@
+#ifndef EIGEN_UNSUPPORTED_CXX11_TENSORSYMMETRY_H
+#define EIGEN_UNSUPPORTED_CXX11_TENSORSYMMETRY_H
+
+#include "Tensor"
+
+#include <algorithm>
+#include <array>
+#include <numeric>
+#include <vector>
+
+namespace Eigen {
+
+template <typename Scalar, int Rank>
+Tensor<Scalar, Rank> symmetrize_tensor_axes(
+    const Tensor<Scalar, Rank>& tensor,
+    int axis_a,
+    int axis_b) {
+    if (axis_a < 0 || axis_a >= Rank || axis_b < 0 || axis_b >= Rank) {
+        throw std::invalid_argument("TensorSymmetry axis is out of range.");
+    }
+
+    std::vector<int64_t> permutation(Rank);
+    std::iota(permutation.begin(), permutation.end(), 0);
+    std::swap(permutation[static_cast<size_t>(axis_a)], permutation[static_cast<size_t>(axis_b)]);
+
+    at::Tensor permuted = tensor.tensor().permute(permutation);
+    at::Tensor sym = (tensor.tensor() + permuted) * static_cast<Scalar>(0.5);
+    return Tensor<Scalar, Rank>(sym);
+}
+
+template <typename Scalar, int Rank>
+Tensor<Scalar, Rank> antisymmetrize_tensor_axes(
+    const Tensor<Scalar, Rank>& tensor,
+    int axis_a,
+    int axis_b) {
+    if (axis_a < 0 || axis_a >= Rank || axis_b < 0 || axis_b >= Rank) {
+        throw std::invalid_argument("TensorSymmetry axis is out of range.");
+    }
+
+    std::vector<int64_t> permutation(Rank);
+    std::iota(permutation.begin(), permutation.end(), 0);
+    std::swap(permutation[static_cast<size_t>(axis_a)], permutation[static_cast<size_t>(axis_b)]);
+
+    at::Tensor permuted = tensor.tensor().permute(permutation);
+    at::Tensor antisym = (tensor.tensor() - permuted) * static_cast<Scalar>(0.5);
+    return Tensor<Scalar, Rank>(antisym);
+}
+
+template <typename Scalar>
+Tensor<Scalar, 2> symmetrize_matrix_tensor(const Tensor<Scalar, 2>& tensor) {
+    return symmetrize_tensor_axes<Scalar, 2>(tensor, 0, 1);
+}
+
+template <typename Scalar>
+Tensor<Scalar, 2> antisymmetrize_matrix_tensor(const Tensor<Scalar, 2>& tensor) {
+    return antisymmetrize_tensor_axes<Scalar, 2>(tensor, 0, 1);
+}
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_CXX11_TENSORSYMMETRY_H

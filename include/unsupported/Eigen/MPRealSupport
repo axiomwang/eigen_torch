@@ -1,0 +1,60 @@
+#ifndef EIGEN_UNSUPPORTED_MPREALSUPPORT_H
+#define EIGEN_UNSUPPORTED_MPREALSUPPORT_H
+
+#include "Eigen/Core"
+
+#include <cmath>
+
+namespace Eigen {
+
+using mpreal = long double;
+
+template <typename Scalar = mpreal>
+class MPRealSupport {
+private:
+    static torch::TensorOptions fp64_options() {
+        return torch::TensorOptions()
+            .dtype(torch::kFloat64)
+            .device(DeviceManager::get_default_device());
+    }
+
+public:
+    static Scalar pi() {
+        auto pi_tensor = torch::acos(torch::tensor(-1.0, fp64_options()));
+        return static_cast<Scalar>(pi_tensor.template item<double>());
+    }
+
+    static Scalar sqrt(Scalar value) {
+        auto t = torch::tensor(static_cast<double>(value), fp64_options());
+        return static_cast<Scalar>(torch::sqrt(t).template item<double>());
+    }
+
+    static Scalar exp(Scalar value) {
+        auto t = torch::tensor(static_cast<double>(value), fp64_options());
+        return static_cast<Scalar>(torch::exp(t).template item<double>());
+    }
+
+    static Scalar log(Scalar value) {
+        auto t = torch::tensor(static_cast<double>(value), fp64_options());
+        return static_cast<Scalar>(torch::log(t).template item<double>());
+    }
+
+    static Scalar dot(
+        const Matrix<Scalar, Dynamic, 1>& lhs,
+        const Matrix<Scalar, Dynamic, 1>& rhs) {
+        at::Tensor lhs64 = lhs.tensor().reshape({-1}).to(torch::kFloat64);
+        at::Tensor rhs64 = rhs.tensor().reshape({-1}).to(torch::kFloat64);
+        return static_cast<Scalar>(torch::dot(lhs64, rhs64).template item<double>());
+    }
+
+    static Matrix<Scalar, Dynamic, Dynamic> matmul(
+        const Matrix<Scalar, Dynamic, Dynamic>& lhs,
+        const Matrix<Scalar, Dynamic, Dynamic>& rhs) {
+        at::Tensor result64 = torch::matmul(lhs.tensor().to(torch::kFloat64), rhs.tensor().to(torch::kFloat64));
+        return Matrix<Scalar, Dynamic, Dynamic>(result64);
+    }
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_MPREALSUPPORT_H

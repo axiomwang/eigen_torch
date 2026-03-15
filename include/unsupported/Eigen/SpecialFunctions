@@ -1,0 +1,67 @@
+#ifndef EIGEN_UNSUPPORTED_SPECIALFUNCTIONS_H
+#define EIGEN_UNSUPPORTED_SPECIALFUNCTIONS_H
+
+#include "Eigen/Core"
+
+#include <cmath>
+
+namespace Eigen {
+
+namespace numext {
+
+template <typename Scalar>
+Scalar erf(Scalar x) {
+    return std::erf(x);
+}
+
+template <typename Scalar>
+Scalar erfc(Scalar x) {
+    return std::erfc(x);
+}
+
+template <typename Scalar>
+Scalar lgamma(Scalar x) {
+    return std::lgamma(x);
+}
+
+template <typename Scalar>
+Scalar digamma(Scalar x) {
+    at::Tensor value = torch::digamma(torch::tensor({x}, torch::TensorOptions().dtype(Matrix<Scalar, 1, 1>::get_torch_dtype())));
+    return value[0].template item<Scalar>();
+}
+
+} // namespace numext
+
+template <typename MatrixType>
+Matrix<typename MatrixType::ScalarType, Dynamic, Dynamic> erf(const MatrixType& matrix) {
+    using Scalar = typename MatrixType::ScalarType;
+    return Matrix<Scalar, Dynamic, Dynamic>(torch::erf(matrix.tensor()));
+}
+
+template <typename MatrixType>
+Matrix<typename MatrixType::ScalarType, Dynamic, Dynamic> erfc(const MatrixType& matrix) {
+    using Scalar = typename MatrixType::ScalarType;
+    return Matrix<Scalar, Dynamic, Dynamic>(torch::erfc(matrix.tensor()));
+}
+
+template <typename MatrixType>
+Matrix<typename MatrixType::ScalarType, Dynamic, Dynamic> lgamma(const MatrixType& matrix) {
+    using Scalar = typename MatrixType::ScalarType;
+    return Matrix<Scalar, Dynamic, Dynamic>(torch::lgamma(matrix.tensor()));
+}
+
+template <typename MatrixType>
+Matrix<typename MatrixType::ScalarType, Dynamic, Dynamic> digamma(const MatrixType& matrix) {
+    using Scalar = typename MatrixType::ScalarType;
+    return Matrix<Scalar, Dynamic, Dynamic>(torch::digamma(matrix.tensor()));
+}
+
+template <typename MatrixType>
+Matrix<typename MatrixType::ScalarType, Dynamic, Dynamic> polygamma(int order, const MatrixType& matrix) {
+    using Scalar = typename MatrixType::ScalarType;
+    return Matrix<Scalar, Dynamic, Dynamic>(torch::special_polygamma(order, matrix.tensor()));
+}
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_SPECIALFUNCTIONS_H

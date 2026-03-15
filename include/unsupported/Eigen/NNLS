@@ -2,14 +2,10 @@
 #define EIGEN_UNSUPPORTED_NNLS_H
 
 #include "Eigen/Core"
+#include "Eigen/SparseCommon"
 
 namespace Eigen {
 
-// Non-Negative Least Squares (NNLS)
-// Solves min ||A*x - b||_2^2 subject to x >= 0
-// PyTorch `linalg` lacks a native active-set NNLS. 
-// We implement a fast Projected Gradient Descent (PGD) here 
-// using PyTorch tensor primitives to mirror the Eigen API.
 template <typename MatrixType_>
 class NNLS {
 public:
@@ -20,9 +16,19 @@ protected:
     at::Tensor m_A;
     bool m_isInitialized = false;
     
-    // Solver configs
     int m_maxIters = 1000;
-    float m_tol = 1e-5;
+    Scalar m_tol = static_cast<Scalar>(1e-5);
+    mutable int m_lastIterations = 0;
+    mutable Scalar m_lastResidualNorm = static_cast<Scalar>(0);
+    mutable ComputationInfo m_info = InvalidInput;
+
+    static at::Tensor dense_tensor(const at::Tensor& tensor) {
+        at::Tensor dense = (tensor.is_sparse() || tensor.is_sparse_csr()) ? tensor.to_dense() : tensor;
+        if (dense.dim() == 1) {
+            dense = dense.unsqueeze(1);
+        }
+        return dense;
+    }
 
 public:
     NNLS() {}
@@ -31,10 +37,34 @@ public:
     }
 
     NNLS& setMaxIterations(int iters) { m_maxIters = iters; return *this; }
-    NNLS& setTolerance(float tol) { m_tol = tol; return *this; }
+    NNLS& setTolerance(Scalar tol) { m_tol = tol; return *this; }
+
+    int maxIterations() const { return m_maxIters; }
+    Scalar tolerance() const { return m_tol; }
+    int iterations() const { return m_lastIterations; }
+    Scalar residualNorm() const { return m_lastResidualNorm; }
+    ComputationInfo info() const { return m_info; }
+    int rows() const { return m_isInitialized ? static_cast<int>(m_A.size(0)) : 0; }
+    int cols() const { return m_isInitialized ? static_cast<int>(m_A.size(1)) : 0; }
+
+    MatrixType matrix() const {
+        return MatrixType(m_A);
+    }
 
     NNLS& compute(const MatrixType& matrix) {
-        m_A = matrix.tensor();
+        m_A = dense_tensor(matrix.tensor());
+        m_lastIterations = 0;
+        m_lastResidualNorm = static_cast<Scalar>(0);
+        m_info = Success;
+        m_isInitialized = true;
+        return *this;
+    }
+
+    NNLS& compute(const at::Tensor& matrix) {
+        m_A = dense_tensor(matrix);
+        m_lastIterations = 0;
+        m_lastResidualNorm = static_cast<Scalar>(0);
+        m_info = Success;
         m_isInitialized = true;
         return *this;
     }
@@ -45,39 +75,39 @@ public:
             throw std::runtime_error("NNLS is not initialized.");
         }
         
-        at::Tensor b_t = b.tensor();
-        // Initialize x = 0
+        at::Tensor b_t = dense_tensor(b.tensor());
         at::Tensor x = torch::zeros({m_A.size(1), b_t.size(1)}, m_A.options());
-        
-        // PGD Loop
-        // Gradient of 0.5 * ||Ax - b||^2 is A^T * (Ax - b)
-        // Lipschitz constant bounds: compute max eigenvalue of A^T A roughly, or line search
-        // We use a safe static step-size from Spectral norm approximation or Adam under the hood.
-        // For simplicity, we use manual PGD with a backtracking or static scaled step.
         at::Tensor AtA = torch::matmul(m_A.transpose(0, 1), m_A);
         at::Tensor Atb = torch::matmul(m_A.transpose(0, 1), b_t);
         
-        // Power iteration to get spectral radius (L) for step size t = 1/L
         at::Tensor v = torch::randn({AtA.size(1), 1}, AtA.options());
         for(int i = 0; i < 10; ++i) {
             v = torch::matmul(AtA, v);
             v = v / torch::linalg_vector_norm(v);
         }
-        float L = torch::dot(v.view({-1}), torch::matmul(AtA, v).view({-1})).item<float>();
-        float lr = (L > 0) ? (1.0f / L) : 1e-3f;
+        Scalar L = torch::dot(v.view({-1}), torch::matmul(AtA, v).view({-1})).template item<Scalar>();
+        Scalar lr = (L > static_cast<Scalar>(0)) ? (static_cast<Scalar>(1) / L) : static_cast<Scalar>(1e-3);
+
+        m_info = NoConvergence;
+        m_lastIterations = m_maxIters;
 
         for (int i = 0; i < m_maxIters; ++i) {
             at::Tensor grad = torch::matmul(AtA, x) - Atb;
-            x = x - lr * grad;
-            // Project into non-negative orthant (x >= 0)
-            x = torch::relu(x);
+            at::Tensor next_x = torch::maximum(x - lr * grad, torch::zeros_like(x));
+            at::Tensor delta = next_x - x;
+            x = next_x;
             
-            // Check convergence on gradient / change
-            if (i % 50 == 0) {
-                float max_grad = torch::max(torch::abs(grad)).item<float>();
-                if (max_grad < m_tol) break;
+            Scalar max_delta = torch::max(torch::abs(delta)).template item<Scalar>();
+            Scalar projected_grad = torch::max(torch::abs(grad * (x > 0).to(grad.scalar_type()))).template item<Scalar>();
+            if (max_delta < m_tol && projected_grad < m_tol) {
+                m_info = Success;
+                m_lastIterations = i + 1;
+                break;
             }
         }
+
+        at::Tensor residual = torch::matmul(m_A, x) - b_t;
+        m_lastResidualNorm = torch::linalg_vector_norm(residual.reshape({-1})).template item<Scalar>();
         
         return Rhs(x);
     }

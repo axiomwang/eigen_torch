@@ -1,0 +1,90 @@
+#ifndef EIGEN_UNSUPPORTED_NONLINEAROPTIMIZATION_H
+#define EIGEN_UNSUPPORTED_NONLINEAROPTIMIZATION_H
+
+#include "Eigen/Core"
+#include "NumericalDiff"
+
+#include <algorithm>
+
+namespace Eigen {
+
+enum HybridNonLinearSolverStatus {
+    HybridRunning = 0,
+    HybridSuccess = 1,
+    HybridNoConvergence = 2,
+    HybridInvalidInput = 3
+};
+
+template <typename FunctorType>
+class HybridNonLinearSolver {
+private:
+    NumericalDiff<FunctorType> m_numerical;
+    int m_maxIterations = 128;
+    double m_tolerance = 1e-6;
+    double m_damping = 1e-6;
+
+    int m_iterations = 0;
+    double m_error = 0.0;
+    HybridNonLinearSolverStatus m_status = HybridInvalidInput;
+
+public:
+    explicit HybridNonLinearSolver(const FunctorType& functor)
+        : m_numerical(functor) {}
+
+    HybridNonLinearSolver& setMaxIterations(int max_iterations) {
+        m_maxIterations = std::max(1, max_iterations);
+        return *this;
+    }
+
+    HybridNonLinearSolver& setTolerance(double tolerance) {
+        m_tolerance = tolerance;
+        return *this;
+    }
+
+    HybridNonLinearSolver& setDamping(double damping) {
+        m_damping = damping;
+        return *this;
+    }
+
+    int iterations() const { return m_iterations; }
+    double error() const { return m_error; }
+    HybridNonLinearSolverStatus status() const { return m_status; }
+
+    template <typename InputType>
+    HybridNonLinearSolverStatus minimize(InputType& x) {
+        using Scalar = typename InputType::ScalarType;
+
+        m_status = HybridRunning;
+        m_iterations = 0;
+
+        for (int iter = 0; iter < m_maxIterations; ++iter) {
+            auto residual = m_numerical.values(x);
+            auto J = m_numerical.jacobian(x);
+
+            Matrix<Scalar, Dynamic, Dynamic> JT = J.transpose();
+            Matrix<Scalar, Dynamic, Dynamic> H = JT * J;
+            H += Matrix<Scalar, Dynamic, Dynamic>::Identity(H.rows(), H.cols()) * static_cast<Scalar>(m_damping);
+
+            Matrix<Scalar, Dynamic, Dynamic> gradient = JT * residual;
+            Matrix<Scalar, Dynamic, Dynamic> step(
+                torch::linalg_solve(H.tensor(), (-gradient).tensor()));
+
+            x = InputType(x.tensor() + step.tensor());
+
+            m_error = residual.norm();
+            m_iterations = iter + 1;
+
+            if (step.norm() < static_cast<Scalar>(m_tolerance) || m_error < m_tolerance) {
+                m_status = HybridSuccess;
+                return m_status;
+            }
+        }
+
+        m_status = HybridNoConvergence;
+        return m_status;
+    }
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_NONLINEAROPTIMIZATION_H

@@ -37,11 +37,41 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_offset<sp/>=<sp/>-dot.template<sp/>item&lt;Scalar&gt;();</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>Hyperplane<sp/>Through(const<sp/>VectorType&amp;<sp/>p0,<sp/>const<sp/>VectorType&amp;<sp/>p1)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(Dim<sp/>==<sp/>2,<sp/>&quot;Through(p0,<sp/>p1)<sp/>is<sp/>intended<sp/>for<sp/>2D<sp/>hyperplanes&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>VectorType<sp/>dir(p1.tensor()<sp/>-<sp/>p0.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>VectorType<sp/>n<sp/>=<sp/>dir.unitOrthogonal();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Hyperplane(n,<sp/>p0);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>static<sp/>Hyperplane<sp/>Through(const<sp/>VectorType&amp;<sp/>p0,<sp/>const<sp/>VectorType&amp;<sp/>p1,<sp/>const<sp/>VectorType&amp;<sp/>p2)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>static_assert(Dim<sp/>==<sp/>3,<sp/>&quot;Through(p0,<sp/>p1,<sp/>p2)<sp/>is<sp/>intended<sp/>for<sp/>3D<sp/>hyperplanes&quot;);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>VectorType<sp/>v1(p1.tensor()<sp/>-<sp/>p0.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>VectorType<sp/>v2(p2.tensor()<sp/>-<sp/>p0.tensor());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>VectorType<sp/>n<sp/>=<sp/>v1.cross(v2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>n.normalize();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Hyperplane(n,<sp/>p0);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>VectorType&amp;<sp/>normal()<sp/>const<sp/>{<sp/>return<sp/>m_normal;<sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>VectorType&amp;<sp/>normal()<sp/>{<sp/>return<sp/>m_normal;<sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>offset()<sp/>const<sp/>{<sp/>return<sp/>m_offset;<sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar&amp;<sp/>offset()<sp/>{<sp/>return<sp/>m_offset;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Hyperplane&amp;<sp/>normalize()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>n<sp/>=<sp/>m_normal.norm();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(n<sp/>!=<sp/>static_cast&lt;Scalar&gt;(0))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_normal<sp/>=<sp/>VectorType(m_normal.tensor()<sp/>/<sp/>n);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_offset<sp/>/=<sp/>n;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>Dim<sp/>+<sp/>1,<sp/>1&gt;<sp/>coeffs()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>coeff<sp/>=<sp/>torch::cat({m_normal.tensor().reshape({Dim}),<sp/>torch::tensor({m_offset},<sp/>m_normal.tensor().options())},<sp/>0);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Matrix&lt;Scalar,<sp/>Dim<sp/>+<sp/>1,<sp/>1&gt;(coeff.unsqueeze(1));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>signedDistance(const<sp/>VectorType&amp;<sp/>p)<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>dot<sp/>=<sp/>torch::sum(m_normal.tensor()<sp/>*<sp/>p.tensor());</highlight></codeline>

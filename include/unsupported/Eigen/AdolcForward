@@ -1,0 +1,62 @@
+#ifndef EIGEN_UNSUPPORTED_ADOLCFORWARD_H
+#define EIGEN_UNSUPPORTED_ADOLCFORWARD_H
+
+#include "Eigen/Core"
+
+#include <type_traits>
+
+namespace Eigen {
+
+template <typename Scalar>
+class AdolcForward {
+private:
+    static torch::ScalarType torch_dtype() {
+        if constexpr (std::is_same_v<Scalar, float>) {
+            return torch::kFloat32;
+        }
+        return torch::kFloat64;
+    }
+
+    static torch::TensorOptions autograd_options() {
+        return torch::TensorOptions()
+            .dtype(torch_dtype())
+            .device(DeviceManager::get_default_device())
+            .requires_grad(true);
+    }
+
+public:
+    template <typename TorchScalarFunction>
+    static Scalar derivative(TorchScalarFunction&& function, Scalar x) {
+        at::Tensor xt = torch::tensor({x}, autograd_options());
+        at::Tensor yt = function(xt);
+
+        if (yt.numel() != 1) {
+            throw std::invalid_argument("AdolcForward::derivative expects scalar output.");
+        }
+
+        yt.backward();
+        return xt.grad().template item<Scalar>();
+    }
+
+    template <typename TorchScalarFunction>
+    static Matrix<Scalar, Dynamic, 1> gradient(
+        TorchScalarFunction&& function,
+        const Matrix<Scalar, Dynamic, 1>& x) {
+        at::Tensor xt = x.tensor().reshape({-1}).clone().detach().to(torch_dtype()).requires_grad_(true);
+        at::Tensor yt = function(xt);
+
+        if (yt.numel() != 1) {
+            throw std::invalid_argument("AdolcForward::gradient expects scalar output.");
+        }
+
+        yt.backward();
+        return Matrix<Scalar, Dynamic, 1>(xt.grad().reshape({x.size(), 1}));
+    }
+};
+
+template <typename Scalar>
+using adolc_forward = AdolcForward<Scalar>;
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_ADOLCFORWARD_H

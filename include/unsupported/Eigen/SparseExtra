@@ -1,0 +1,76 @@
+#ifndef EIGEN_UNSUPPORTED_SPARSEEXTRA_H
+#define EIGEN_UNSUPPORTED_SPARSEEXTRA_H
+
+#include "Eigen/Sparse"
+
+#include <random>
+#include <vector>
+
+namespace Eigen {
+
+template <typename Scalar, int Options = ColMajor, typename StorageIndex = int>
+SparseMatrix<Scalar, Options, StorageIndex> sparseIdentity(StorageIndex rows, StorageIndex cols) {
+    SparseMatrix<Scalar, Options, StorageIndex> out(rows, cols);
+    StorageIndex diagonal = std::min(rows, cols);
+    for (StorageIndex i = 0; i < diagonal; ++i) {
+        out.insert(i, i) = static_cast<Scalar>(1);
+    }
+    out.makeCompressed();
+    return out;
+}
+
+template <typename Scalar, int Options = ColMajor, typename StorageIndex = int>
+SparseMatrix<Scalar, Options, StorageIndex>
+sparseRandom(StorageIndex rows, StorageIndex cols, double density, uint64_t seed = 42) {
+    SparseMatrix<Scalar, Options, StorageIndex> out(rows, cols);
+
+    std::mt19937_64 generator(seed);
+    std::uniform_real_distribution<double> keep(0.0, 1.0);
+    std::uniform_real_distribution<double> value_dist(-1.0, 1.0);
+
+    std::vector<Triplet<Scalar>> triplets;
+    for (StorageIndex row = 0; row < rows; ++row) {
+        for (StorageIndex col = 0; col < cols; ++col) {
+            if (keep(generator) <= density) {
+                triplets.emplace_back(static_cast<int>(row), static_cast<int>(col), static_cast<Scalar>(value_dist(generator)));
+            }
+        }
+    }
+
+    out.setFromTriplets(triplets.begin(), triplets.end());
+    return out;
+}
+
+template <typename Scalar, int Options, typename StorageIndex>
+Scalar sparseNorm(const SparseMatrix<Scalar, Options, StorageIndex>& matrix) {
+    return matrix.toDense().norm();
+}
+
+template <typename Scalar, int Options, typename StorageIndex>
+Scalar sparseTrace(const SparseMatrix<Scalar, Options, StorageIndex>& matrix) {
+    StorageIndex diagonal = std::min(matrix.rows(), matrix.cols());
+    Scalar trace = static_cast<Scalar>(0);
+    for (StorageIndex i = 0; i < diagonal; ++i) {
+        trace += matrix.coeff(i, i);
+    }
+    return trace;
+}
+
+template <typename Scalar, int Options, typename StorageIndex>
+Matrix<Scalar, Dynamic, Dynamic> sparseToDense(const SparseMatrix<Scalar, Options, StorageIndex>& matrix) {
+    return matrix.toDense();
+}
+
+template <typename Scalar, int Options, typename StorageIndex>
+SparseMatrix<Scalar, Options, StorageIndex> pruneSparse(
+    const SparseMatrix<Scalar, Options, StorageIndex>& matrix,
+    Scalar reference = static_cast<Scalar>(0),
+    Scalar epsilon = static_cast<Scalar>(1e-12)) {
+    SparseMatrix<Scalar, Options, StorageIndex> out(matrix.tensor());
+    out.prune(reference, epsilon);
+    return out;
+}
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_SPARSEEXTRA_H

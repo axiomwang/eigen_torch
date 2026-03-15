@@ -1,29 +1,35 @@
-.. EigenTorch documentation master file, created by
-   sphinx-quickstart on Tue Mar 10 00:07:12 2026.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-EigenTorch API Reference
+EigenTorch Documentation
 ========================
 
-The following API exposes the comprehensive capabilities of the **Eigen** drop-in replacement library, seamlessly scaling matrix operations to massive GPU topologies via PyTorch.
+EigenTorch provides Eigen-style C++ APIs backed by libtorch for dense, sparse,
+geometry, and unsupported-module workflows.
 
 .. toctree::
    :maxdepth: 2
-   :caption: API Architecture:
+   :caption: Guides
+
+   quickstart
+   module_coverage
+   testing
+
+API Reference
+=============
 
 Device Management
 -----------------
+
 .. doxygenclass:: Eigen::DeviceManager
    :members:
 
 Core Linear Algebra
 -------------------
+
 .. doxygenclass:: Eigen::Matrix
    :members:
 
 Solvers
 -------
+
 .. doxygenclass:: Eigen::PartialPivLU
    :members:
 .. doxygenclass:: Eigen::LLT
@@ -37,39 +43,31 @@ Solvers
 
 Geometry
 --------
-.. doxygenclass:: Eigen::Quaternion
-   :members:
-.. doxygenclass:: Eigen::AngleAxis
-   :members:
-.. doxygenclass:: Eigen::Translation
-   :members:
-.. doxygenclass:: Eigen::Transform
-   :members:
-.. doxygenclass:: Eigen::Rotation2D
-   :members:
-.. doxygenclass:: Eigen::Scaling
-   :members:
-.. doxygenclass:: Eigen::ParametrizedLine
-   :members:
-.. doxygenclass:: Eigen::Hyperplane
-   :members:
-.. doxygenclass:: Eigen::AlignedBox
-   :members:
+
+Geometry types are provided through these headers:
+
+- ``Eigen/Quaternion``
+- ``Eigen/AngleAxis``
+- ``Eigen/Translation``
+- ``Eigen/Transform``
+- ``Eigen/Rotation2D``
+- ``Eigen/Scaling``
+- ``Eigen/ParametrizedLine``
+- ``Eigen/Hyperplane``
+- ``Eigen/AlignedBox``
 
 Sparse Operations
 -----------------
-.. doxygenclass:: Eigen::SparseMatrix
-   :members:
-.. doxygenclass:: Eigen::SparseLU
-   :members:
-.. doxygenclass:: Eigen::SparseQR
-   :members:
-.. doxygenclass:: Eigen::SimplicialLLT
-   :members:
-.. doxygenclass:: Eigen::SimplicialLDLT
-   :members:
-   
+
+Sparse APIs are provided through these headers:
+
+- ``Eigen/SparseMatrix``
+- ``Eigen/SparseVector``
+- ``Eigen/SparseLU``
+- ``Eigen/SparseQR``
+- ``Eigen/SparseCholesky``
+
 Jacobi Internal Iterators
 -------------------------
-.. doxygenclass:: Eigen::JacobiRotation
-   :members:
+
+Jacobi helpers are provided through ``Eigen/Jacobi``.

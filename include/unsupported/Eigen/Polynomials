@@ -1,0 +1,109 @@
+#ifndef EIGEN_UNSUPPORTED_POLYNOMIALS_H
+#define EIGEN_UNSUPPORTED_POLYNOMIALS_H
+
+#include "Eigen/Core"
+
+#include <complex>
+#include <vector>
+
+namespace Eigen {
+
+template <typename Scalar>
+Scalar poly_eval(const Matrix<Scalar, Dynamic, 1>& coeffs, Scalar x) {
+    Scalar value = static_cast<Scalar>(0);
+    for (int i = 0; i < coeffs.size(); ++i) {
+        value = value * x + coeffs(i);
+    }
+    return value;
+}
+
+template <typename Scalar>
+std::complex<Scalar> poly_eval(
+    const Matrix<Scalar, Dynamic, 1>& coeffs,
+    const std::complex<Scalar>& x) {
+    std::complex<Scalar> value(0, 0);
+    for (int i = 0; i < coeffs.size(); ++i) {
+        value = value * x + static_cast<Scalar>(coeffs(i));
+    }
+    return value;
+}
+
+template <typename Scalar>
+class PolynomialSolver {
+public:
+    using Complex = std::complex<Scalar>;
+
+private:
+    Matrix<Complex, Dynamic, 1> m_roots;
+    bool m_isInitialized = false;
+
+    static torch::ScalarType complex_dtype() {
+        if constexpr (std::is_same_v<Scalar, float>) {
+            return torch::kComplexFloat;
+        }
+        return torch::kComplexDouble;
+    }
+
+public:
+    PolynomialSolver() {}
+
+    explicit PolynomialSolver(const Matrix<Scalar, Dynamic, 1>& coefficients) {
+        compute(coefficients);
+    }
+
+    PolynomialSolver& compute(const Matrix<Scalar, Dynamic, 1>& coefficients) {
+        int degree = coefficients.size() - 1;
+        if (degree <= 0) {
+            m_roots = Matrix<Complex, Dynamic, 1>::Zero(0, 1);
+            m_isInitialized = true;
+            return *this;
+        }
+
+        Scalar leading = coefficients(0);
+        if (std::abs(leading) <= static_cast<Scalar>(1e-12)) {
+            throw std::runtime_error("PolynomialSolver requires non-zero leading coefficient");
+        }
+
+        auto options = torch::TensorOptions().dtype(complex_dtype()).device(DeviceManager::get_default_device());
+        at::Tensor companion = torch::zeros({degree, degree}, options);
+
+        for (int col = 0; col < degree; ++col) {
+            companion.index_put_({0, col}, static_cast<Scalar>(-coefficients(col + 1) / leading));
+        }
+        for (int row = 1; row < degree; ++row) {
+            companion.index_put_({row, row - 1}, static_cast<Scalar>(1));
+        }
+
+        at::Tensor eigvals = std::get<0>(torch::linalg_eig(companion));
+        m_roots = Matrix<Complex, Dynamic, 1>(eigvals.unsqueeze(1));
+        m_isInitialized = true;
+        return *this;
+    }
+
+    bool info() const { return m_isInitialized; }
+
+    Matrix<Complex, Dynamic, 1> roots() const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("PolynomialSolver is not initialized");
+        }
+        return m_roots;
+    }
+
+    Complex smallestRoot() const {
+        if (!m_isInitialized || m_roots.size() == 0) {
+            return Complex(0, 0);
+        }
+
+        Complex best = m_roots(0);
+        for (int i = 1; i < m_roots.size(); ++i) {
+            if (std::abs(m_roots(i)) < std::abs(best)) {
+                best = m_roots(i);
+            }
+        }
+        return best;
+    }
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_POLYNOMIALS_H

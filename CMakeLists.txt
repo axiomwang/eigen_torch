@@ -85,3 +85,11 @@ add_test(NAME sparse_linalg_test COMMAND test_sparse_linalg)
 add_executable(test_api_compat tests/test_api_compat.cpp)
 target_link_libraries(test_api_compat PRIVATE Eigen)
 add_test(NAME api_compat_test COMMAND test_api_compat)
+
+add_executable(test_unsupported_compat tests/test_unsupported_compat.cpp)
+target_link_libraries(test_unsupported_compat PRIVATE Eigen)
+add_test(NAME unsupported_compat_test COMMAND test_unsupported_compat)
+
+add_executable(test_unsupported_full_modules tests/test_unsupported_full_modules.cpp)
+target_link_libraries(test_unsupported_full_modules PRIVATE Eigen)
+add_test(NAME unsupported_full_modules_test COMMAND test_unsupported_full_modules)

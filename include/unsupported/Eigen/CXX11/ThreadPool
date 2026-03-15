@@ -1,0 +1,71 @@
+#ifndef EIGEN_UNSUPPORTED_CXX11_THREADPOOL_H
+#define EIGEN_UNSUPPORTED_CXX11_THREADPOOL_H
+
+#include "Tensor"
+
+#include <algorithm>
+#include <future>
+#include <thread>
+#include <vector>
+
+namespace Eigen {
+
+class ThreadPoolDevice {
+private:
+    int m_numThreads;
+
+public:
+    explicit ThreadPoolDevice(int num_threads = 0)
+        : m_numThreads(num_threads > 0 ? num_threads : static_cast<int>(std::thread::hardware_concurrency())) {
+        if (m_numThreads <= 0) {
+            m_numThreads = 1;
+        }
+        at::set_num_threads(m_numThreads);
+    }
+
+    int numThreads() const {
+        return m_numThreads;
+    }
+
+    template <typename Function>
+    void parallelFor(int begin, int end, int grain_size, Function&& function) const {
+        if (end <= begin) {
+            return;
+        }
+
+        int total = end - begin;
+        int grain = std::max(1, grain_size);
+        int chunks = (total + grain - 1) / grain;
+        int workers = std::max(1, std::min(m_numThreads, chunks));
+
+        std::vector<std::future<void>> tasks;
+        tasks.reserve(static_cast<size_t>(workers));
+
+        for (int worker = 0; worker < workers; ++worker) {
+            int chunk_begin = begin + (worker * total) / workers;
+            int chunk_end = begin + ((worker + 1) * total) / workers;
+
+            tasks.emplace_back(std::async(std::launch::async, [=]() {
+                for (int block_begin = chunk_begin; block_begin < chunk_end; block_begin += grain) {
+                    int block_end = std::min(chunk_end, block_begin + grain);
+                    function(block_begin, block_end);
+                }
+            }));
+        }
+
+        for (auto& task : tasks) {
+            task.get();
+        }
+    }
+
+    template <typename Scalar>
+    Tensor<Scalar, 2> parallelMatMul(
+        const Tensor<Scalar, 2>& lhs,
+        const Tensor<Scalar, 2>& rhs) const {
+        return Tensor<Scalar, 2>(torch::matmul(lhs.tensor(), rhs.tensor()));
+    }
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_CXX11_THREADPOOL_H

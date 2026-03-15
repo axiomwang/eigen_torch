@@ -2,12 +2,13 @@
 #define EIGEN_UNSUPPORTED_SPLINES_H
 
 #include "Eigen/Core"
+
+#include <algorithm>
+#include <array>
 #include <vector>
 
 namespace Eigen {
 
-// Basic BSpline API wrapper.
-// Evaluates polynomial curves over tensor sequences natively.
 template <typename Scalar_, int Dim_, int Degree_>
 class Spline {
 public:
@@ -21,6 +22,138 @@ protected:
     ControlPointVectorType m_ctrls;
     std::vector<Scalar> m_knots;
 
+    int effectiveDegree() const {
+        if (m_ctrls.empty()) {
+            return 0;
+        }
+        return std::min(Degree, static_cast<int>(m_ctrls.size()) - 1);
+    }
+
+    std::vector<Scalar> effectiveKnots() const {
+        int degree = effectiveDegree();
+        int control_count = static_cast<int>(m_ctrls.size());
+        int knot_count = control_count + degree + 1;
+
+        if (control_count == 0) {
+            return {};
+        }
+
+        if (static_cast<int>(m_knots.size()) == knot_count) {
+            return m_knots;
+        }
+
+        std::vector<Scalar> knots(static_cast<size_t>(knot_count), static_cast<Scalar>(0));
+        for (int index = 0; index < knot_count; ++index) {
+            if (index <= degree) {
+                knots[static_cast<size_t>(index)] = static_cast<Scalar>(0);
+            } else if (index >= control_count) {
+                knots[static_cast<size_t>(index)] = static_cast<Scalar>(1);
+            } else {
+                knots[static_cast<size_t>(index)] =
+                    static_cast<Scalar>(index - degree) / static_cast<Scalar>(control_count - degree);
+            }
+        }
+        return knots;
+    }
+
+    Scalar parameterMin() const {
+        std::vector<Scalar> knots = effectiveKnots();
+        if (knots.empty()) {
+            return static_cast<Scalar>(0);
+        }
+        return knots[static_cast<size_t>(effectiveDegree())];
+    }
+
+    Scalar parameterMax() const {
+        std::vector<Scalar> knots = effectiveKnots();
+        if (knots.empty()) {
+            return static_cast<Scalar>(1);
+        }
+        return knots[static_cast<size_t>(m_ctrls.size())];
+    }
+
+    int findSpan(Scalar u, const std::vector<Scalar>& knots, int degree) const {
+        int n = static_cast<int>(m_ctrls.size()) - 1;
+        if (u >= knots[static_cast<size_t>(n + 1)]) {
+            return n;
+        }
+        if (u <= knots[static_cast<size_t>(degree)]) {
+            return degree;
+        }
+
+        int low = degree;
+        int high = n + 1;
+        int mid = (low + high) / 2;
+        while (u < knots[static_cast<size_t>(mid)] || u >= knots[static_cast<size_t>(mid + 1)]) {
+            if (u < knots[static_cast<size_t>(mid)]) {
+                high = mid;
+            } else {
+                low = mid;
+            }
+            mid = (low + high) / 2;
+        }
+        return mid;
+    }
+
+    std::vector<Scalar> basisValues(int span, Scalar u, const std::vector<Scalar>& knots, int degree) const {
+        std::vector<Scalar> left(static_cast<size_t>(degree + 1), static_cast<Scalar>(0));
+        std::vector<Scalar> right(static_cast<size_t>(degree + 1), static_cast<Scalar>(0));
+        std::vector<Scalar> basis(static_cast<size_t>(degree + 1), static_cast<Scalar>(0));
+        basis[0] = static_cast<Scalar>(1);
+
+        for (int j = 1; j <= degree; ++j) {
+            left[static_cast<size_t>(j)] = u - knots[static_cast<size_t>(span + 1 - j)];
+            right[static_cast<size_t>(j)] = knots[static_cast<size_t>(span + j)] - u;
+            Scalar saved = static_cast<Scalar>(0);
+
+            for (int r = 0; r < j; ++r) {
+                Scalar denom = right[static_cast<size_t>(r + 1)] + left[static_cast<size_t>(j - r)];
+                Scalar temp = std::abs(denom) > static_cast<Scalar>(1e-12)
+                    ? basis[static_cast<size_t>(r)] / denom
+                    : static_cast<Scalar>(0);
+                basis[static_cast<size_t>(r)] = saved + right[static_cast<size_t>(r + 1)] * temp;
+                saved = left[static_cast<size_t>(j - r)] * temp;
+            }
+            basis[static_cast<size_t>(j)] = saved;
+        }
+
+        return basis;
+    }
+
+    at::Tensor controlTensor() const {
+        auto options = torch::TensorOptions()
+            .dtype(VectorType::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        if (m_ctrls.empty()) {
+            return torch::empty({0, Dim}, options);
+        }
+
+        std::vector<at::Tensor> controls;
+        controls.reserve(m_ctrls.size());
+        for (const auto& ctrl : m_ctrls) {
+            controls.push_back(ctrl.tensor().reshape({Dim}));
+        }
+        return torch::stack(controls, 0);
+    }
+
+    VectorType derivativeRecursive(Scalar u, int order, Scalar h) const {
+        if (order == 0) {
+            return evaluate(u);
+        }
+
+        Scalar lower = parameterMin();
+        Scalar upper = parameterMax();
+        Scalar plus = std::min(upper, u + h);
+        Scalar minus = std::max(lower, u - h);
+        if (std::abs(plus - minus) <= static_cast<Scalar>(1e-12)) {
+            return VectorType::Zero(Dim, 1);
+        }
+
+        return VectorType((derivativeRecursive(plus, order - 1, h).tensor() -
+                           derivativeRecursive(minus, order - 1, h).tensor()) /
+                          static_cast<Scalar>(plus - minus));
+    }
+
 public:
     Spline() {}
 
@@ -30,23 +163,84 @@ public:
     const ControlPointVectorType& ctrls() const { return m_ctrls; }
     const std::vector<Scalar>& knots() const { return m_knots; }
 
-    // Evaluates the spline at parameter u (0 <= u <= 1 typically)
+    Spline& setCtrls(const ControlPointVectorType& ctrls) {
+        m_ctrls = ctrls;
+        return *this;
+    }
+
+    Spline& setKnots(const std::vector<Scalar>& knots) {
+        m_knots = knots;
+        return *this;
+    }
+
+    int degree() const { return effectiveDegree(); }
+    int numControlPoints() const { return static_cast<int>(m_ctrls.size()); }
+
+    int span(Scalar u) const {
+        if (m_ctrls.empty()) {
+            return 0;
+        }
+        std::vector<Scalar> knots = effectiveKnots();
+        Scalar clamped = std::max(parameterMin(), std::min(parameterMax(), u));
+        return findSpan(clamped, knots, effectiveDegree());
+    }
+
+    Matrix<Scalar, Dynamic, 1> basisFunctions(Scalar u) const {
+        if (m_ctrls.empty()) {
+            return Matrix<Scalar, Dynamic, 1>::Zero(0, 1);
+        }
+        std::vector<Scalar> knots = effectiveKnots();
+        int degree = effectiveDegree();
+        Scalar clamped = std::max(parameterMin(), std::min(parameterMax(), u));
+        std::vector<Scalar> basis = basisValues(findSpan(clamped, knots, degree), clamped, knots, degree);
+        auto options = torch::TensorOptions()
+            .dtype(VectorType::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        return Matrix<Scalar, Dynamic, 1>(torch::tensor(basis, options).unsqueeze(1));
+    }
+
     VectorType operator()(Scalar u) const {
         return evaluate(u);
     }
 
-    // Generic implementation for API surface parity - relies on Cox-De Boor recursively
     VectorType evaluate(Scalar u) const {
-        if (m_ctrls.empty()) return VectorType::Zero(Dim, 1);
-        // For PyTorch dropping, we'd normally vectorize this evaluation across the knot span
-        // For this C++ namespace drop-in, returning the origin control point as a placeholder
-        // until full tensorized differentiation is requested.
-        return m_ctrls.front();
+        if (m_ctrls.empty()) {
+            return VectorType::Zero(Dim, 1);
+        }
+
+        std::vector<Scalar> knots = effectiveKnots();
+        int degree = effectiveDegree();
+        Scalar clamped = std::max(parameterMin(), std::min(parameterMax(), u));
+        int spline_span = findSpan(clamped, knots, degree);
+        std::vector<Scalar> basis = basisValues(spline_span, clamped, knots, degree);
+
+        auto options = torch::TensorOptions()
+            .dtype(VectorType::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        at::Tensor basis_tensor = torch::tensor(basis, options).unsqueeze(1);
+        at::Tensor controls = controlTensor().slice(0, spline_span - degree, spline_span + 1);
+        at::Tensor value = torch::matmul(controls.transpose(0, 1), basis_tensor).reshape({Dim, 1});
+        return VectorType(value);
+    }
+
+    VectorType derivative(Scalar u) const {
+        return derivativeRecursive(u, 1, static_cast<Scalar>(1e-4));
+    }
+
+    std::vector<VectorType> derivatives(Scalar u, int order) const {
+        std::vector<VectorType> result;
+        result.reserve(static_cast<size_t>(order + 1));
+        for (int current_order = 0; current_order <= order; ++current_order) {
+            result.push_back(derivativeRecursive(u, current_order, static_cast<Scalar>(1e-4)));
+        }
+        return result;
     }
 };
 
 using Spline2f = Spline<float, 2, 2>;
 using Spline3f = Spline<float, 3, 3>;
+using Spline2d = Spline<double, 2, 2>;
+using Spline3d = Spline<double, 3, 3>;
 
 } // namespace Eigen
 

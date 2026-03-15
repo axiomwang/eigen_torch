@@ -2,13 +2,15 @@
 #define EIGEN_UNSUPPORTED_BVH_H
 
 #include "Eigen/Geometry"
+
+#include <algorithm>
+#include <type_traits>
+#include <utility>
 #include <vector>
 #include <memory>
 
 namespace Eigen {
 
-// Bounding Volume Hierarchy natively composed of AlignedBoxes.
-// KD-Tree topology mapped for spatial fast-access filtering.
 template <typename Scalar_, int Dim_, typename Object_>
 class KdBVH {
 public:
@@ -28,9 +30,86 @@ public:
 
 protected:
     std::unique_ptr<Node> m_root;
+    int m_leafSize = 4;
+
+    template <typename T, typename = void>
+    struct has_bounding_box_method : std::false_type {};
+
+    template <typename T>
+    struct has_bounding_box_method<T, std::void_t<decltype(std::declval<const T&>().boundingBox())>> : std::true_type {};
+
+    template <typename T>
+    struct is_box_like : std::is_same<std::decay_t<T>, BoxType> {};
+
+    template <typename T>
+    struct is_point_like : std::is_same<std::decay_t<T>, VectorType> {};
+
+    template <typename T>
+    static BoxType objectBounds(const T& object) {
+        if constexpr (is_box_like<T>::value) {
+            return object;
+        } else if constexpr (is_point_like<T>::value) {
+            return BoxType(object);
+        } else if constexpr (has_bounding_box_method<T>::value) {
+            return object.boundingBox();
+        } else {
+            VectorType origin = VectorType::Zero(Dim, 1);
+            return BoxType(origin, origin);
+        }
+    }
+
+    static Scalar axisValue(const VectorType& vector, int axis) {
+        return vector(axis);
+    }
+
+    template <typename Iter>
+    static BoxType computeBounds(Iter begin, Iter end) {
+        BoxType bounds;
+        for (auto it = begin; it != end; ++it) {
+            bounds.extend(objectBounds(*it));
+        }
+        return bounds;
+    }
+
+    int longestAxis(const BoxType& bounds) const {
+        VectorType extent = bounds.sizes();
+        int bestAxis = 0;
+        Scalar bestValue = extent(0);
+        for (int axis = 1; axis < Dim; ++axis) {
+            Scalar value = extent(axis);
+            if (value > bestValue) {
+                bestValue = value;
+                bestAxis = axis;
+            }
+        }
+        return bestAxis;
+    }
+
+    void collectIntersecting(const Node* node, const BoxType& query, std::vector<Object>& results) const {
+        if (!node || !node->bounds.intersects(query)) {
+            return;
+        }
+
+        if (node->isLeaf) {
+            for (const auto& object : node->objects) {
+                if (objectBounds(object).intersects(query)) {
+                    results.push_back(object);
+                }
+            }
+            return;
+        }
+
+        collectIntersecting(node->left.get(), query, results);
+        collectIntersecting(node->right.get(), query, results);
+    }
 
 public:
     KdBVH() {}
+
+    KdBVH& setLeafSize(int leaf_size) {
+        m_leafSize = std::max(1, leaf_size);
+        return *this;
+    }
 
     template <typename Iter>
     void init(Iter begin, Iter end) {
@@ -47,24 +126,45 @@ protected:
         if (begin == end) return nullptr;
         
         auto node = std::make_unique<Node>();
-        for (auto it = begin; it != end; ++it) {
-            // Assume the object can yield bounded limits, or we just expand arbitrarily for the stub
-            // In a real BVH, we'd extract boundingBox(*it);
-        }
+        node->bounds = computeBounds(begin, end);
         
-        // For demonstration of the topological C++ API surface perfectly mirroring Eigen:
-        size_t count = std::distance(begin, end);
-        if (count <= 4) { // Leaf threshold
+        size_t count = static_cast<size_t>(std::distance(begin, end));
+        if (count <= static_cast<size_t>(m_leafSize)) {
             node->isLeaf = true;
             node->objects.assign(begin, end);
         } else {
             node->isLeaf = false;
-            auto mid = begin;
-            std::advance(mid, count / 2);
-            node->left = buildTree(begin, mid, depth + 1);
-            node->right = buildTree(mid, end, depth + 1);
+
+            std::vector<Object> objects(begin, end);
+            int axis = longestAxis(node->bounds);
+            std::sort(objects.begin(), objects.end(), [&](const Object& lhs, const Object& rhs) {
+                return axisValue(objectBounds(lhs).center(), axis) < axisValue(objectBounds(rhs).center(), axis);
+            });
+
+            auto mid = objects.begin() + static_cast<std::ptrdiff_t>(count / 2);
+            node->left = buildTree(objects.begin(), mid, depth + 1);
+            node->right = buildTree(mid, objects.end(), depth + 1);
         }
         return node;
+    }
+
+public:
+    bool intersects(const BoxType& query) const {
+        return m_root && m_root->bounds.intersects(query);
+    }
+
+    bool intersects(const VectorType& point) const {
+        return intersects(BoxType(point));
+    }
+
+    std::vector<Object> intersectingObjects(const BoxType& query) const {
+        std::vector<Object> results;
+        collectIntersecting(m_root.get(), query, results);
+        return results;
+    }
+
+    std::vector<Object> intersectingObjects(const VectorType& point) const {
+        return intersectingObjects(BoxType(point));
     }
 };
 

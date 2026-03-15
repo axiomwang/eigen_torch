@@ -3,11 +3,10 @@
 
 #include "Eigen/Core"
 
+#include <type_traits>
+
 namespace Eigen {
 
-// PyTorch provides an extremely powerful Autograd C++ engine natively.
-// Standard Eigen implements AutoDiff scalar via Dual Numbers mapping internal Jacobians.
-// We provide AutoDiffScalar wrapping standard Torch differentiable tensors.
 template <typename DerType_>
 class AutoDiffScalar {
 public:
@@ -17,32 +16,79 @@ public:
 protected:
     at::Tensor m_value;
 
-public:
-    AutoDiffScalar() {}
-
-    explicit AutoDiffScalar(Scalar v) {
-        // Instantiate a differentiable 0-D scalar
-        auto options = torch::TensorOptions()
+    static at::TensorOptions default_options() {
+        return torch::TensorOptions()
             .dtype(DerType::get_torch_dtype())
             .device(DeviceManager::get_default_device())
             .requires_grad(true);
-        m_value = torch::tensor({v}, options);
     }
 
-    explicit AutoDiffScalar(const at::Tensor& t) : m_value(t) {}
+    static at::Tensor normalize_value_tensor(const at::Tensor& tensor) {
+        at::Tensor value = tensor.defined() ? tensor : torch::zeros({1}, default_options());
+        value = value.reshape({1});
+        if (!value.requires_grad()) {
+            value = value.clone().detach().requires_grad_(true);
+        }
+        if (!value.is_leaf()) {
+            value.retain_grad();
+        }
+        return value;
+    }
+
+public:
+    AutoDiffScalar()
+        : m_value(torch::zeros({1}, default_options())) {}
+
+    explicit AutoDiffScalar(Scalar v)
+        : m_value(torch::tensor({v}, default_options())) {}
+
+    explicit AutoDiffScalar(const at::Tensor& tensor)
+        : m_value(normalize_value_tensor(tensor)) {}
+
+    explicit AutoDiffScalar(const DerType& value)
+        : m_value(normalize_value_tensor(value.tensor().reshape({1}))) {}
 
     Scalar value() const { return m_value.template item<Scalar>(); }
+    operator Scalar() const { return value(); }
+
+    AutoDiffScalar& setValue(Scalar value) {
+        m_value = torch::tensor({value}, default_options());
+        return *this;
+    }
+
+    AutoDiffScalar& setValue(const at::Tensor& tensor) {
+        m_value = normalize_value_tensor(tensor);
+        return *this;
+    }
+
     at::Tensor& tensor() { return m_value; }
     const at::Tensor& tensor() const { return m_value; }
 
-    // Trigger backward pass natively
     void backward() {
-        m_value.backward();
+        if (m_value.numel() == 1) {
+            m_value.backward();
+        } else {
+            m_value.backward(torch::ones_like(m_value));
+        }
     }
 
-    // Retrieve gradient after backward() is called
+    void backward(Scalar gradient) {
+        m_value.backward(torch::full_like(m_value, gradient));
+    }
+
+    void backward(const DerType& gradient) {
+        m_value.backward(gradient.tensor().reshape_as(m_value));
+    }
+
     at::Tensor grad() const {
-        return m_value.grad();
+        if (m_value.grad().defined()) {
+            return m_value.grad();
+        }
+        return torch::zeros_like(m_value);
+    }
+
+    DerType derivatives() const {
+        return DerType(grad());
     }
 
     AutoDiffScalar operator+(const AutoDiffScalar& other) const {
@@ -60,7 +106,118 @@ public:
     AutoDiffScalar operator/(const AutoDiffScalar& other) const {
         return AutoDiffScalar(m_value / other.tensor());
     }
+
+    AutoDiffScalar operator+(Scalar scalar) const {
+        return AutoDiffScalar(m_value + scalar);
+    }
+
+    AutoDiffScalar operator-(Scalar scalar) const {
+        return AutoDiffScalar(m_value - scalar);
+    }
+
+    AutoDiffScalar operator*(Scalar scalar) const {
+        return AutoDiffScalar(m_value * scalar);
+    }
+
+    AutoDiffScalar operator/(Scalar scalar) const {
+        return AutoDiffScalar(m_value / scalar);
+    }
+
+    AutoDiffScalar operator-() const {
+        return AutoDiffScalar(-m_value);
+    }
+
+    AutoDiffScalar& operator+=(const AutoDiffScalar& other) {
+        m_value = m_value + other.tensor();
+        return *this;
+    }
+
+    AutoDiffScalar& operator-=(const AutoDiffScalar& other) {
+        m_value = m_value - other.tensor();
+        return *this;
+    }
+
+    AutoDiffScalar& operator*=(const AutoDiffScalar& other) {
+        m_value = m_value * other.tensor();
+        return *this;
+    }
+
+    AutoDiffScalar& operator/=(const AutoDiffScalar& other) {
+        m_value = m_value / other.tensor();
+        return *this;
+    }
+
+    AutoDiffScalar& operator+=(Scalar scalar) {
+        m_value = m_value + scalar;
+        return *this;
+    }
+
+    AutoDiffScalar& operator-=(Scalar scalar) {
+        m_value = m_value - scalar;
+        return *this;
+    }
+
+    AutoDiffScalar& operator*=(Scalar scalar) {
+        m_value = m_value * scalar;
+        return *this;
+    }
+
+    AutoDiffScalar& operator/=(Scalar scalar) {
+        m_value = m_value / scalar;
+        return *this;
+    }
+
+    friend AutoDiffScalar operator+(Scalar scalar, const AutoDiffScalar& value) {
+        return AutoDiffScalar(scalar + value.tensor());
+    }
+
+    friend AutoDiffScalar operator-(Scalar scalar, const AutoDiffScalar& value) {
+        return AutoDiffScalar(scalar - value.tensor());
+    }
+
+    friend AutoDiffScalar operator*(Scalar scalar, const AutoDiffScalar& value) {
+        return AutoDiffScalar(scalar * value.tensor());
+    }
+
+    friend AutoDiffScalar operator/(Scalar scalar, const AutoDiffScalar& value) {
+        return AutoDiffScalar(scalar / value.tensor());
+    }
 };
+
+template <typename DerType>
+AutoDiffScalar<DerType> sin(const AutoDiffScalar<DerType>& x) {
+    return AutoDiffScalar<DerType>(torch::sin(x.tensor()));
+}
+
+template <typename DerType>
+AutoDiffScalar<DerType> cos(const AutoDiffScalar<DerType>& x) {
+    return AutoDiffScalar<DerType>(torch::cos(x.tensor()));
+}
+
+template <typename DerType>
+AutoDiffScalar<DerType> tan(const AutoDiffScalar<DerType>& x) {
+    return AutoDiffScalar<DerType>(torch::tan(x.tensor()));
+}
+
+template <typename DerType>
+AutoDiffScalar<DerType> exp(const AutoDiffScalar<DerType>& x) {
+    return AutoDiffScalar<DerType>(torch::exp(x.tensor()));
+}
+
+template <typename DerType>
+AutoDiffScalar<DerType> log(const AutoDiffScalar<DerType>& x) {
+    return AutoDiffScalar<DerType>(torch::log(x.tensor()));
+}
+
+template <typename DerType>
+AutoDiffScalar<DerType> sqrt(const AutoDiffScalar<DerType>& x) {
+    return AutoDiffScalar<DerType>(torch::sqrt(x.tensor()));
+}
+
+template <typename DerType>
+AutoDiffScalar<DerType> abs(const AutoDiffScalar<DerType>& x) {
+    return AutoDiffScalar<DerType>(torch::abs(x.tensor()));
+}
 
 } // namespace Eigen
 

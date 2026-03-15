@@ -2,34 +2,76 @@
 #define EIGEN_UNSUPPORTED_CXX11_TENSOR_H
 
 #include "Eigen/Core"
+
+#include <array>
+#include <initializer_list>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace Eigen {
 
-// Eigen's original unsupported CXX11/Tensor module was built to retrofit generic 
-// N-dimensional computations natively into Eigen's 2D-restricted pipeline.
-// Given LibTorch itself is identically an N-dimensional generic structural engine,
-// our implementation of Eigen::Tensor strictly aliases down to `at::Tensor` primitives
-// granting identical surface accessibility natively via standard `Eigen::Tensor` typing.
 template <typename Scalar_, int NumIndices_>
 class Tensor {
 public:
     using Scalar = Scalar_;
     static constexpr int NumIndices = NumIndices_;
 
+    class CoeffProxy {
+    private:
+        at::Tensor m_element;
+
+    public:
+        explicit CoeffProxy(const at::Tensor& element) : m_element(element) {}
+
+        CoeffProxy& operator=(Scalar value) {
+            m_element.fill_(value);
+            return *this;
+        }
+
+        operator Scalar() const {
+            return m_element.template item<Scalar>();
+        }
+    };
+
 protected:
     at::Tensor m_tensor;
+
+    static std::vector<at::indexing::TensorIndex> makeIndexVector(const std::vector<int64_t>& indices) {
+        std::vector<at::indexing::TensorIndex> tensor_indices;
+        tensor_indices.reserve(indices.size());
+        for (int64_t index : indices) {
+            tensor_indices.emplace_back(index);
+        }
+        return tensor_indices;
+    }
+
+    static at::TensorOptions default_options() {
+        return torch::TensorOptions()
+            .dtype(get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+    }
+
+    void initialize(const std::vector<int64_t>& dims) {
+        if (static_cast<int>(dims.size()) != NumIndices) {
+            throw std::invalid_argument("Tensor rank does not match template rank.");
+        }
+        m_tensor = torch::empty(dims, default_options());
+    }
 
 public:
     Tensor() {}
 
-    // Init from dimensions using param pack or vector
     Tensor(const std::vector<int64_t>& dims) {
-        auto options = torch::TensorOptions()
-            .dtype(get_torch_dtype())
-            .device(DeviceManager::get_default_device());
+        initialize(dims);
+    }
 
-        m_tensor = torch::empty(dims, options);
+    Tensor(const std::array<int64_t, NumIndices>& dims) {
+        initialize(std::vector<int64_t>(dims.begin(), dims.end()));
+    }
+
+    Tensor(std::initializer_list<int64_t> dims) {
+        initialize(std::vector<int64_t>(dims.begin(), dims.end()));
     }
 
     Tensor(const at::Tensor& t) : m_tensor(t) {}
@@ -45,8 +87,42 @@ public:
     at::Tensor& tensor() { return m_tensor; }
     const at::Tensor& tensor() const { return m_tensor; }
 
-    int dimension(int idx) const { return m_tensor.size(idx); }
-    int size() const { return m_tensor.numel(); }
+    int rank() const { return NumIndices; }
+    int dimension(int idx) const { return static_cast<int>(m_tensor.size(idx)); }
+    int size() const { return static_cast<int>(m_tensor.numel()); }
+
+    std::array<int64_t, NumIndices> dimensions() const {
+        std::array<int64_t, NumIndices> dims{};
+        for (int index = 0; index < NumIndices; ++index) {
+            dims[static_cast<size_t>(index)] = m_tensor.size(index);
+        }
+        return dims;
+    }
+
+    void resize(const std::vector<int64_t>& dims) {
+        initialize(dims);
+    }
+
+    void resize(const std::array<int64_t, NumIndices>& dims) {
+        initialize(std::vector<int64_t>(dims.begin(), dims.end()));
+    }
+
+    template <typename... IndexTypes, typename std::enable_if<sizeof...(IndexTypes) == NumIndices, int>::type = 0>
+    Scalar operator()(IndexTypes... indices) const {
+        std::vector<int64_t> idx{static_cast<int64_t>(indices)...};
+        return m_tensor.index(makeIndexVector(idx)).template item<Scalar>();
+    }
+
+    template <typename... IndexTypes, typename std::enable_if<sizeof...(IndexTypes) == NumIndices, int>::type = 0>
+    CoeffProxy operator()(IndexTypes... indices) {
+        std::vector<int64_t> idx{static_cast<int64_t>(indices)...};
+        return CoeffProxy(m_tensor.index(makeIndexVector(idx)));
+    }
+
+    Tensor& setZero() {
+        m_tensor.zero_();
+        return *this;
+    }
 
     Tensor setConstant(Scalar val) {
         m_tensor.fill_(val);
@@ -54,18 +130,74 @@ public:
     }
 
     Tensor setRandom() {
-        // Uniform [0,1) normally for floating point
-        m_tensor.uniform_();
+        if constexpr (std::is_integral_v<Scalar>) {
+            m_tensor.random_(0, 100);
+        } else {
+            m_tensor.uniform_();
+        }
         return *this;
     }
 
-    // Elementwise mappings
+    Scalar sum() const {
+        return m_tensor.sum().template item<Scalar>();
+    }
+
+    Scalar mean() const {
+        return m_tensor.mean().template item<Scalar>();
+    }
+
+    Scalar maximum() const {
+        return m_tensor.max().template item<Scalar>();
+    }
+
+    Scalar minimum() const {
+        return m_tensor.min().template item<Scalar>();
+    }
+
     Tensor operator+(const Tensor& other) const { return Tensor(m_tensor + other.tensor()); }
     Tensor operator-(const Tensor& other) const { return Tensor(m_tensor - other.tensor()); }
     Tensor operator*(const Tensor& other) const { return Tensor(m_tensor * other.tensor()); }
     Tensor operator/(const Tensor& other) const { return Tensor(m_tensor / other.tensor()); }
+
+    Tensor& operator+=(const Tensor& other) {
+        m_tensor = m_tensor + other.tensor();
+        return *this;
+    }
+
+    Tensor& operator-=(const Tensor& other) {
+        m_tensor = m_tensor - other.tensor();
+        return *this;
+    }
+
+    Tensor& operator*=(const Tensor& other) {
+        m_tensor = m_tensor * other.tensor();
+        return *this;
+    }
+
+    Tensor& operator/=(const Tensor& other) {
+        m_tensor = m_tensor / other.tensor();
+        return *this;
+    }
+
+    Tensor sqrt() const { return Tensor(torch::sqrt(m_tensor)); }
+    Tensor log() const { return Tensor(torch::log(m_tensor)); }
+    Tensor exp() const { return Tensor(torch::exp(m_tensor)); }
+    Tensor abs() const { return Tensor(torch::abs(m_tensor)); }
+    Tensor square() const { return Tensor(m_tensor * m_tensor); }
+
+    Tensor shuffle(const std::array<int64_t, NumIndices>& permutation) const {
+        return Tensor(m_tensor.permute(std::vector<int64_t>(permutation.begin(), permutation.end())));
+    }
+
+    Tensor reshape(const std::array<int64_t, NumIndices>& dims) const {
+        return Tensor(m_tensor.reshape(std::vector<int64_t>(dims.begin(), dims.end())));
+    }
+
+    template <int NewNumIndices>
+    Tensor<Scalar, NewNumIndices> reshape(const std::array<int64_t, NewNumIndices>& dims) const {
+        return Tensor<Scalar, NewNumIndices>(m_tensor.reshape(std::vector<int64_t>(dims.begin(), dims.end())));
+    }
     
-    // Contraction (tensordot)
     Tensor contract(const Tensor& other, const std::vector<std::pair<int, int>>& dims) const {
         std::vector<int64_t> dims_A, dims_B;
         for (const auto& p : dims) {

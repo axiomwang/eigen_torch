@@ -1,0 +1,231 @@
+#ifndef EIGEN_UNSUPPORTED_ITERATIVESOLVERS_H
+#define EIGEN_UNSUPPORTED_ITERATIVESOLVERS_H
+
+#include "Eigen/Core"
+#include "Eigen/Sparse"
+#include "Eigen/SparseCommon"
+
+#include <algorithm>
+#include <type_traits>
+
+namespace Eigen {
+
+namespace internal {
+
+template <typename T, typename = void>
+struct has_toDense : std::false_type {};
+
+template <typename T>
+struct has_toDense<T, std::void_t<decltype(std::declval<const T&>().toDense())>> : std::true_type {};
+
+template <typename MatrixType>
+Matrix<typename MatrixType::ScalarType, Dynamic, Dynamic> toDenseMatrix(const MatrixType& matrix) {
+    using Scalar = typename MatrixType::ScalarType;
+    if constexpr (has_toDense<MatrixType>::value) {
+        return Matrix<Scalar, Dynamic, Dynamic>(matrix.toDense().tensor());
+    } else {
+        return Matrix<Scalar, Dynamic, Dynamic>(matrix.tensor());
+    }
+}
+
+} // namespace internal
+
+template <typename MatrixType>
+class ConjugateGradient {
+public:
+    using Scalar = typename MatrixType::ScalarType;
+
+private:
+    Matrix<Scalar, Dynamic, Dynamic> m_A;
+    int m_maxIterations = 200;
+    double m_tolerance = 1e-8;
+
+    int m_iterations = 0;
+    double m_error = 0.0;
+    ComputationInfo m_info = InvalidInput;
+
+public:
+    ConjugateGradient() {}
+
+    ConjugateGradient& setMaxIterations(int max_iterations) {
+        m_maxIterations = std::max(1, max_iterations);
+        return *this;
+    }
+
+    ConjugateGradient& setTolerance(double tolerance) {
+        m_tolerance = tolerance;
+        return *this;
+    }
+
+    int iterations() const { return m_iterations; }
+    double error() const { return m_error; }
+    ComputationInfo info() const { return m_info; }
+
+    ConjugateGradient& compute(const MatrixType& A) {
+        m_A = internal::toDenseMatrix(A);
+        m_info = Success;
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) {
+        if (m_A.rows() == 0 || m_A.cols() == 0) {
+            throw std::runtime_error("ConjugateGradient is not initialized.");
+        }
+
+        Matrix<Scalar, Dynamic, Dynamic> b_dense(b.tensor());
+        Matrix<Scalar, Dynamic, Dynamic> x = Matrix<Scalar, Dynamic, Dynamic>::Zero(m_A.cols(), b_dense.cols());
+        Matrix<Scalar, Dynamic, Dynamic> r = b_dense - m_A * x;
+        Matrix<Scalar, Dynamic, Dynamic> p(r.tensor().clone());
+
+        Scalar rs_old = r.squaredNorm();
+        m_info = NoConvergence;
+
+        for (int iter = 0; iter < m_maxIterations; ++iter) {
+            Matrix<Scalar, Dynamic, Dynamic> Ap = m_A * p;
+            Scalar denom = p.dot(Ap);
+            if (std::abs(denom) < static_cast<Scalar>(1e-20)) {
+                break;
+            }
+
+            Scalar alpha = rs_old / denom;
+            x += p * alpha;
+            r -= Ap * alpha;
+
+            Scalar rs_new = r.squaredNorm();
+            m_error = std::sqrt(static_cast<double>(rs_new));
+            m_iterations = iter + 1;
+
+            if (m_error < m_tolerance) {
+                m_info = Success;
+                break;
+            }
+
+            Scalar beta = rs_new / rs_old;
+            p = Matrix<Scalar, Dynamic, Dynamic>(r.tensor() + (p * beta).tensor());
+            rs_old = rs_new;
+        }
+
+        if (m_info != Success && m_error < m_tolerance) {
+            m_info = Success;
+        }
+
+        return Rhs(x.tensor());
+    }
+};
+
+template <typename MatrixType>
+class BiCGSTAB {
+public:
+    using Scalar = typename MatrixType::ScalarType;
+
+private:
+    Matrix<Scalar, Dynamic, Dynamic> m_A;
+    int m_maxIterations = 300;
+    double m_tolerance = 1e-8;
+
+    int m_iterations = 0;
+    double m_error = 0.0;
+    ComputationInfo m_info = InvalidInput;
+
+public:
+    BiCGSTAB() {}
+
+    BiCGSTAB& setMaxIterations(int max_iterations) {
+        m_maxIterations = std::max(1, max_iterations);
+        return *this;
+    }
+
+    BiCGSTAB& setTolerance(double tolerance) {
+        m_tolerance = tolerance;
+        return *this;
+    }
+
+    int iterations() const { return m_iterations; }
+    double error() const { return m_error; }
+    ComputationInfo info() const { return m_info; }
+
+    BiCGSTAB& compute(const MatrixType& A) {
+        m_A = internal::toDenseMatrix(A);
+        m_info = Success;
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) {
+        if (m_A.rows() == 0 || m_A.cols() == 0) {
+            throw std::runtime_error("BiCGSTAB is not initialized.");
+        }
+
+        Matrix<Scalar, Dynamic, Dynamic> b_dense(b.tensor());
+        Matrix<Scalar, Dynamic, Dynamic> x = Matrix<Scalar, Dynamic, Dynamic>::Zero(m_A.cols(), b_dense.cols());
+
+        Matrix<Scalar, Dynamic, Dynamic> r = b_dense - m_A * x;
+        Matrix<Scalar, Dynamic, Dynamic> r0(r.tensor().clone());
+        Matrix<Scalar, Dynamic, Dynamic> p = Matrix<Scalar, Dynamic, Dynamic>::Zero(m_A.cols(), b_dense.cols());
+        Matrix<Scalar, Dynamic, Dynamic> v = Matrix<Scalar, Dynamic, Dynamic>::Zero(m_A.cols(), b_dense.cols());
+
+        Scalar rho_old = 1;
+        Scalar alpha = 1;
+        Scalar omega = 1;
+
+        m_info = NoConvergence;
+
+        for (int iter = 0; iter < m_maxIterations; ++iter) {
+            Scalar rho_new = r0.dot(r);
+            if (std::abs(rho_new) < static_cast<Scalar>(1e-20)) {
+                break;
+            }
+
+            Scalar beta = (rho_new / rho_old) * (alpha / omega);
+            p = Matrix<Scalar, Dynamic, Dynamic>(r.tensor() + (p - v * omega).tensor() * beta);
+            v = m_A * p;
+
+            Scalar r0v = r0.dot(v);
+            if (std::abs(r0v) < static_cast<Scalar>(1e-20)) {
+                break;
+            }
+
+            alpha = rho_new / r0v;
+            Matrix<Scalar, Dynamic, Dynamic> s = r - v * alpha;
+
+            if (s.norm() < static_cast<Scalar>(m_tolerance)) {
+                x += p * alpha;
+                m_iterations = iter + 1;
+                m_error = s.norm();
+                m_info = Success;
+                break;
+            }
+
+            Matrix<Scalar, Dynamic, Dynamic> t = m_A * s;
+            Scalar tt = t.dot(t);
+            if (std::abs(tt) < static_cast<Scalar>(1e-20)) {
+                break;
+            }
+
+            omega = t.dot(s) / tt;
+            x += p * alpha + s * omega;
+            r = s - t * omega;
+
+            m_iterations = iter + 1;
+            m_error = r.norm();
+
+            if (m_error < m_tolerance) {
+                m_info = Success;
+                break;
+            }
+
+            rho_old = rho_new;
+        }
+
+        if (m_info != Success && m_error < m_tolerance) {
+            m_info = Success;
+        }
+
+        return Rhs(x.tensor());
+    }
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_ITERATIVESOLVERS_H

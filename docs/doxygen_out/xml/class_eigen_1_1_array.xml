@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="class_eigen_1_1_array" kind="class" language="C++" prot="public">
+    <compoundname>Eigen::Array</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename Scalar</type>
+      </param>
+      <param>
+        <type>int</type>
+        <declname>RowsAtCompileTime</declname>
+        <defname>RowsAtCompileTime</defname>
+      </param>
+      <param>
+        <type>int</type>
+        <declname>ColsAtCompileTime</declname>
+        <defname>ColsAtCompileTime</defname>
+      </param>
+    </templateparamlist>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="31" column="16" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="31" bodyend="-1"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

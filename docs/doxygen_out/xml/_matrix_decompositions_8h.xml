@@ -1,0 +1,209 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="_matrix_decompositions_8h" kind="file" language="C++">
+    <compoundname>MatrixDecompositions.h</compoundname>
+    <includes refid="_matrix_8h" local="yes">Matrix.h</includes>
+    <includes refid="_l_u" local="yes">LU</includes>
+    <includes refid="_cholesky" local="yes">Cholesky</includes>
+    <includes refid="_q_r" local="yes">QR</includes>
+    <includes refid="_s_v_d" local="yes">SVD</includes>
+    <includes refid="_eigenvalues" local="yes">Eigenvalues</includes>
+    <incdepgraph>
+      <node id="12">
+        <label>Cholesky</label>
+        <link refid="_cholesky"/>
+      </node>
+      <node id="4">
+        <label>Device.h</label>
+        <link refid="_device_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>Eigenvalues</label>
+        <link refid="_eigenvalues"/>
+      </node>
+      <node id="11">
+        <label>LU</label>
+        <link refid="_l_u"/>
+      </node>
+      <node id="2">
+        <label>Matrix.h</label>
+        <link refid="_matrix_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/MatrixDecompositions.h</label>
+        <link refid="_matrix_decompositions_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>QR</label>
+        <link refid="_q_r"/>
+      </node>
+      <node id="14">
+        <label>SVD</label>
+        <link refid="_s_v_d"/>
+      </node>
+      <node id="5">
+        <label>algorithm</label>
+      </node>
+      <node id="6">
+        <label>cmath</label>
+      </node>
+      <node id="7">
+        <label>complex</label>
+      </node>
+      <node id="8">
+        <label>iostream</label>
+      </node>
+      <node id="9">
+        <label>stdexcept</label>
+      </node>
+      <node id="3">
+        <label>torch/torch.h</label>
+      </node>
+      <node id="10">
+        <label>type_traits</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespace_eigen">Eigen</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="_matrix_8h" kindref="compound">Matrix.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="_l_u" kindref="compound">LU</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="_cholesky" kindref="compound">Cholesky</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="_q_r" kindref="compound">QR</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="_s_v_d" kindref="compound">SVD</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="_eigenvalues" kindref="compound">Eigenvalues</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespace_eigen" kindref="compound">Eigen</ref><sp/>{</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_partial_piv_l_u" kindref="compound">PartialPivLU&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="14" refid="class_eigen_1_1_matrix_1a517109d02851023d777d0e15e7c34f53" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a517109d02851023d777d0e15e7c34f53" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::partialPivLu</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_partial_piv_l_u" kindref="compound">PartialPivLU&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="17"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_full_piv_l_u" kindref="compound">FullPivLU&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="21" refid="class_eigen_1_1_matrix_1a935e2293df0203e9c583f4a228858a40" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a935e2293df0203e9c583f4a228858a40" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::fullPivLu</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_full_piv_l_u" kindref="compound">FullPivLU&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="24"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_householder_q_r" kindref="compound">HouseholderQR&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="28" refid="class_eigen_1_1_matrix_1a3c59bd567734ad8477a80def4a3e54fd" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a3c59bd567734ad8477a80def4a3e54fd" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::householderQr</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_householder_q_r" kindref="compound">HouseholderQR&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="31"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_col_piv_householder_q_r" kindref="compound">ColPivHouseholderQR&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="35" refid="class_eigen_1_1_matrix_1a98218b9255e01fc57fe92baf1b8540a6" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a98218b9255e01fc57fe92baf1b8540a6" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::colPivHouseholderQr</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_col_piv_householder_q_r" kindref="compound">ColPivHouseholderQR&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="38"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_full_piv_householder_q_r" kindref="compound">FullPivHouseholderQR&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="42" refid="class_eigen_1_1_matrix_1a6dbfbb7ad552c41986672fed2ddcd69e" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a6dbfbb7ad552c41986672fed2ddcd69e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::fullPivHouseholderQr</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_full_piv_householder_q_r" kindref="compound">FullPivHouseholderQR&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="45"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_l_l_t" kindref="compound">LLT&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="49" refid="class_eigen_1_1_matrix_1a4fcb5f497c22518093c29f267dea08ed" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a4fcb5f497c22518093c29f267dea08ed" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::llt</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_l_l_t" kindref="compound">LLT&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="52"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_l_d_l_t" kindref="compound">LDLT&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="56" refid="class_eigen_1_1_matrix_1a2bf29b826b96aa82ca7daebddeb0058b" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a2bf29b826b96aa82ca7daebddeb0058b" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::ldlt</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_l_d_l_t" kindref="compound">LDLT&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="59"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_jacobi_s_v_d" kindref="compound">JacobiSVD&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="63" refid="class_eigen_1_1_matrix_1a6195d28f65bfc92c693239e1a9c51e87" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a6195d28f65bfc92c693239e1a9c51e87" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::jacobiSvd</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>computationOptions)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_jacobi_s_v_d" kindref="compound">JacobiSVD&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">),<sp/>computationOptions);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_b_d_c_s_v_d" kindref="compound">BDCSVD&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="70" refid="class_eigen_1_1_matrix_1a0834120d748d2bcc4939335fa9b0033d" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a0834120d748d2bcc4939335fa9b0033d" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::bdcSvd</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>computationOptions)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_b_d_c_s_v_d" kindref="compound">BDCSVD&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">),<sp/>computationOptions);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_complete_orthogonal_decomposition" kindref="compound">CompleteOrthogonalDecomposition&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="77" refid="class_eigen_1_1_matrix_1a782f0bafd7474d94e6f28e9bf4180d3d" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a782f0bafd7474d94e6f28e9bf4180d3d" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::completeOrthogonalDecomposition</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_complete_orthogonal_decomposition" kindref="compound">CompleteOrthogonalDecomposition&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="80"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_eigen_solver" kindref="compound">EigenSolver&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="84" refid="class_eigen_1_1_matrix_1a035f2a0f70b4b929dc20a5cb789f0035" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a035f2a0f70b4b929dc20a5cb789f0035" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::eigenSolver</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>computeEigenvectors)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_eigen_solver" kindref="compound">EigenSolver&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">),<sp/>computeEigenvectors);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_self_adjoint_eigen_solver" kindref="compound">SelfAdjointEigenSolver&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="91" refid="class_eigen_1_1_matrix_1a10e53658614b9c4fec6426734c5a12da" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a10e53658614b9c4fec6426734c5a12da" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::selfAdjointEigenSolver</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>computeEigenvectors)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_self_adjoint_eigen_solver" kindref="compound">SelfAdjointEigenSolver&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">),<sp/>computeEigenvectors);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Scalar,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>RowsAtCompileTime,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ColsAtCompileTime&gt;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_complex_eigen_solver" kindref="compound">ComplexEigenSolver&lt;Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>&gt;</highlight></codeline>
+<codeline lineno="98" refid="class_eigen_1_1_matrix_1a4275e2ef5ef06a98b5eaef1ca81f8e7a" refkind="member"><highlight class="normal"><ref refid="class_eigen_1_1_matrix_1a4275e2ef5ef06a98b5eaef1ca81f8e7a" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;::complexEigenSolver</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>computeEigenvectors)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Self<sp/>=<sp/><ref refid="class_eigen_1_1_matrix_1a91837210903a20016d2349ea9aceb22e" kindref="member">Matrix&lt;Scalar, RowsAtCompileTime, ColsAtCompileTime&gt;</ref>;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="class_eigen_1_1_complex_eigen_solver" kindref="compound">ComplexEigenSolver&lt;Self&gt;</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">Self&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">),<sp/>computeEigenvectors);</highlight></codeline>
+<codeline lineno="101"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>Eigen</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/MatrixDecompositions.h"/>
+  </compounddef>
+</doxygen>

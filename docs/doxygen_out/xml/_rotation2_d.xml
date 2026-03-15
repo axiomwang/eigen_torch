@@ -28,8 +28,17 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Rotation2D()<sp/>:<sp/>m_angle(0)<sp/>{}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Rotation2D(Scalar<sp/>angle)<sp/>:<sp/>m_angle(angle)<sp/>{}</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>Rotation2D(const<sp/>Matrix&lt;Scalar,<sp/>2,<sp/>2&gt;&amp;<sp/>matrix)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fromRotationMatrix(matrix);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>angle()<sp/>const<sp/>{<sp/>return<sp/>m_angle;<sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar&amp;<sp/>angle()<sp/>{<sp/>return<sp/>m_angle;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Rotation2D&amp;<sp/>fromRotationMatrix(const<sp/>Matrix&lt;Scalar,<sp/>2,<sp/>2&gt;&amp;<sp/>matrix)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_angle<sp/>=<sp/>std::atan2(matrix(1,<sp/>0),<sp/>matrix(0,<sp/>0));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>2,<sp/>2&gt;<sp/>toRotationMatrix()<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>s<sp/>=<sp/>std::sin(m_angle);</highlight></codeline>
@@ -52,6 +61,11 @@
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Rotation2D<sp/>inverse()<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Rotation2D(-m_angle);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Rotation2D&amp;<sp/>operator*=(const<sp/>Rotation2D&amp;<sp/>other)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_angle<sp/>+=<sp/>other.angle();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>

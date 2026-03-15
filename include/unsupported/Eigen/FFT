@@ -3,32 +3,193 @@
 
 #include "Eigen/Core"
 
+#include <complex>
+#include <type_traits>
+#include <vector>
+
 namespace Eigen {
 
-// Wrapper mapping Eigen's FFT arrays around PyTorch's native `torch::fft` library.
 template <typename Scalar_>
 class FFT {
 public:
     using Scalar = Scalar_;
+
+    enum Flag {
+        Default = 0,
+        Unscaled = 1 << 0,
+        HalfSpectrum = 1 << 1,
+    };
+
+protected:
+    int m_flags = Default;
+
+    template <typename T, typename = void>
+    struct has_tensor_method : std::false_type {};
+
+    template <typename T>
+    struct has_tensor_method<T, std::void_t<decltype(std::declval<const T&>().tensor())>> : std::true_type {};
+
+    template <typename T, typename = void>
+    struct has_scalar_type : std::false_type {};
+
+    template <typename T>
+    struct has_scalar_type<T, std::void_t<typename T::ScalarType>> : std::true_type {};
+
+    template <typename T>
+    struct is_std_vector : std::false_type {};
+
+    template <typename T, typename Alloc>
+    struct is_std_vector<std::vector<T, Alloc>> : std::true_type {};
+
+    template <typename T>
+    struct is_complex_scalar : std::false_type {};
+
+    template <typename T>
+    struct is_complex_scalar<std::complex<T>> : std::true_type {};
+
+    template <typename T>
+    struct complex_value_type {
+        using type = T;
+    };
+
+    template <typename T>
+    struct complex_value_type<std::complex<T>> {
+        using type = T;
+    };
+
+    template <typename T>
+    static constexpr torch::ScalarType scalar_dtype() {
+        if constexpr (std::is_same_v<T, float>) return torch::kFloat32;
+        if constexpr (std::is_same_v<T, double>) return torch::kFloat64;
+        if constexpr (std::is_same_v<T, std::complex<float>>) return torch::kComplexFloat;
+        if constexpr (std::is_same_v<T, std::complex<double>>) return torch::kComplexDouble;
+        return torch::kFloat32;
+    }
+
+    template <typename InputType>
+    static at::Tensor toTensor(const InputType& src) {
+        if constexpr (has_tensor_method<InputType>::value) {
+            return src.tensor().reshape({-1});
+        } else if constexpr (is_std_vector<InputType>::value) {
+            using ValueType = typename InputType::value_type;
+            auto options = torch::TensorOptions()
+                .dtype(scalar_dtype<ValueType>())
+                .device(DeviceManager::get_default_device());
+            if constexpr (is_complex_scalar<ValueType>::value) {
+                using RealType = typename complex_value_type<ValueType>::type;
+                std::vector<c10::complex<RealType>> values;
+                values.reserve(src.size());
+                for (const auto& value : src) {
+                    values.emplace_back(value.real(), value.imag());
+                }
+                return torch::tensor(values, options).reshape({-1});
+            } else {
+                return torch::tensor(src, options).reshape({-1});
+            }
+        } else {
+            static_assert(sizeof(InputType) == 0, "FFT input type is not supported");
+        }
+    }
+
+    template <typename OutputType>
+    static void assignResult(OutputType& dst, at::Tensor result) {
+        if constexpr (has_scalar_type<OutputType>::value) {
+            using OutputScalar = typename OutputType::ScalarType;
+            if constexpr (!is_complex_scalar<OutputScalar>::value) {
+                if (result.is_complex()) {
+                    result = torch::real(result);
+                }
+            } else if (!result.is_complex()) {
+                result = result.to(scalar_dtype<OutputScalar>());
+            }
+            dst = OutputType(result);
+        } else if constexpr (is_std_vector<OutputType>::value) {
+            using ValueType = typename OutputType::value_type;
+            at::Tensor flat = result.reshape({-1}).to(torch::kCPU);
+            if constexpr (!is_complex_scalar<ValueType>::value) {
+                if (flat.is_complex()) {
+                    flat = torch::real(flat);
+                }
+            } else if (!flat.is_complex()) {
+                flat = flat.to(scalar_dtype<ValueType>());
+            }
+
+            dst.resize(static_cast<size_t>(flat.numel()));
+            for (int64_t index = 0; index < flat.numel(); ++index) {
+                if constexpr (is_complex_scalar<ValueType>::value) {
+                    using RealType = typename complex_value_type<ValueType>::type;
+                    c10::complex<RealType> value = flat[index].template item<c10::complex<RealType>>();
+                    dst[static_cast<size_t>(index)] = ValueType(value.real(), value.imag());
+                } else {
+                    dst[static_cast<size_t>(index)] = flat[index].template item<ValueType>();
+                }
+            }
+        } else {
+            static_assert(sizeof(OutputType) == 0, "FFT output type is not supported");
+        }
+    }
+
+    at::Tensor forwardTensor(const at::Tensor& input, int64_t nfft = -1) const {
+        if (input.is_complex() || !(m_flags & HalfSpectrum)) {
+            return nfft > 0 ? torch::fft_fft(input, nfft) : torch::fft_fft(input);
+        }
+        return nfft > 0 ? torch::fft_rfft(input, nfft) : torch::fft_rfft(input);
+    }
+
+    at::Tensor inverseTensor(const at::Tensor& input, int64_t nfft = -1) const {
+        at::Tensor result;
+        if ((m_flags & HalfSpectrum) && input.is_complex()) {
+            result = nfft > 0 ? torch::fft_irfft(input, nfft) : torch::fft_irfft(input);
+        } else if (input.is_complex()) {
+            result = nfft > 0 ? torch::fft_ifft(input, nfft) : torch::fft_ifft(input);
+        } else {
+            result = nfft > 0 ? torch::fft_irfft(input, nfft) : torch::fft_irfft(input);
+        }
+
+        if (m_flags & Unscaled) {
+            int64_t scale = nfft > 0 ? nfft : input.numel();
+            if (scale > 0) {
+                result = result * static_cast<Scalar>(scale);
+            }
+        }
+        return result;
+    }
     
+public:
     FFT() {}
 
-    template <typename InputType, typename OutputType>
-    void fwd(OutputType& dst, const InputType& src) {
-        // Eigen's src input is usually real, dst is complex.
-        at::Tensor input_t = src.tensor();
-        // 1D Real to Complex FFT
-        at::Tensor result = torch::fft_rfft(input_t); 
-        dst = OutputType(result);
+    FFT& SetFlag(Flag flag) {
+        m_flags |= flag;
+        return *this;
+    }
+
+    FFT& ClearFlag(Flag flag) {
+        m_flags &= ~flag;
+        return *this;
+    }
+
+    bool HasFlag(Flag flag) const {
+        return (m_flags & flag) != 0;
     }
 
     template <typename InputType, typename OutputType>
-    void inv(OutputType& dst, const InputType& src) {
-        // Complex to Real IFFT
-        at::Tensor input_t = src.tensor();
-        // PyTorch expects original size for irfft if dimension was even, we pass generic
-        at::Tensor result = torch::fft_irfft(input_t);
-        dst = OutputType(result);
+    void fwd(OutputType& dst, const InputType& src) const {
+        assignResult(dst, forwardTensor(toTensor(src)));
+    }
+
+    template <typename InputType, typename OutputType>
+    void fwd(OutputType& dst, const InputType& src, int nfft) const {
+        assignResult(dst, forwardTensor(toTensor(src), nfft));
+    }
+
+    template <typename InputType, typename OutputType>
+    void inv(OutputType& dst, const InputType& src) const {
+        assignResult(dst, inverseTensor(toTensor(src)));
+    }
+
+    template <typename InputType, typename OutputType>
+    void inv(OutputType& dst, const InputType& src, int nfft) const {
+        assignResult(dst, inverseTensor(toTensor(src), nfft));
     }
 };
 

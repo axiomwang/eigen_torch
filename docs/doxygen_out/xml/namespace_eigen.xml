@@ -3,6 +3,20 @@
   <compounddef id="namespace_eigen" kind="namespace" language="C++">
     <compoundname>Eigen</compoundname>
     <innerclass refid="class_eigen_1_1_device_manager" prot="public">Eigen::DeviceManager</innerclass>
+    <innerclass refid="class_eigen_1_1_partial_piv_l_u" prot="public">Eigen::PartialPivLU</innerclass>
+    <innerclass refid="class_eigen_1_1_full_piv_l_u" prot="public">Eigen::FullPivLU</innerclass>
+    <innerclass refid="class_eigen_1_1_householder_q_r" prot="public">Eigen::HouseholderQR</innerclass>
+    <innerclass refid="class_eigen_1_1_col_piv_householder_q_r" prot="public">Eigen::ColPivHouseholderQR</innerclass>
+    <innerclass refid="class_eigen_1_1_full_piv_householder_q_r" prot="public">Eigen::FullPivHouseholderQR</innerclass>
+    <innerclass refid="class_eigen_1_1_l_l_t" prot="public">Eigen::LLT</innerclass>
+    <innerclass refid="class_eigen_1_1_l_d_l_t" prot="public">Eigen::LDLT</innerclass>
+    <innerclass refid="class_eigen_1_1_jacobi_s_v_d" prot="public">Eigen::JacobiSVD</innerclass>
+    <innerclass refid="class_eigen_1_1_b_d_c_s_v_d" prot="public">Eigen::BDCSVD</innerclass>
+    <innerclass refid="class_eigen_1_1_complete_orthogonal_decomposition" prot="public">Eigen::CompleteOrthogonalDecomposition</innerclass>
+    <innerclass refid="class_eigen_1_1_eigen_solver" prot="public">Eigen::EigenSolver</innerclass>
+    <innerclass refid="class_eigen_1_1_self_adjoint_eigen_solver" prot="public">Eigen::SelfAdjointEigenSolver</innerclass>
+    <innerclass refid="class_eigen_1_1_complex_eigen_solver" prot="public">Eigen::ComplexEigenSolver</innerclass>
+    <innerclass refid="class_eigen_1_1_array" prot="public">Eigen::Array</innerclass>
     <innerclass refid="class_eigen_1_1_matrix" prot="public">Eigen::Matrix</innerclass>
     <sectiondef kind="typedef">
       <memberdef kind="typedef" id="namespace_eigen_1ad74255131e0e3e4eac3bf071a03c975f" prot="public" static="no">
@@ -17,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="212" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="212" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="769" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="769" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1a215d9633d350b8670db5d4377dff3b82" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; double, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
@@ -31,7 +45,49 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="213" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="213" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="770" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="770" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1a785e50935c7be27286d3e6a548d1617c" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; std::complex&lt; float &gt;, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>using Eigen::MatrixXcf = Matrix&lt;std::complex&lt;float&gt;, Dynamic, Dynamic&gt;</definition>
+        <argsstring></argsstring>
+        <name>MatrixXcf</name>
+        <qualifiedname>Eigen::MatrixXcf</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="771" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="771" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1a888d7a6f49a5f66642c3ec3ee76b4420" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; std::complex&lt; double &gt;, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>using Eigen::MatrixXcd = Matrix&lt;std::complex&lt;double&gt;, Dynamic, Dynamic&gt;</definition>
+        <argsstring></argsstring>
+        <name>MatrixXcd</name>
+        <qualifiedname>Eigen::MatrixXcd</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="772" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="772" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1a26af7c579f61d33f02ce5546b1aceedf" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; int32_t, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>using Eigen::MatrixXi = Matrix&lt;int32_t, Dynamic, Dynamic&gt;</definition>
+        <argsstring></argsstring>
+        <name>MatrixXi</name>
+        <qualifiedname>Eigen::MatrixXi</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="773" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="773" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1ac6d5117f42866229c8e1b37a3e0ac4f3" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; float, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, 1 &gt;</type>
@@ -45,7 +101,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="214" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="214" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="774" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="774" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1a918ad7603375ea830920ab1d43e340ae" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; double, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, 1 &gt;</type>
@@ -59,7 +115,77 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="215" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="215" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="775" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="775" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1a03ac9f2f3238afff113bd2aef9dca258" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; std::complex&lt; float &gt;, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, 1 &gt;</type>
+        <definition>using Eigen::VectorXcf = Matrix&lt;std::complex&lt;float&gt;, Dynamic, 1&gt;</definition>
+        <argsstring></argsstring>
+        <name>VectorXcf</name>
+        <qualifiedname>Eigen::VectorXcf</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="776" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="776" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1a0048163ff9e394ec960eacfd1ca9f8aa" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; std::complex&lt; double &gt;, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, 1 &gt;</type>
+        <definition>using Eigen::VectorXcd = Matrix&lt;std::complex&lt;double&gt;, Dynamic, 1&gt;</definition>
+        <argsstring></argsstring>
+        <name>VectorXcd</name>
+        <qualifiedname>Eigen::VectorXcd</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="777" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="777" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1afe3a89f42afc8f6c72a487af1e0171ac" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; int32_t, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref>, 1 &gt;</type>
+        <definition>using Eigen::VectorXi = Matrix&lt;int32_t, Dynamic, 1&gt;</definition>
+        <argsstring></argsstring>
+        <name>VectorXi</name>
+        <qualifiedname>Eigen::VectorXi</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="778" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="778" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1ad0757eb637037892868d2d03cacb2042" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; float, 1, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>using Eigen::RowVectorXf = Matrix&lt;float, 1, Dynamic&gt;</definition>
+        <argsstring></argsstring>
+        <name>RowVectorXf</name>
+        <qualifiedname>Eigen::RowVectorXf</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="779" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="779" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1a2a3f4889d891a8a8ad45ddfd94072923" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; double, 1, <ref refid="namespace_eigen_1a0df59d37a5dd9e845d2cbd824ef04a74" kindref="member">Dynamic</ref> &gt;</type>
+        <definition>using Eigen::RowVectorXd = Matrix&lt;double, 1, Dynamic&gt;</definition>
+        <argsstring></argsstring>
+        <name>RowVectorXd</name>
+        <qualifiedname>Eigen::RowVectorXd</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="780" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="780" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1aa5d56f11b800c46fbcafd9d43c6004a8" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; float, 2, 2 &gt;</type>
@@ -73,7 +199,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="218" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="218" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="783" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="783" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1a6f8bde07d5ea249371fda4acba273e24" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; float, 3, 3 &gt;</type>
@@ -87,7 +213,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="219" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="219" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="784" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="784" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1a0859749cc567b5b7d2d1cebd994bd2af" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; float, 4, 4 &gt;</type>
@@ -101,7 +227,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="220" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="220" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="785" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="785" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1ab316590896c3ded7c8b3856fa0da3e63" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; double, 2, 2 &gt;</type>
@@ -115,7 +241,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="222" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="222" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="787" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="787" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1abd74dff3cda9599d788680a97b517ed5" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; double, 3, 3 &gt;</type>
@@ -129,7 +255,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="223" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="223" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="788" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="788" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1aae4a0fb2ed90f83664e1bce167293998" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; double, 4, 4 &gt;</type>
@@ -143,7 +269,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="224" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="224" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="789" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="789" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1accdcde24cef7f13682e004c5058a4c1c" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; float, 2, 1 &gt;</type>
@@ -157,7 +283,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="226" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="226" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="791" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="791" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1a87bbde309d5984ec0fb7951e4fbb1199" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; float, 3, 1 &gt;</type>
@@ -171,7 +297,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="227" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="227" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="792" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="792" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1a9db8faa168b56991fa05b1f826fbd727" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; float, 4, 1 &gt;</type>
@@ -185,7 +311,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="228" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="228" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="793" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="793" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1a32675e8f1517d68b70fc1353e0223486" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; double, 2, 1 &gt;</type>
@@ -199,7 +325,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="230" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="230" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="795" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="795" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1a70c73468be581824994656ef7fb3becd" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; double, 3, 1 &gt;</type>
@@ -213,7 +339,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="231" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="231" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="796" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="796" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespace_eigen_1a6c60cdfb59a7a1bb314d3a78a7185d55" prot="public" static="no">
         <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; double, 4, 1 &gt;</type>
@@ -227,7 +353,91 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="232" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="232" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="797" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="797" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1a6aec84d8e834c49b939fc0e4b1787264" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; float, 1, 2 &gt;</type>
+        <definition>using Eigen::RowVector2f = Matrix&lt;float, 1, 2&gt;</definition>
+        <argsstring></argsstring>
+        <name>RowVector2f</name>
+        <qualifiedname>Eigen::RowVector2f</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="799" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="799" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1a9432b6d605b8a554e596c79b03288de7" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; float, 1, 3 &gt;</type>
+        <definition>using Eigen::RowVector3f = Matrix&lt;float, 1, 3&gt;</definition>
+        <argsstring></argsstring>
+        <name>RowVector3f</name>
+        <qualifiedname>Eigen::RowVector3f</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="800" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="800" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1aa2d0d3ba8297973e29985178b017af69" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; float, 1, 4 &gt;</type>
+        <definition>using Eigen::RowVector4f = Matrix&lt;float, 1, 4&gt;</definition>
+        <argsstring></argsstring>
+        <name>RowVector4f</name>
+        <qualifiedname>Eigen::RowVector4f</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="801" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="801" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1afe3e0ce7e054686acfa78c3b329df5c1" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; double, 1, 2 &gt;</type>
+        <definition>using Eigen::RowVector2d = Matrix&lt;double, 1, 2&gt;</definition>
+        <argsstring></argsstring>
+        <name>RowVector2d</name>
+        <qualifiedname>Eigen::RowVector2d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="803" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="803" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1aff3a0922ec11124678225d752d3fbf0b" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; double, 1, 3 &gt;</type>
+        <definition>using Eigen::RowVector3d = Matrix&lt;double, 1, 3&gt;</definition>
+        <argsstring></argsstring>
+        <name>RowVector3d</name>
+        <qualifiedname>Eigen::RowVector3d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="804" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="804" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="namespace_eigen_1a83a120b6833f9ab3cc4b6963943bf040" prot="public" static="no">
+        <type><ref refid="class_eigen_1_1_matrix" kindref="compound">Matrix</ref>&lt; double, 1, 4 &gt;</type>
+        <definition>using Eigen::RowVector4d = Matrix&lt;double, 1, 4&gt;</definition>
+        <argsstring></argsstring>
+        <name>RowVector4d</name>
+        <qualifiedname>Eigen::RowVector4d</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="805" column="1" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="805" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="var">
@@ -244,7 +454,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="10" column="15" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="10" bodyend="-1"/>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="15" column="15" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="15" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

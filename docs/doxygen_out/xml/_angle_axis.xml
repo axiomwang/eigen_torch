@@ -10,6 +10,7 @@
 <codeline><highlight class="normal">#pragma<sp/>once</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;Matrix.h&quot;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;Quaternion&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&lt;algorithm&gt;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&lt;cmath&gt;</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal">namespace<sp/>Eigen<sp/>{</highlight></codeline>
@@ -31,12 +32,62 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>AngleAxis(Scalar<sp/>angle,<sp/>const<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;&amp;<sp/>axis)<sp/>:<sp/>m_angle(angle),<sp/>m_axis(axis)<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Assume<sp/>axis<sp/>is<sp/>already<sp/>normalized,<sp/>matching<sp/>Eigen<sp/>semantics</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>explicit<sp/>AngleAxis(const<sp/>Quaternion&lt;Scalar&gt;&amp;<sp/>q)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fromQuaternion(q);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar<sp/>angle()<sp/>const<sp/>{<sp/>return<sp/>m_angle;<sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;&amp;<sp/>axis()<sp/>const<sp/>{<sp/>return<sp/>m_axis;<sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Scalar&amp;<sp/>angle()<sp/>{<sp/>return<sp/>m_angle;<sp/>}</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;&amp;<sp/>axis()<sp/>{<sp/>return<sp/>m_axis;<sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>AngleAxis&amp;<sp/>fromRotationMatrix(const<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>3&gt;&amp;<sp/>rot)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>trace<sp/>=<sp/>rot(0,<sp/>0)<sp/>+<sp/>rot(1,<sp/>1)<sp/>+<sp/>rot(2,<sp/>2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>cos_theta<sp/>=<sp/>(trace<sp/>-<sp/>static_cast&lt;Scalar&gt;(1))<sp/>/<sp/>static_cast&lt;Scalar&gt;(2);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cos_theta<sp/>=<sp/>std::max(static_cast&lt;Scalar&gt;(-1),<sp/>std::min(static_cast&lt;Scalar&gt;(1),<sp/>cos_theta));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_angle<sp/>=<sp/>std::acos(cos_theta);</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(std::abs(m_angle)<sp/>&lt;<sp/>static_cast&lt;Scalar&gt;(1e-7))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_axis<sp/>=<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;::UnitX();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>denom<sp/>=<sp/>static_cast&lt;Scalar&gt;(2)<sp/>*<sp/>std::sin(m_angle);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.dtype(Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;::get_torch_dtype())</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.device(DeviceManager::get_default_device());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>at::Tensor<sp/>axis_t<sp/>=<sp/>torch::tensor({</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(rot(2,<sp/>1)<sp/>-<sp/>rot(1,<sp/>2))<sp/>/<sp/>denom,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(rot(0,<sp/>2)<sp/>-<sp/>rot(2,<sp/>0))<sp/>/<sp/>denom,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(rot(1,<sp/>0)<sp/>-<sp/>rot(0,<sp/>1))<sp/>/<sp/>denom</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>},<sp/>options).unsqueeze(1);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_axis<sp/>=<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;(axis_t).normalized();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>AngleAxis&amp;<sp/>fromQuaternion(const<sp/>Quaternion&lt;Scalar&gt;&amp;<sp/>q_in)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Quaternion&lt;Scalar&gt;<sp/>q<sp/>=<sp/>q_in.normalized();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>qw<sp/>=<sp/>q.w();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>qx<sp/>=<sp/>q.x();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>qy<sp/>=<sp/>q.y();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>qz<sp/>=<sp/>q.z();</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_angle<sp/>=<sp/>static_cast&lt;Scalar&gt;(2)<sp/>*<sp/>std::acos(qw);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>s<sp/>=<sp/>std::sqrt(std::max(static_cast&lt;Scalar&gt;(0),<sp/>static_cast&lt;Scalar&gt;(1)<sp/>-<sp/>qw<sp/>*<sp/>qw));</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>(s<sp/>&lt;<sp/>static_cast&lt;Scalar&gt;(1e-7))<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_axis<sp/>=<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;::UnitX();</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/>else<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>auto<sp/>options<sp/>=<sp/>torch::TensorOptions()</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.dtype(Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;::get_torch_dtype())</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.device(DeviceManager::get_default_device());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>m_axis<sp/>=<sp/>Matrix&lt;Scalar,<sp/>3,<sp/>1&gt;(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>torch::tensor({qx<sp/>/<sp/>s,<sp/>qy<sp/>/<sp/>s,<sp/>qz<sp/>/<sp/>s},<sp/>options).unsqueeze(1));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>*this;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Matrix&lt;Scalar,<sp/>3,<sp/>3&gt;<sp/>toRotationMatrix()<sp/>const<sp/>{</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Use<sp/>Rodrigues&apos;<sp/>rotation<sp/>formula</highlight></codeline>
@@ -70,6 +121,18 @@
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Scalar<sp/>z<sp/>=<sp/>m_axis.tensor()[2][0].template<sp/>item&lt;Scalar&gt;()<sp/>*<sp/>s;</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>Quaternion&lt;Scalar&gt;(c,<sp/>x,<sp/>y,<sp/>z);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Quaternion&lt;Scalar&gt;<sp/>toQuaternion()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>static_cast&lt;Quaternion&lt;Scalar&gt;&gt;(*this);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>AngleAxis<sp/>inverse()<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>AngleAxis(-m_angle,<sp/>m_axis);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>Quaternion&lt;Scalar&gt;<sp/>operator*(const<sp/>AngleAxis&amp;<sp/>other)<sp/>const<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>this-&gt;toQuaternion()<sp/>*<sp/>other.toQuaternion();</highlight></codeline>
 <codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline><highlight class="normal">};</highlight></codeline>
 <codeline></codeline>

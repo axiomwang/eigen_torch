@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.16.1" xml:lang="en-US">
+  <compounddef id="class_eigen_1_1_matrix_1_1_coeff_proxy" kind="class" language="C++" prot="public">
+    <compoundname>Eigen::Matrix::CoeffProxy</compoundname>
+    <includes refid="_matrix_8h" local="no">Matrix.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_eigen_1_1_matrix_1_1_coeff_proxy_1addd4a22f31f92d1482701e4476ab2289" prot="private" static="no" mutable="no">
+        <type>at::Tensor</type>
+        <definition>at::Tensor Eigen::Matrix&lt; Scalar_, RowsAtCompileTime_, ColsAtCompileTime_ &gt;::CoeffProxy::m_element</definition>
+        <argsstring></argsstring>
+        <name>m_element</name>
+        <qualifiedname>Eigen::Matrix::CoeffProxy::m_element</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="72" column="20" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1_1_coeff_proxy_1a8ddfeb49bb56a828d2c601089362ac34" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Eigen::Matrix&lt; Scalar_, RowsAtCompileTime_, ColsAtCompileTime_ &gt;::CoeffProxy::CoeffProxy</definition>
+        <argsstring>(const at::Tensor &amp;element)</argsstring>
+        <name>CoeffProxy</name>
+        <qualifiedname>Eigen::Matrix::CoeffProxy::CoeffProxy</qualifiedname>
+        <param>
+          <type>const at::Tensor &amp;</type>
+          <declname>element</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="75" column="18" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="75" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1_1_coeff_proxy_1a93bc8ce1bcd1b6741f05cdc0cf43037e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_eigen_1_1_matrix_1_1_coeff_proxy_1a8ddfeb49bb56a828d2c601089362ac34" kindref="member">CoeffProxy</ref> &amp;</type>
+        <definition>CoeffProxy &amp; Eigen::Matrix&lt; Scalar_, RowsAtCompileTime_, ColsAtCompileTime_ &gt;::CoeffProxy::operator=</definition>
+        <argsstring>(const Scalar_ &amp;value)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Eigen::Matrix::CoeffProxy::operator=</qualifiedname>
+        <param>
+          <type>const Scalar_ &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="77" column="20" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="77" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1_1_coeff_proxy_1a9e2bf4d88eb5eb562062d407310c569a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="class_eigen_1_1_matrix_1_1_coeff_proxy_1a8ddfeb49bb56a828d2c601089362ac34" kindref="member">CoeffProxy</ref> &amp;</type>
+        <definition>CoeffProxy &amp; Eigen::Matrix&lt; Scalar_, RowsAtCompileTime_, ColsAtCompileTime_ &gt;::CoeffProxy::operator=</definition>
+        <argsstring>(const T &amp;value)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Eigen::Matrix::CoeffProxy::operator=</qualifiedname>
+        <param>
+          <type>const T &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="83" column="20" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="83" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="class_eigen_1_1_matrix_1_1_coeff_proxy_1a00f61d15713ab338fbf55bb70c0de766" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Eigen::Matrix&lt; Scalar_, RowsAtCompileTime_, ColsAtCompileTime_ &gt;::CoeffProxy::operator Scalar_</definition>
+        <argsstring>() const</argsstring>
+        <name>operator Scalar_</name>
+        <qualifiedname>Eigen::Matrix::CoeffProxy::operator Scalar_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="88" column="9" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="88" bodyend="90"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" line="70" column="5" bodyfile="/Users/wangshiyu/Documents/C++/eigen_torch/include/Eigen/Matrix.h" bodystart="70" bodyend="91"/>
+    <listofallmembers>
+      <member refid="class_eigen_1_1_matrix_1_1_coeff_proxy_1a8ddfeb49bb56a828d2c601089362ac34" prot="public" virt="non-virtual"><scope>Eigen::Matrix::CoeffProxy</scope><name>CoeffProxy</name></member>
+      <member refid="class_eigen_1_1_matrix_1_1_coeff_proxy_1addd4a22f31f92d1482701e4476ab2289" prot="private" virt="non-virtual"><scope>Eigen::Matrix::CoeffProxy</scope><name>m_element</name></member>
+      <member refid="class_eigen_1_1_matrix_1_1_coeff_proxy_1a00f61d15713ab338fbf55bb70c0de766" prot="public" virt="non-virtual"><scope>Eigen::Matrix::CoeffProxy</scope><name>operator Scalar_</name></member>
+      <member refid="class_eigen_1_1_matrix_1_1_coeff_proxy_1a93bc8ce1bcd1b6741f05cdc0cf43037e" prot="public" virt="non-virtual"><scope>Eigen::Matrix::CoeffProxy</scope><name>operator=</name></member>
+      <member refid="class_eigen_1_1_matrix_1_1_coeff_proxy_1a9e2bf4d88eb5eb562062d407310c569a" prot="public" virt="non-virtual"><scope>Eigen::Matrix::CoeffProxy</scope><name>operator=</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

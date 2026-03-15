@@ -1,0 +1,102 @@
+#ifndef EIGEN_UNSUPPORTED_LEVENBERGMARQUARDT_H
+#define EIGEN_UNSUPPORTED_LEVENBERGMARQUARDT_H
+
+#include "Eigen/Core"
+#include "NumericalDiff"
+
+#include <algorithm>
+
+namespace Eigen {
+
+enum LevenbergMarquardtStatus {
+    LMRunning = 0,
+    LMSuccess = 1,
+    LMNoConvergence = 2,
+    LMInvalidInput = 3
+};
+
+template <typename FunctorType>
+class LevenbergMarquardt {
+private:
+    NumericalDiff<FunctorType> m_numerical;
+    int m_maxIterations = 128;
+    double m_tolerance = 1e-7;
+    double m_lambda = 1e-3;
+
+    int m_iterations = 0;
+    double m_error = 0.0;
+    LevenbergMarquardtStatus m_status = LMInvalidInput;
+
+public:
+    explicit LevenbergMarquardt(const FunctorType& functor)
+        : m_numerical(functor) {}
+
+    LevenbergMarquardt& setMaxIterations(int max_iterations) {
+        m_maxIterations = std::max(1, max_iterations);
+        return *this;
+    }
+
+    LevenbergMarquardt& setTolerance(double tolerance) {
+        m_tolerance = tolerance;
+        return *this;
+    }
+
+    LevenbergMarquardt& setLambda(double lambda) {
+        m_lambda = lambda;
+        return *this;
+    }
+
+    int iterations() const { return m_iterations; }
+    double error() const { return m_error; }
+    LevenbergMarquardtStatus status() const { return m_status; }
+
+    template <typename InputType>
+    LevenbergMarquardtStatus minimize(InputType& x) {
+        using Scalar = typename InputType::ScalarType;
+
+        m_status = LMRunning;
+        m_iterations = 0;
+
+        for (int iter = 0; iter < m_maxIterations; ++iter) {
+            auto residual = m_numerical.values(x);
+            auto J = m_numerical.jacobian(x);
+
+            Matrix<Scalar, Dynamic, Dynamic> JT = J.transpose();
+            Matrix<Scalar, Dynamic, Dynamic> A = JT * J;
+            Matrix<Scalar, Dynamic, Dynamic> g = JT * residual;
+
+            Matrix<Scalar, Dynamic, Dynamic> damped =
+                A + Matrix<Scalar, Dynamic, Dynamic>::Identity(A.rows(), A.cols()) * static_cast<Scalar>(m_lambda);
+            Matrix<Scalar, Dynamic, Dynamic> step(
+                torch::linalg_solve(damped.tensor(), (-g).tensor()));
+
+            InputType candidate(x.tensor() + step.tensor());
+            auto candidate_residual = m_numerical.values(candidate);
+
+            Scalar current_error = residual.squaredNorm();
+            Scalar new_error = candidate_residual.squaredNorm();
+
+            if (new_error < current_error) {
+                x = candidate;
+                m_lambda = std::max(1e-12, m_lambda * 0.7);
+            } else {
+                m_lambda = std::min(1e6, m_lambda * 2.0);
+            }
+
+            m_error = std::sqrt(static_cast<double>(new_error));
+            m_iterations = iter + 1;
+
+            if (step.norm() < static_cast<Scalar>(m_tolerance) || m_error < m_tolerance) {
+                m_status = LMSuccess;
+                return m_status;
+            }
+        }
+
+        m_status = LMNoConvergence;
+        return m_status;
+    }
+};
+
+} // namespace Eigen
+
+#endif // EIGEN_UNSUPPORTED_LEVENBERGMARQUARDT_H

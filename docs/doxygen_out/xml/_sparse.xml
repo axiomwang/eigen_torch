@@ -10,7 +10,9 @@
 <codeline><highlight class="normal">#ifndef<sp/>EIGEN_SPARSE_MODULE_H</highlight></codeline>
 <codeline><highlight class="normal">#define<sp/>EIGEN_SPARSE_MODULE_H</highlight></codeline>
 <codeline></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;SparseCommon&quot;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;SparseMatrix&quot;</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;SparseVector&quot;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;SparseLU&quot;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;SparseQR&quot;</highlight></codeline>
 <codeline><highlight class="normal">#include<sp/>&quot;SparseCholesky&quot;</highlight></codeline>

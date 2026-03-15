@@ -1,176 +1,287 @@
-#include <Eigen/SVD>
-#include <Eigen/Eigenvalues>
 #include <Eigen/Dense>
+#include <Eigen/Eigenvalues>
 #include <Eigen/Geometry>
-#include <Eigen/Sparse>
 #include <Eigen/Jacobi>
-#include <unsupported/Eigen/AutoDiff>
-#include <unsupported/Eigen/EulerAngles>
-#include <unsupported/Eigen/FFT>
-#include <unsupported/Eigen/CXX11/Tensor>
-#include <unsupported/Eigen/BVH>
-#include <unsupported/Eigen/Splines>
-#include <unsupported/Eigen/NNLS>
+#include <Eigen/SVD>
+
+#include <cmath>
 #include <iostream>
 
+namespace {
+
+constexpr float kPi = 3.14159265358979323846f;
+
+template <typename Lhs, typename Rhs>
+float maxAbsDiff(const Lhs& lhs, const Rhs& rhs) {
+    return (lhs - rhs).cwiseAbs().maxCoeff();
+}
+
+template <typename Lhs, typename Rhs>
+bool nearMatrix(const Lhs& lhs, const Rhs& rhs, float eps = 1e-4f) {
+    return maxAbsDiff(lhs, rhs) <= eps;
+}
+
+bool nearScalar(float lhs, float rhs, float eps = 1e-4f) {
+    return std::abs(lhs - rhs) <= eps;
+}
+
+} // namespace
+
 int main() {
-    std::cout << "Starting Eigen Phase 2 Tests..." << std::endl;
     Eigen::DeviceManager::set_default_device(torch::kCPU);
+    auto options = torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU);
 
-    std::cout << "\n--- LU Decomposition ---" << std::endl;
-    Eigen::MatrixXf A = Eigen::MatrixXf::Random(3, 3);
-    Eigen::VectorXf b = Eigen::VectorXf::Random(3, 1);
-    Eigen::PartialPivLU<Eigen::MatrixXf> lusolver(A);
-    Eigen::VectorXf x_lu = lusolver.solve(b);
-    std::cout << "LU Solution Error: " << (A * x_lu - b).cwiseAbs().maxCoeff() << " (Expected ~0)" << std::endl;
+    {
+        Eigen::MatrixXf A(torch::tensor({{4.0f, 7.0f}, {2.0f, 6.0f}}, options));
+        Eigen::MatrixXf B(torch::tensor({{1.0f, 2.0f}, {3.0f, 4.0f}}, options));
+        Eigen::MatrixXf expected_product(torch::tensor({{25.0f, 36.0f}, {20.0f, 28.0f}}, options));
+        Eigen::MatrixXf expected_inverse(torch::tensor({{0.6f, -0.7f}, {-0.2f, 0.4f}}, options));
 
-    std::cout << "\n--- Eigen-style Chaining: FullPivLU ---" << std::endl;
-    Eigen::VectorXf x_fullpivlu = A.fullPivLu().solve(b);
-    std::cout << "FullPivLU Solution Error: " << (A * x_fullpivlu - b).cwiseAbs().maxCoeff() << " (Expected ~0)" << std::endl;
+        if (!nearMatrix(A * B, expected_product) ||
+            !nearScalar(A.determinant(), 10.0f) ||
+            !nearMatrix(A.inverse(), expected_inverse, 1e-3f)) {
+            std::cerr << "Dense matrix arithmetic mismatch" << std::endl;
+            return 1;
+        }
+    }
 
-    std::cout << "\n--- Cholesky Decomposition ---" << std::endl;
-    Eigen::MatrixXf A_sym = A.transpose() * A + Eigen::MatrixXf::Identity(3,3); // Ensure pos-def
-    Eigen::LLT<Eigen::MatrixXf> lltsolver(A_sym);
-    Eigen::VectorXf x_llt = lltsolver.solve(b);
-    std::cout << "Cholesky Solution Error: " << (A_sym * x_llt - b).cwiseAbs().maxCoeff() << " (Expected ~0)" << std::endl;
+    {
+        Eigen::MatrixXf system(torch::tensor({{3.0f, 1.0f}, {1.0f, 2.0f}}, options));
+        Eigen::VectorXf x_true(torch::tensor({2.0f, -1.0f}, options).unsqueeze(1));
+        Eigen::VectorXf rhs = system * x_true;
 
-    std::cout << "\n--- QR Decomposition ---" << std::endl;
-    Eigen::HouseholderQR<Eigen::MatrixXf> qrsolver(A);
-    Eigen::VectorXf x_qr = qrsolver.solve(b);
-    std::cout << "QR Solution Error: " << (A * x_qr - b).cwiseAbs().maxCoeff() << " (Expected ~0)" << std::endl;
+        if (!nearMatrix(system.partialPivLu().solve(rhs), x_true) ||
+            !nearMatrix(system.fullPivLu().solve(rhs), x_true) ||
+            !nearMatrix(system.householderQr().solve(rhs), x_true) ||
+            !nearMatrix(system.colPivHouseholderQr().solve(rhs), x_true) ||
+            !nearMatrix(system.fullPivHouseholderQr().solve(rhs), x_true) ||
+            !nearMatrix(system.completeOrthogonalDecomposition().solve(rhs), x_true) ||
+            !nearMatrix(system.llt().solve(rhs), x_true) ||
+            !nearMatrix(system.ldlt().solve(rhs), x_true)) {
+            std::cerr << "Dense linear solve mismatch" << std::endl;
+            return 1;
+        }
 
-    std::cout << "\n--- Eigen-style Chaining: ColPivHouseholderQR ---" << std::endl;
-    Eigen::VectorXf x_colpiv = A.colPivHouseholderQr().solve(b);
-    std::cout << "ColPivHouseholderQR Solution Error: " << (A * x_colpiv - b).cwiseAbs().maxCoeff() << " (Expected ~0)" << std::endl;
+        Eigen::LLT<Eigen::MatrixXf> llt(system);
+        if (!nearMatrix(llt.matrixL() * llt.matrixL().transpose(), system, 1e-3f)) {
+            std::cerr << "LLT reconstruction mismatch" << std::endl;
+            return 1;
+        }
+    }
 
-    std::cout << "\n--- Eigen-style Chaining: FullPivHouseholderQR ---" << std::endl;
-    Eigen::VectorXf x_fullpivqr = A.fullPivHouseholderQr().solve(b);
-    std::cout << "FullPivHouseholderQR Solution Error: " << (A * x_fullpivqr - b).cwiseAbs().maxCoeff() << " (Expected ~0)" << std::endl;
+    {
+        Eigen::MatrixXf diag(torch::tensor({{5.0f, 0.0f}, {0.0f, 2.0f}}, options));
+        Eigen::VectorXf x_true(torch::tensor({1.5f, -2.0f}, options).unsqueeze(1));
+        Eigen::VectorXf rhs = diag * x_true;
 
-    std::cout << "\n--- Rank-deficient solve (pivoted QR) ---" << std::endl;
-    // Make A_rankdef rank-deficient by duplicating a column.
-    Eigen::MatrixXf A_rankdef = Eigen::MatrixXf::Random(3, 3);
-    A_rankdef.tensor().select(1, 2).copy_(A_rankdef.tensor().select(1, 1));
-    Eigen::VectorXf b_rankdef = Eigen::VectorXf::Random(3, 1);
-    Eigen::VectorXf x_rankdef = A_rankdef.colPivHouseholderQr().solve(b_rankdef);
-    auto residual = (A_rankdef * x_rankdef - b_rankdef).cwiseAbs().maxCoeff();
-    std::cout << "Rank-deficient residual (ColPivHouseholderQR): " << residual << " (Expected small-ish)" << std::endl;
+        Eigen::JacobiSVD<Eigen::MatrixXf> jacobi_svd(diag, Eigen::ComputeThinU | Eigen::ComputeThinV);
+        Eigen::BDCSVD<Eigen::MatrixXf> bdc_svd(diag, Eigen::ComputeThinU | Eigen::ComputeThinV);
+        if (!nearMatrix(jacobi_svd.solve(rhs), x_true) ||
+            !nearMatrix(bdc_svd.solve(rhs), x_true) ||
+            !nearScalar(jacobi_svd.singularValues().sum(), 7.0f) ||
+            !nearScalar(jacobi_svd.singularValues().prod(), 10.0f)) {
+            std::cerr << "SVD mismatch" << std::endl;
+            return 1;
+        }
+    }
 
-    std::cout << "\n--- SVD Decomposition ---" << std::endl;
-    Eigen::JacobiSVD<Eigen::MatrixXf> svd(A, Eigen::ComputeFullU | Eigen::ComputeFullV);
-    Eigen::VectorXf x_svd = svd.solve(b);
-    std::cout << "SVD Solution Error: " << (A * x_svd - b).cwiseAbs().maxCoeff() << " (Expected ~0)" << std::endl;
+    {
+        Eigen::MatrixXf diagonal(torch::tensor({
+            {1.0f, 0.0f, 0.0f},
+            {0.0f, 2.0f, 0.0f},
+            {0.0f, 0.0f, 4.0f}
+        }, options));
 
-    std::cout << "\n--- Eigenvalues ---" << std::endl;
-    Eigen::EigenSolver<Eigen::MatrixXf> eig(A);
-    std::cout << "Eigenvalues (Real component) shape: " << eig.eigenvalues().rows() << "x" << eig.eigenvalues().cols() << std::endl;
-    
-    std::cout << "\n--- Geometry Module ---" << std::endl;
-    Eigen::Quaternionf q(1, 0, 0, 0);
-    Eigen::Matrix<float, 3, 1> point = Eigen::Matrix<float, 3, 1>::Ones(3, 1);
-    
-    // Quaternion * Vector returns Fixed Dynamic, auto converts? Actually operator* is fixed
-    Eigen::Matrix<float, 3, 1> rotated = q * point;
-    std::cout << "Point rotated by Identity Quaternion matches self: " << (rotated - point).cwiseAbs().maxCoeff() << std::endl;
-    std::cout << "Quat -> Rot Matrix size: " << q.toRotationMatrix().rows() << "x" << q.toRotationMatrix().cols() << std::endl;
-    
-    Eigen::AngleAxisf aa(3.14159f, Eigen::Matrix<float, 3, 1>::Ones(3, 1));
-    std::cout << "AngleAxis -> Rot Matrix valid: " << aa.toRotationMatrix().rows() << "x" << aa.toRotationMatrix().cols() << std::endl;
+        auto eig = diagonal.eigenSolver();
+        auto seig = diagonal.selfAdjointEigenSolver();
+        auto ceig = diagonal.complexEigenSolver();
+        Eigen::MatrixXf orthogonality = seig.eigenvectors().transpose() * seig.eigenvectors();
+        Eigen::MatrixXf identity = Eigen::MatrixXf::Identity(3, 3);
 
-    Eigen::Translation3f t(Eigen::Matrix<float, 3, 1>::Ones(3, 1));
-    std::cout << "Translation valid x/y/z: " << t.x() << ", " << t.y() << ", " << t.z() << std::endl;
-    
-    Eigen::Affine3f T; // Identity transform
-    Eigen::VectorXf p2 = T * point; 
-    std::cout << "Affine transform applied: Error=" << (p2 - point).cwiseAbs().maxCoeff() << std::endl;
+        if (!nearScalar(eig.eigenvalues().sum(), 7.0f) ||
+            !nearScalar(eig.eigenvalues().prod(), 8.0f) ||
+            !nearScalar(seig.eigenvalues().sum(), 7.0f) ||
+            !nearScalar(ceig.eigenvalues().sum(), 7.0f) ||
+            !nearMatrix(orthogonality, identity, 1e-4f)) {
+            std::cerr << "Eigen decomposition mismatch" << std::endl;
+            return 1;
+        }
+    }
 
-    std::cout << "\n--- Sparse Matrix Module ---" << std::endl;
-    Eigen::SparseMatrixf sm(3, 3);
-    sm.insert(0, 0, 1.0f);
-    sm.insert(1, 1, 2.0f);
-    sm.insert(2, 2, 3.0f);
-    sm.makeCompressed();
-    
-    std::cout << "Sparse Matrix nonZero elements: " << sm.nonZeros() << std::endl;
-    Eigen::VectorXf x_sm = Eigen::VectorXf::Ones(3, 1); // Changed to 3x1 to match sm
-    Eigen::VectorXf y_sm = sm * x_sm;
-    std::cout << "Sparse * Dense vector top element expected ~1: " << y_sm.tensor()[0][0].item<float>() << std::endl;
+    {
+        Eigen::ArrayXXf arr(torch::tensor({{1.0f, 2.0f}, {3.0f, 4.0f}}, options));
+        Eigen::MatrixXf expected_square(torch::tensor({{1.0f, 4.0f}, {9.0f, 16.0f}}, options));
+        Eigen::MatrixXf expected_shift(torch::tensor({{1.0f, 1.5f}, {2.0f, 2.5f}}, options));
+        Eigen::MatrixXf expected_pow(torch::tensor({{1.0f, 8.0f}, {27.0f, 64.0f}}, options));
 
-    // Advanced Sparse Solvers
-    Eigen::SparseLU<Eigen::SparseMatrix<float>> slu(sm);
-    Eigen::VectorXf slu_ans = slu.solve(y_sm);
-    std::cout << "SparseLU Error: " << (x_sm - slu_ans).cwiseAbs().maxCoeff() << std::endl;
+        if (!nearMatrix(arr.square().matrix(), expected_square) ||
+            !nearMatrix(((arr + 1.0f) / 2.0f).matrix(), expected_shift) ||
+            !nearMatrix(arr.pow(3.0f).matrix(), expected_pow)) {
+            std::cerr << "Array calculation mismatch" << std::endl;
+            return 1;
+        }
 
-    Eigen::SparseQR<Eigen::SparseMatrix<float>> sqr(sm);
-    Eigen::VectorXf sqr_ans = sqr.solve(y_sm);
-    std::cout << "SparseQR Error: " << (x_sm - sqr_ans).cwiseAbs().maxCoeff() << std::endl;
+        float raw[] = {1.0f, 2.0f, 3.0f, 4.0f};
+        Eigen::Map<Eigen::Matrix<float, 2, 2>> map_mat(raw);
+        map_mat(0, 1) = 5.0f;
+        if (!nearScalar(map_mat.determinant(), -11.0f) || !nearScalar(raw[1], 5.0f)) {
+            std::cerr << "Map mismatch" << std::endl;
+            return 1;
+        }
 
-    Eigen::SimplicialLLT<Eigen::SparseMatrix<float>> sllt(sm); // sm should be pos-def for CHol
-    Eigen::VectorXf sllt_ans = sllt.solve(y_sm);
-    std::cout << "SimplicialLLT Error: " << (x_sm - sllt_ans).cwiseAbs().maxCoeff() << std::endl;
+        Eigen::MatrixXf M(torch::tensor({{1.0f, 2.0f}, {3.0f, 4.0f}}, options));
+        M.conservativeResize(3, 3);
+        Eigen::MatrixXf top_left(torch::tensor({{1.0f, 2.0f}, {3.0f, 4.0f}}, options));
+        if (!nearMatrix(M.topLeftCorner(2, 2), top_left) ||
+            !nearScalar(M(2, 2), 0.0f)) {
+            std::cerr << "Core resize/block mismatch" << std::endl;
+            return 1;
+        }
+    }
 
-    std::cout << "\n--- Advanced Geometry Module ---" << std::endl;
-    Eigen::Rotation2Df rot2d(3.14159f / 2.0f); // 90 deg
-    Eigen::Matrix<float, 2, 1> p2d = Eigen::Matrix<float, 2, 1>::Ones(2, 1);
-    std::cout << "Rotation2D applied length matching: " << (rot2d * p2d).rows() << "x1" << std::endl;
+    {
+        Eigen::Vector3f unit_x = Eigen::Vector3f::UnitX();
+        Eigen::Vector3f unit_y = Eigen::Vector3f::UnitY();
+        Eigen::Vector3f unit_z = Eigen::Vector3f::UnitZ();
+        Eigen::Vector3f cross = unit_x.cross(unit_y);
+        Eigen::Vector4f homogeneous_input(torch::tensor({2.0f, 4.0f, 6.0f, 2.0f}, options).unsqueeze(1));
+        Eigen::Vector3f normalized_h(torch::tensor({1.0f, 2.0f, 3.0f}, options).unsqueeze(1));
+        Eigen::Vector4f expected_homogeneous(torch::tensor({1.0f, 0.0f, 0.0f, 1.0f}, options).unsqueeze(1));
+        Eigen::VectorXf orthogonal = unit_x.unitOrthogonal();
 
-    Eigen::Scaling3f scale(2.0f);
-    std::cout << "Scaling3D top corner: " << (scale * point).tensor()[0][0].item<float>() << " (expected 2.0)" << std::endl;
+        if (!nearMatrix(cross, unit_z) ||
+            !nearScalar(unit_x.dot(unit_y), 0.0f) ||
+            !nearMatrix(unit_x.homogeneous(), expected_homogeneous) ||
+            !nearMatrix(homogeneous_input.hnormalized(), normalized_h) ||
+            !nearScalar(unit_x.dot(orthogonal), 0.0f, 1e-4f) ||
+            !nearScalar(orthogonal.norm(), 1.0f, 1e-4f)) {
+            std::cerr << "Vector helper mismatch" << std::endl;
+            return 1;
+        }
+    }
 
-    Eigen::ParametrizedLine3f line(point, Eigen::Matrix<float, 3, 1>::Ones(3, 1));
-    std::cout << "ParametrizedLine Distance: " << line.distance(point) << " (expected 0)" << std::endl;
+    {
+        float s = std::sqrt(0.5f);
+        Eigen::Quaternionf qz90(s, 0.0f, 0.0f, s);
+        Eigen::Vector3f expected_rotated(torch::tensor({0.0f, 1.0f, 0.0f}, options).unsqueeze(1));
+        Eigen::MatrixXf expected_rot(torch::tensor({
+            {0.0f, -1.0f, 0.0f},
+            {1.0f,  0.0f, 0.0f},
+            {0.0f,  0.0f, 1.0f}
+        }, options));
 
-    Eigen::Hyperplane3f plane(Eigen::Matrix<float, 3, 1>::Ones(3, 1), 0.0f);
-    std::cout << "Hyperplane center normal: " << plane.normal().tensor()[0][0].item<float>() << std::endl;
+        if (!nearMatrix(qz90 * Eigen::Vector3f::UnitX(), expected_rotated, 1e-3f) ||
+            !nearMatrix(qz90.toRotationMatrix(), expected_rot, 1e-3f) ||
+            !nearScalar(qz90.norm(), 1.0f, 1e-4f)) {
+            std::cerr << "Quaternion mismatch" << std::endl;
+            return 1;
+        }
 
-    Eigen::AlignedBox3f box(point);
-    box.extend(Eigen::Matrix<float, 3, 1>(Eigen::Matrix<float, 3, 1>::Ones(3, 1).tensor() * -1.0f));
-    std::cout << "AlignedBox center matches 0: " << box.center().tensor()[0][0].item<float>() << std::endl;
+        Eigen::AngleAxisf aa(kPi * 0.5f, Eigen::Vector3f::UnitZ());
+        if (!nearMatrix(aa.toRotationMatrix(), expected_rot, 1e-3f) ||
+            !nearMatrix(aa.toQuaternion() * Eigen::Vector3f::UnitX(), expected_rotated, 1e-3f)) {
+            std::cerr << "AngleAxis mismatch" << std::endl;
+            return 1;
+        }
 
-    std::cout << "\n--- Jacobi Module ---" << std::endl;
-    Eigen::JacobiRotationf jac(1.0f, 0.0f);
-    std::cout << "Jacobi Rotation default structure ok C=1 S=0: C=" << jac.c() << " S=" << jac.s() << std::endl;
+        Eigen::Translation3f translation(1.0f, 2.0f, 3.0f);
+        Eigen::Vector3f point = Eigen::Vector3f::Ones(3, 1);
+        Eigen::Vector3f translated_expected(torch::tensor({2.0f, 3.0f, 4.0f}, options).unsqueeze(1));
+        if (!nearMatrix(translation * point, translated_expected) ||
+            !nearMatrix(translation.inverse() * translated_expected, point)) {
+            std::cerr << "Translation mismatch" << std::endl;
+            return 1;
+        }
 
-    std::cout << "\n--- Phase 6: Typedefs & Unsupported Modules ---" << std::endl;
-    Eigen::Matrix4d m4d = Eigen::Matrix4d::Identity(4, 4);
-    Eigen::Vector3f v3f = Eigen::Vector3f::Ones(3, 1);
-    std::cout << "Typedef Matrix4d size: " << m4d.rows() << "x" << m4d.cols() << std::endl;
-    std::cout << "Typedef Vector3f size: " << v3f.rows() << "x" << v3f.cols() << std::endl;
+        Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+        transform.translate(translation);
+        if (!nearMatrix(transform * point, translated_expected)) {
+            std::cerr << "Transform translation mismatch" << std::endl;
+            return 1;
+        }
 
-    Eigen::AutoDiffScalar<Eigen::MatrixXf> x(5.0f);
-    Eigen::AutoDiffScalar<Eigen::MatrixXf> y = x * x; // 5^2 = 25, derivative = 2*5 = 10
-    y.backward();
-    std::cout << "AutoDiffScalar (5^2) = " << y.value() << ", Gradient (2*5) = " << x.grad().item<float>() << std::endl;
+        Eigen::Affine3f rotation_transform = Eigen::Affine3f::Identity();
+        rotation_transform.rotate(qz90);
+        if (!nearMatrix(rotation_transform * Eigen::Vector3f::UnitX(), expected_rotated, 1e-3f)) {
+            std::cerr << "Transform rotation mismatch" << std::endl;
+            return 1;
+        }
 
-    Eigen::EulerAnglesf euler(0.0f, 0.0f, 0.0f);
-    std::cout << "EulerAngles -> RotMatrix [0,0]: " << euler.toRotationMatrix().tensor()[0][0].item<float>() << std::endl;
+        Eigen::Rotation2Df rotation2d(kPi * 0.5f);
+        Eigen::Matrix<float, 2, 1> expected_2d(torch::tensor({0.0f, 1.0f}, options).unsqueeze(1));
+        if (!nearMatrix(rotation2d * Eigen::Vector2f::UnitX(), expected_2d, 1e-3f)) {
+            std::cerr << "Rotation2D mismatch" << std::endl;
+            return 1;
+        }
 
-    Eigen::Tensor<float, 3> t3d({2, 2, 2});
-    t3d.setConstant(3.14f);
-    std::cout << "CXX11/Tensor N-Dim rank: " << t3d.tensor().dim() << ", numel: " << t3d.size() << std::endl;
+        Eigen::Vector3f scale_factors(torch::tensor({2.0f, 3.0f, 4.0f}, options).unsqueeze(1));
+        Eigen::Scaling3f scaling(scale_factors);
+        Eigen::Vector3f scaled_input(torch::tensor({1.0f, 2.0f, 3.0f}, options).unsqueeze(1));
+        Eigen::Vector3f scaled_expected(torch::tensor({2.0f, 6.0f, 12.0f}, options).unsqueeze(1));
+        if (!nearMatrix(scaling * scaled_input, scaled_expected) ||
+            !nearMatrix(scaling.toDenseMatrix(), Eigen::MatrixXf(torch::tensor({
+                {2.0f, 0.0f, 0.0f},
+                {0.0f, 3.0f, 0.0f},
+                {0.0f, 0.0f, 4.0f}
+            }, options)))) {
+            std::cerr << "Scaling mismatch" << std::endl;
+            return 1;
+        }
 
-    Eigen::FFTf fft;
-    Eigen::MatrixXf sig = Eigen::MatrixXf::Ones(4, 1);
-    Eigen::MatrixXf sig_fwd;
-    fft.fwd(sig_fwd, sig);
-    std::cout << "FFT Forward elements yielded correctly (complex format handled natively under torch)" << std::endl;
+        Eigen::ParametrizedLine3f line = Eigen::ParametrizedLine3f::Through(
+            Eigen::Vector3f::Zero(3, 1), Eigen::Vector3f::UnitX());
+        Eigen::Vector3f query(torch::tensor({2.0f, 3.0f, 0.0f}, options).unsqueeze(1));
+        Eigen::Vector3f projected(torch::tensor({2.0f, 0.0f, 0.0f}, options).unsqueeze(1));
+        if (!nearScalar(line.projection(query), 2.0f) ||
+            !nearMatrix(line.projectionPoint(query), projected) ||
+            !nearScalar(line.distance(query), 3.0f)) {
+            std::cerr << "ParametrizedLine mismatch" << std::endl;
+            return 1;
+        }
 
-    std::vector<int> bvh_nodes = {1, 2, 3};
-    Eigen::KdBVHf3 bvh;
-    bvh.init(bvh_nodes.begin(), bvh_nodes.end());
-    std::cout << "KdBVH Root isLeaf evaluation: " << bvh.getRoot()->isLeaf << std::endl;
+        Eigen::Hyperplane3f plane = Eigen::Hyperplane3f::Through(
+            Eigen::Vector3f::Zero(3, 1), Eigen::Vector3f::UnitX(), Eigen::Vector3f::UnitY());
+        Eigen::Vector3f plane_query(torch::tensor({1.0f, 2.0f, 3.0f}, options).unsqueeze(1));
+        Eigen::Vector3f plane_proj(torch::tensor({1.0f, 2.0f, 0.0f}, options).unsqueeze(1));
+        if (!nearScalar(plane.signedDistance(plane_query), 3.0f, 1e-3f) ||
+            !nearScalar(plane.absDistance(plane_query), 3.0f, 1e-3f) ||
+            !nearMatrix(plane.projection(plane_query), plane_proj, 1e-3f)) {
+            std::cerr << "Hyperplane mismatch" << std::endl;
+            return 1;
+        }
 
-    std::vector<float> knots = {0.0f, 0.5f, 1.0f};
-    std::vector<Eigen::Matrix<float, 3, 1>> ctrls = {v3f, v3f};
-    Eigen::Spline3f spline(knots, ctrls);
-    std::cout << "Spline evaluated u=0.5: " << spline(0.5f).tensor()[0][0].item<float>() << std::endl;
+        Eigen::AlignedBox3f box(Eigen::Vector3f::Zero(3, 1), Eigen::Vector3f::Constant(3, 1, 2.0f));
+        Eigen::AlignedBox3f box2(Eigen::Vector3f::Ones(3, 1), Eigen::Vector3f::Constant(3, 1, 3.0f));
+        Eigen::Vector3f clamped_expected(torch::tensor({2.0f, 0.0f, 1.0f}, options).unsqueeze(1));
+        if (!box.intersects(box2) ||
+            !nearScalar(box.intersection(box2).volume(), 1.0f) ||
+            !nearMatrix(box.center(), Eigen::Vector3f::Constant(3, 1, 1.0f)) ||
+            !nearMatrix(box.clamp(Eigen::Vector3f(torch::tensor({4.0f, -1.0f, 1.0f}, options).unsqueeze(1))), clamped_expected)) {
+            std::cerr << "AlignedBox mismatch" << std::endl;
+            return 1;
+        }
 
-    Eigen::MatrixXf A_nnls = Eigen::MatrixXf::Identity(2, 2);
-    Eigen::VectorXf b_nnls(Eigen::VectorXf::Ones(2, 1).tensor() * -1.0f); // Target negatives
-    Eigen::NNLS<Eigen::MatrixXf> nnls(A_nnls);
-    Eigen::VectorXf x_nnls = nnls.solve(b_nnls);
-    std::cout << "NNLS Projected Target for Negatives (clipped to >=0): " << x_nnls.tensor()[0][0].item<float>() << std::endl;
+        Eigen::MatrixXf symmetric(torch::tensor({{4.0f, 1.0f}, {1.0f, 3.0f}}, options));
+        Eigen::JacobiRotationf jacobi;
+        if (!jacobi.makeJacobi(symmetric, 0, 1)) {
+            std::cerr << "Jacobi rotation construction failed" << std::endl;
+            return 1;
+        }
+        if (!nearScalar(jacobi.c() * jacobi.c() + jacobi.s() * jacobi.s(), 1.0f, 1e-4f)) {
+            std::cerr << "Jacobi rotation normalization mismatch" << std::endl;
+            return 1;
+        }
+        Eigen::MatrixXf jacobi_matrix(torch::tensor({
+            {jacobi.c(), -jacobi.s()},
+            {jacobi.s(),  jacobi.c()}
+        }, options));
+        Eigen::MatrixXf rotated = jacobi_matrix.transpose() * symmetric * jacobi_matrix;
+        if (!nearScalar(rotated(0, 1), 0.0f, 1e-3f) || !nearScalar(rotated(1, 0), 0.0f, 1e-3f)) {
+            std::cerr << "Jacobi rotation annihilation mismatch" << std::endl;
+            return 1;
+        }
+    }
 
-    std::cout << "\nAll features executed successfully!\n" << std::endl;
+    std::cout << "Dense/core/geometry numerical checks passed" << std::endl;
     return 0;
 }
