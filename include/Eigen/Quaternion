@@ -12,12 +12,18 @@ protected:
     at::Tensor m_coeffs;
 
 public:
+    using ScalarType = Scalar;
+
     Quaternion() {
         auto options = torch::TensorOptions()
             .dtype(Matrix<Scalar, 4, 1>::get_torch_dtype())
             .device(DeviceManager::get_default_device());
         // Identity quaternion: w=1, x=y=z=0
         m_coeffs = torch::tensor({1.0, 0.0, 0.0, 0.0}, options); 
+    }
+
+    static Quaternion Identity() {
+        return Quaternion();
     }
 
     Quaternion(Scalar w, Scalar x, Scalar y, Scalar z) {
@@ -46,6 +52,33 @@ public:
     Scalar x() const { return m_coeffs[1].item<Scalar>(); }
     Scalar y() const { return m_coeffs[2].item<Scalar>(); }
     Scalar z() const { return m_coeffs[3].item<Scalar>(); }
+
+    Quaternion& setIdentity() {
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, 4, 1>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        m_coeffs = torch::tensor({1.0, 0.0, 0.0, 0.0}, options);
+        return *this;
+    }
+
+    Scalar squaredNorm() const {
+        return torch::dot(m_coeffs, m_coeffs).template item<Scalar>();
+    }
+
+    Scalar norm() const {
+        return torch::linalg_vector_norm(m_coeffs).template item<Scalar>();
+    }
+
+    Scalar dot(const Quaternion& other) const {
+        return torch::dot(m_coeffs, other.coeffs()).template item<Scalar>();
+    }
+
+    Quaternion conjugate() const {
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, 4, 1>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        return Quaternion(torch::tensor({w(), -x(), -y(), -z()}, options));
+    }
 
     // Normalize
     void normalize() {
@@ -82,12 +115,32 @@ public:
     }
 
     Quaternion inverse() const {
-        Scalar norm_sq = torch::dot(m_coeffs, m_coeffs).item<Scalar>();
-        auto options = torch::TensorOptions()
-            .dtype(Matrix<Scalar, 4, 1>::get_torch_dtype())
-            .device(DeviceManager::get_default_device());
-        at::Tensor inv_coeffs = torch::tensor({w(), -x(), -y(), -z()}, options) / norm_sq;
-        return Quaternion(inv_coeffs);
+        Scalar norm_sq = squaredNorm();
+        return Quaternion(conjugate().coeffs() / norm_sq);
+    }
+
+    Quaternion slerp(Scalar t, const Quaternion& other) const {
+        Quaternion q1 = normalized();
+        Quaternion q2 = other.normalized();
+
+        Scalar cos_theta = q1.dot(q2);
+        if (cos_theta < static_cast<Scalar>(0)) {
+            q2 = Quaternion(-q2.coeffs());
+            cos_theta = -cos_theta;
+        }
+
+        // If very close, use normalized lerp for stability.
+        if (cos_theta > static_cast<Scalar>(0.9995)) {
+            Quaternion blended((static_cast<Scalar>(1) - t) * q1.coeffs() + t * q2.coeffs());
+            blended.normalize();
+            return blended;
+        }
+
+        Scalar theta = std::acos(cos_theta);
+        Scalar sin_theta = std::sin(theta);
+        Scalar w1 = std::sin((static_cast<Scalar>(1) - t) * theta) / sin_theta;
+        Scalar w2 = std::sin(t * theta) / sin_theta;
+        return Quaternion(w1 * q1.coeffs() + w2 * q2.coeffs());
     }
     
     // To Rotation Matrix
@@ -106,6 +159,8 @@ public:
         
         return Matrix<Scalar, 3, 3>(rot);
     }
+
+    const at::Tensor& tensor() const { return m_coeffs; }
 };
 
 using Quaternionf = Quaternion<float>;

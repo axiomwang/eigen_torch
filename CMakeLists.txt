@@ -80,3 +80,8 @@ install(FILES
 
 add_executable(test_sparse_linalg tests/test_sparse_linalg.cpp)
 target_link_libraries(test_sparse_linalg PRIVATE Eigen)
+add_test(NAME sparse_linalg_test COMMAND test_sparse_linalg)
+
+add_executable(test_api_compat tests/test_api_compat.cpp)
+target_link_libraries(test_api_compat PRIVATE Eigen)
+add_test(NAME api_compat_test COMMAND test_api_compat)

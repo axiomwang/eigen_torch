@@ -1,0 +1,106 @@
+#pragma once
+
+#include "Matrix.h"
+
+namespace Eigen {
+
+template <int Value = Dynamic>
+struct InnerStride {
+    explicit InnerStride(int stride = Value) : value(stride) {}
+    int value;
+};
+
+template <int Value = Dynamic>
+struct OuterStride {
+    explicit OuterStride(int stride = Value) : value(stride) {}
+    int value;
+};
+
+template <int Outer = Dynamic, int Inner = Dynamic>
+struct Stride {
+    explicit Stride(int outer_stride = Outer, int inner_stride = Inner)
+        : outer(outer_stride), inner(inner_stride) {}
+    int outer;
+    int inner;
+};
+
+template <typename PlainObjectType, int MapOptions = 0, typename StrideType = Stride<>>
+class Map;
+
+template <typename Scalar, int RowsAtCompileTime, int ColsAtCompileTime, int MapOptions, typename StrideType>
+class Map<Matrix<Scalar, RowsAtCompileTime, ColsAtCompileTime>, MapOptions, StrideType>
+    : public Matrix<Scalar, RowsAtCompileTime, ColsAtCompileTime> {
+private:
+    using Base = Matrix<Scalar, RowsAtCompileTime, ColsAtCompileTime>;
+
+    void bind(Scalar* data, int rows, int cols) {
+        Base::validate_resize(rows, cols);
+        auto options = torch::TensorOptions().dtype(Base::get_torch_dtype()).device(torch::kCPU);
+        this->m_tensor = torch::from_blob(static_cast<void*>(data), {rows, cols}, options);
+    }
+
+public:
+    Map(Scalar* data, int rows, int cols) {
+        bind(data, rows, cols);
+    }
+
+    Map(Scalar* data, int rows, int cols, const StrideType&) {
+        bind(data, rows, cols);
+    }
+
+    Map(Scalar* data, int size) {
+        if constexpr (RowsAtCompileTime == 1 && ColsAtCompileTime != 1) {
+            bind(data, 1, size);
+        } else {
+            bind(data, size, 1);
+        }
+    }
+
+    explicit Map(Scalar* data) {
+        if constexpr (RowsAtCompileTime == Dynamic || ColsAtCompileTime == Dynamic) {
+            throw std::invalid_argument("Dynamic Map requires explicit dimensions.");
+        } else {
+            bind(data, RowsAtCompileTime, ColsAtCompileTime);
+        }
+    }
+};
+
+template <typename Scalar, int RowsAtCompileTime, int ColsAtCompileTime, int MapOptions, typename StrideType>
+class Map<const Matrix<Scalar, RowsAtCompileTime, ColsAtCompileTime>, MapOptions, StrideType>
+    : public Matrix<Scalar, RowsAtCompileTime, ColsAtCompileTime> {
+private:
+    using Base = Matrix<Scalar, RowsAtCompileTime, ColsAtCompileTime>;
+
+    void bind(const Scalar* data, int rows, int cols) {
+        Base::validate_resize(rows, cols);
+        auto options = torch::TensorOptions().dtype(Base::get_torch_dtype()).device(torch::kCPU);
+        this->m_tensor = torch::from_blob(const_cast<void*>(static_cast<const void*>(data)), {rows, cols}, options);
+    }
+
+public:
+    Map(const Scalar* data, int rows, int cols) {
+        bind(data, rows, cols);
+    }
+
+    Map(const Scalar* data, int rows, int cols, const StrideType&) {
+        bind(data, rows, cols);
+    }
+
+    Map(const Scalar* data, int size) {
+        if constexpr (RowsAtCompileTime == 1 && ColsAtCompileTime != 1) {
+            bind(data, 1, size);
+        } else {
+            bind(data, size, 1);
+        }
+    }
+
+    explicit Map(const Scalar* data) {
+        if constexpr (RowsAtCompileTime == Dynamic || ColsAtCompileTime == Dynamic) {
+            throw std::invalid_argument("Dynamic Map requires explicit dimensions.");
+        } else {
+            bind(data, RowsAtCompileTime, ColsAtCompileTime);
+        }
+    }
+};
+
+} // namespace Eigen

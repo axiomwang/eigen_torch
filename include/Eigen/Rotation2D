@@ -19,8 +19,17 @@ public:
     Rotation2D() : m_angle(0) {}
     explicit Rotation2D(Scalar angle) : m_angle(angle) {}
 
+    explicit Rotation2D(const Matrix<Scalar, 2, 2>& matrix) {
+        fromRotationMatrix(matrix);
+    }
+
     Scalar angle() const { return m_angle; }
     Scalar& angle() { return m_angle; }
+
+    Rotation2D& fromRotationMatrix(const Matrix<Scalar, 2, 2>& matrix) {
+        m_angle = std::atan2(matrix(1, 0), matrix(0, 0));
+        return *this;
+    }
 
     Matrix<Scalar, 2, 2> toRotationMatrix() const {
         Scalar s = std::sin(m_angle);
@@ -43,6 +52,11 @@ public:
 
     Rotation2D inverse() const {
         return Rotation2D(-m_angle);
+    }
+
+    Rotation2D& operator*=(const Rotation2D& other) {
+        m_angle += other.angle();
+        return *this;
     }
 };
 

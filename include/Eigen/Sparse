@@ -1,7 +1,9 @@
 #ifndef EIGEN_SPARSE_MODULE_H
 #define EIGEN_SPARSE_MODULE_H
 
+#include "SparseCommon"
 #include "SparseMatrix"
+#include "SparseVector"
 #include "SparseLU"
 #include "SparseQR"
 #include "SparseCholesky"

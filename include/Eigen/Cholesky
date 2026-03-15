@@ -44,4 +44,14 @@ public:
     }
 };
 
+template <typename MatrixType>
+class LDLT : public LLT<MatrixType> {
+public:
+    using LLT<MatrixType>::LLT;
+    using LLT<MatrixType>::compute;
+    using LLT<MatrixType>::solve;
+    using LLT<MatrixType>::info;
+    using LLT<MatrixType>::matrixL;
+};
+
 } // namespace Eigen

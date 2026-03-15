@@ -22,6 +22,12 @@ public:
     ParametrizedLine(const VectorType& origin, const VectorType& direction) 
         : m_origin(origin), m_direction(direction) {}
 
+    static ParametrizedLine Through(const VectorType& p0, const VectorType& p1) {
+        VectorType dir = VectorType(p1.tensor() - p0.tensor());
+        dir.normalize();
+        return ParametrizedLine(p0, dir);
+    }
+
     const VectorType& origin() const { return m_origin; }
     VectorType& origin() { return m_origin; }
 
@@ -30,6 +36,11 @@ public:
 
     VectorType pointAt(Scalar t) const {
         return VectorType(m_origin.tensor() + m_direction.tensor() * t);
+    }
+
+    ParametrizedLine& normalize() {
+        m_direction.normalize();
+        return *this;
     }
 
     Scalar projection(const VectorType& p) const {

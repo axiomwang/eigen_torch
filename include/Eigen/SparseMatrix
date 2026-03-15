@@ -1,100 +1,467 @@
 #pragma once
 #include "Matrix.h"
+#include "SparseCommon"
+#include <algorithm>
+#include <cstdint>
+#include <map>
 #include <vector>
 
 namespace Eigen {
 
-// Standard Eigen has SparseMatrix<Scalar, Options, Index> and supports row/col major.
-// By default, Torch CSR is equivalent to RowMajor. We will default to CSR.
-template <typename Scalar>
-class SparseMatrix {
-protected:
-    at::Tensor m_tensor;
-    int m_rows;
-    int m_cols;
-    
-    // For incrementally filling the matrix (like Eigen's triplets)
-    struct Triplet {
-        int row;
-        int col;
-        Scalar value;
-    };
-    std::vector<Triplet> m_triplets;
-    bool m_isCompressed = false;
+template <typename Scalar_>
+class Triplet {
+public:
+    using Scalar = Scalar_;
+
+private:
+    int m_row;
+    int m_col;
+    Scalar m_value;
 
 public:
+    Triplet() : m_row(0), m_col(0), m_value(static_cast<Scalar>(0)) {}
+
+    Triplet(int row, int col, Scalar value)
+        : m_row(row), m_col(col), m_value(value) {}
+
+    int row() const { return m_row; }
+    int col() const { return m_col; }
+    Scalar value() const { return m_value; }
+
+    void setValue(Scalar value) { m_value = value; }
+};
+
+// Standard Eigen has SparseMatrix<Scalar, Options, Index> and supports row/col major.
+template <typename Scalar_, int Options_ = ColMajor, typename StorageIndex_ = int>
+class SparseMatrix {
+protected:
+    using Scalar = Scalar_;
+    using StorageIndex = StorageIndex_;
+    static constexpr bool kRowMajor = (Options_ == RowMajor);
+
+    at::Tensor m_tensor;
+    StorageIndex m_rows;
+    StorageIndex m_cols;
+    
+    // For incrementally filling the matrix (like Eigen's triplets)
+    std::vector<Triplet<Scalar>> m_triplets;
+    bool m_isCompressed = false;
+
+    static constexpr torch::ScalarType value_dtype() {
+        return Matrix<Scalar, Dynamic, Dynamic>::get_torch_dtype();
+    }
+
+    static torch::TensorOptions value_options_cpu() {
+        return torch::TensorOptions().dtype(value_dtype()).device(torch::kCPU);
+    }
+
+    static torch::TensorOptions index_options_cpu() {
+        return torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU);
+    }
+
+    void validate_indices(StorageIndex row, StorageIndex col) const {
+        if (row < 0 || row >= m_rows || col < 0 || col >= m_cols) {
+            throw std::out_of_range("SparseMatrix index out of range");
+        }
+    }
+
+    at::Tensor ensure_coalesced_coo() const {
+        if (!m_isCompressed) {
+            throw std::runtime_error("SparseMatrix must be compressed before this operation");
+        }
+        return m_tensor.to_sparse().coalesce();
+    }
+
+    void materialize_triplets_from_tensor_if_needed() {
+        if (!m_isCompressed || !m_tensor.defined()) {
+            return;
+        }
+
+        at::Tensor coo = m_tensor.to_sparse().coalesce().to(torch::kCPU);
+        at::Tensor indices = coo.indices();
+        at::Tensor values = coo.values().to(torch::kCPU);
+
+        m_triplets.clear();
+        m_triplets.reserve(values.numel());
+        for (int64_t i = 0; i < values.numel(); ++i) {
+            StorageIndex row = static_cast<StorageIndex>(indices[0][i].item<int64_t>());
+            StorageIndex col = static_cast<StorageIndex>(indices[1][i].item<int64_t>());
+            Scalar val = values[i].template item<Scalar>();
+            m_triplets.emplace_back(static_cast<int>(row), static_cast<int>(col), val);
+        }
+
+        m_isCompressed = false;
+    }
+
+    void build_empty_compressed() {
+        at::Tensor crow = torch::zeros({static_cast<int64_t>(m_rows) + 1}, index_options_cpu());
+        at::Tensor col = torch::empty({0}, index_options_cpu());
+        at::Tensor vals = torch::empty({0}, value_options_cpu());
+        at::Tensor csr = torch::sparse_csr_tensor(
+            crow,
+            col,
+            vals,
+            {static_cast<int64_t>(m_rows), static_cast<int64_t>(m_cols)},
+            value_options_cpu());
+
+        auto device = DeviceManager::get_default_device();
+        if (device != torch::kCPU) {
+            csr = csr.to(device);
+        }
+
+        m_tensor = csr;
+        m_isCompressed = true;
+    }
+
+public:
+    class InsertionProxy {
+    private:
+        SparseMatrix& m_matrix;
+        StorageIndex m_row;
+        StorageIndex m_col;
+
+    public:
+        InsertionProxy(SparseMatrix& matrix, StorageIndex row, StorageIndex col)
+            : m_matrix(matrix), m_row(row), m_col(col) {}
+
+        InsertionProxy& operator=(const Scalar& value) {
+            m_matrix.insert(m_row, m_col, value);
+            return *this;
+        }
+
+        operator Scalar() const {
+            return m_matrix.coeff(m_row, m_col);
+        }
+    };
+
+    class InnerIterator {
+    private:
+        const SparseMatrix& m_matrix;
+        at::Tensor m_indices;
+        at::Tensor m_values;
+        std::vector<int64_t> m_positions;
+        int64_t m_cursor;
+        StorageIndex m_outer;
+
+    public:
+        InnerIterator(const SparseMatrix& matrix, StorageIndex outer)
+            : m_matrix(matrix), m_cursor(0), m_outer(outer) {
+            if (!m_matrix.m_isCompressed) {
+                throw std::runtime_error("SparseMatrix must be compressed before iteration");
+            }
+
+            at::Tensor coo = m_matrix.m_tensor.to_sparse().coalesce().to(torch::kCPU);
+            m_indices = coo.indices();
+            m_values = coo.values().to(torch::kCPU);
+
+            m_positions.reserve(m_values.numel());
+            for (int64_t i = 0; i < m_values.numel(); ++i) {
+                StorageIndex row = static_cast<StorageIndex>(m_indices[0][i].item<int64_t>());
+                StorageIndex col = static_cast<StorageIndex>(m_indices[1][i].item<int64_t>());
+                StorageIndex outer_idx = kRowMajor ? row : col;
+                if (outer_idx == outer) {
+                    m_positions.push_back(i);
+                }
+            }
+
+            std::sort(m_positions.begin(), m_positions.end(), [&](int64_t a, int64_t b) {
+                StorageIndex row_a = static_cast<StorageIndex>(m_indices[0][a].item<int64_t>());
+                StorageIndex col_a = static_cast<StorageIndex>(m_indices[1][a].item<int64_t>());
+                StorageIndex row_b = static_cast<StorageIndex>(m_indices[0][b].item<int64_t>());
+                StorageIndex col_b = static_cast<StorageIndex>(m_indices[1][b].item<int64_t>());
+                StorageIndex inner_a = kRowMajor ? col_a : row_a;
+                StorageIndex inner_b = kRowMajor ? col_b : row_b;
+                return inner_a < inner_b;
+            });
+        }
+
+        explicit operator bool() const {
+            return m_cursor < static_cast<int64_t>(m_positions.size());
+        }
+
+        InnerIterator& operator++() {
+            ++m_cursor;
+            return *this;
+        }
+
+        StorageIndex row() const {
+            int64_t pos = m_positions[m_cursor];
+            return static_cast<StorageIndex>(m_indices[0][pos].item<int64_t>());
+        }
+
+        StorageIndex col() const {
+            int64_t pos = m_positions[m_cursor];
+            return static_cast<StorageIndex>(m_indices[1][pos].item<int64_t>());
+        }
+
+        StorageIndex index() const {
+            if constexpr (kRowMajor) {
+                return col();
+            }
+            return row();
+        }
+
+        Scalar value() const {
+            int64_t pos = m_positions[m_cursor];
+            return m_values[pos].template item<Scalar>();
+        }
+    };
+
     using ScalarType = Scalar;
+    using StorageIndexType = StorageIndex;
+    static constexpr int Options = Options_;
     
     // Create an empty sparse matrix
     SparseMatrix() : m_rows(0), m_cols(0) {}
     
-    SparseMatrix(int rows, int cols) : m_rows(rows), m_cols(cols) {}
+    SparseMatrix(StorageIndex rows, StorageIndex cols) : m_rows(rows), m_cols(cols) {}
     
     // Explicit constructor from existing sparse tensor
-    explicit SparseMatrix(const at::Tensor& tensor) : m_tensor(tensor) {
-        if (tensor.is_sparse() || tensor.is_sparse_csr()) {
-            m_rows = tensor.size(0);
-            m_cols = tensor.size(1);
-            m_isCompressed = true;
+    explicit SparseMatrix(const at::Tensor& tensor) {
+        if (tensor.is_sparse_csr()) {
+            m_tensor = tensor;
+        } else if (tensor.is_sparse()) {
+            m_tensor = tensor.coalesce().to_sparse_csr();
         } else {
             throw std::runtime_error("Tensor provided to SparseMatrix is not a sparse tensor.");
         }
+        m_rows = static_cast<StorageIndex>(tensor.size(0));
+        m_cols = static_cast<StorageIndex>(tensor.size(1));
+        m_isCompressed = true;
     }
 
-    int rows() const { return m_rows; }
-    int cols() const { return m_cols; }
-    int nonZeros() const { return m_isCompressed ? m_tensor._nnz() : m_triplets.size(); }
+    StorageIndex rows() const { return m_rows; }
+    StorageIndex cols() const { return m_cols; }
+
+    StorageIndex nonZeros() const {
+        return m_isCompressed
+            ? static_cast<StorageIndex>(m_tensor._nnz())
+            : static_cast<StorageIndex>(m_triplets.size());
+    }
+
+    StorageIndex outerSize() const {
+        return kRowMajor ? m_rows : m_cols;
+    }
+
+    StorageIndex innerSize() const {
+        return kRowMajor ? m_cols : m_rows;
+    }
+
+    bool isCompressed() const { return m_isCompressed; }
+
+    void resize(StorageIndex rows, StorageIndex cols) {
+        m_rows = rows;
+        m_cols = cols;
+        m_triplets.clear();
+        m_tensor = at::Tensor();
+        m_isCompressed = false;
+    }
+
+    void setZero() {
+        m_triplets.clear();
+        m_tensor = at::Tensor();
+        m_isCompressed = false;
+    }
+
+    void setIdentity() {
+        if (m_rows != m_cols) {
+            throw std::invalid_argument("setIdentity requires a square SparseMatrix");
+        }
+        m_triplets.clear();
+        m_triplets.reserve(static_cast<size_t>(m_rows));
+        for (StorageIndex i = 0; i < m_rows; ++i) {
+            m_triplets.emplace_back(static_cast<int>(i), static_cast<int>(i), static_cast<Scalar>(1));
+        }
+        m_isCompressed = false;
+        makeCompressed();
+    }
     
-    const at::Tensor& tensor() const { return m_tensor; }
+    const at::Tensor& tensor() const {
+        if (!m_isCompressed) {
+            throw std::runtime_error("SparseMatrix must be compressed before accessing tensor() const");
+        }
+        return m_tensor;
+    }
+
+    void reserve(int n) {
+        m_triplets.reserve(n);
+    }
+
+    template <typename SizesType>
+    void reserve(const SizesType& sizes) {
+        reserve(static_cast<int>(sizes.sum()));
+    }
     
     // Inserting elements is done via triplets in Eigen.
-    // E.g. matrix.insert(i, j) = v; In dense, this is easy, in sparse it's slow.
-    // Eigen recommends setFromTriplets.
-    
-    void insert(int row, int col, Scalar value) {
-        m_triplets.push_back({row, col, value});
+    InsertionProxy insert(StorageIndex row, StorageIndex col) {
+        validate_indices(row, col);
+        return InsertionProxy(*this, row, col);
+    }
+
+    void insert(StorageIndex row, StorageIndex col, Scalar value) {
+        validate_indices(row, col);
+        materialize_triplets_from_tensor_if_needed();
+        m_triplets.emplace_back(static_cast<int>(row), static_cast<int>(col), value);
         m_isCompressed = false;
+    }
+
+    InsertionProxy coeffRef(StorageIndex row, StorageIndex col) {
+        return insert(row, col);
+    }
+
+    Scalar coeff(StorageIndex row, StorageIndex col) const {
+        validate_indices(row, col);
+        if (!m_isCompressed) {
+            Scalar total = static_cast<Scalar>(0);
+            for (const auto& t : m_triplets) {
+                if (t.row() == row && t.col() == col) {
+                    total += t.value();
+                }
+            }
+            return total;
+        }
+
+        at::Tensor coo = ensure_coalesced_coo().to(torch::kCPU);
+        at::Tensor indices = coo.indices();
+        at::Tensor values = coo.values().to(torch::kCPU);
+        for (int64_t i = 0; i < values.numel(); ++i) {
+            StorageIndex r = static_cast<StorageIndex>(indices[0][i].item<int64_t>());
+            StorageIndex c = static_cast<StorageIndex>(indices[1][i].item<int64_t>());
+            if (r == row && c == col) {
+                return values[i].template item<Scalar>();
+            }
+        }
+        return static_cast<Scalar>(0);
+    }
+
+    template <typename InputIterator>
+    void setFromTriplets(InputIterator begin, InputIterator end) {
+        m_triplets.clear();
+        for (auto it = begin; it != end; ++it) {
+            m_triplets.emplace_back(it->row(), it->col(), it->value());
+        }
+        m_isCompressed = false;
+        makeCompressed();
     }
     
     // Build the CSR tensor from the inserted triplets
     void makeCompressed() {
         if (m_isCompressed) return;
-        
-        // Torch needs sorted indices for CSR. Creating COO first and then converting is usually easiest.
+
+        if (m_rows < 0 || m_cols < 0) {
+            throw std::invalid_argument("SparseMatrix dimensions must be non-negative");
+        }
+
+        if (m_triplets.empty()) {
+            build_empty_compressed();
+            return;
+        }
+
+        std::map<std::pair<StorageIndex, StorageIndex>, Scalar> merged;
+        for (const auto& t : m_triplets) {
+            StorageIndex row = static_cast<StorageIndex>(t.row());
+            StorageIndex col = static_cast<StorageIndex>(t.col());
+            validate_indices(row, col);
+            merged[{row, col}] += t.value();
+        }
+
         std::vector<int64_t> row_indices;
         std::vector<int64_t> col_indices;
         std::vector<Scalar> values;
-        
-        for (const auto& t : m_triplets) {
-            row_indices.push_back(t.row);
-            col_indices.push_back(t.col);
-            values.push_back(t.value);
+
+        row_indices.reserve(merged.size());
+        col_indices.reserve(merged.size());
+        values.reserve(merged.size());
+        for (const auto& entry : merged) {
+            if (entry.second == static_cast<Scalar>(0)) {
+                continue;
+            }
+            row_indices.push_back(static_cast<int64_t>(entry.first.first));
+            col_indices.push_back(static_cast<int64_t>(entry.first.second));
+            values.push_back(entry.second);
         }
-        
-        auto options_idx = torch::TensorOptions().dtype(torch::kInt64).device(torch::kCPU);
-        auto options_val = torch::TensorOptions().dtype(Matrix<Scalar, Dynamic, Dynamic>::get_torch_dtype()).device(DeviceManager::get_default_device());
+
+        if (values.empty()) {
+            build_empty_compressed();
+            m_triplets.clear();
+            return;
+        }
+
+        auto options_idx = index_options_cpu();
+        auto options_val_cpu = value_options_cpu();
 
         at::Tensor indices = torch::vstack({
             torch::tensor(row_indices, options_idx),
             torch::tensor(col_indices, options_idx)
         });
-        at::Tensor vals = torch::tensor(values, options_val);
-        
-        // Ensure device is correct
-        indices = indices.to(DeviceManager::get_default_device());
-        
-        // Create COO, then convert to CSR (PyTorch 2.0+ pattern)
-        at::Tensor coo = torch::sparse_coo_tensor(indices, vals, {m_rows, m_cols}, options_val.layout(torch::kSparse));
+        at::Tensor vals = torch::tensor(values, options_val_cpu);
+
+        at::Tensor coo = torch::sparse_coo_tensor(
+            indices,
+            vals,
+            {static_cast<int64_t>(m_rows), static_cast<int64_t>(m_cols)},
+            options_val_cpu.layout(torch::kSparse)).coalesce();
+
+        auto device = DeviceManager::get_default_device();
+        if (device != torch::kCPU) {
+            coo = coo.to(device);
+        }
+
         m_tensor = coo.to_sparse_csr();
         
         m_triplets.clear();
         m_isCompressed = true;
     }
 
+    void prune(Scalar reference = static_cast<Scalar>(0), Scalar epsilon = static_cast<Scalar>(1e-12)) {
+        auto threshold = std::abs(reference) * std::abs(epsilon);
+        if (!m_isCompressed) {
+            m_triplets.erase(
+                std::remove_if(
+                    m_triplets.begin(),
+                    m_triplets.end(),
+                    [&](const Triplet<Scalar>& t) { return std::abs(t.value()) <= threshold; }),
+                m_triplets.end());
+            return;
+        }
+
+        at::Tensor coo = m_tensor.to_sparse().coalesce();
+        at::Tensor indices = coo.indices().to(torch::kCPU);
+        at::Tensor values = coo.values().to(torch::kCPU);
+
+        m_triplets.clear();
+        for (int64_t i = 0; i < values.numel(); ++i) {
+            Scalar v = values[i].template item<Scalar>();
+            if (std::abs(v) > threshold) {
+                StorageIndex row = static_cast<StorageIndex>(indices[0][i].item<int64_t>());
+                StorageIndex col = static_cast<StorageIndex>(indices[1][i].item<int64_t>());
+                m_triplets.emplace_back(static_cast<int>(row), static_cast<int>(col), v);
+            }
+        }
+        m_isCompressed = false;
+        makeCompressed();
+    }
+
+    Matrix<Scalar, Dynamic, Dynamic> toDense() const {
+        if (m_isCompressed) {
+            return Matrix<Scalar, Dynamic, Dynamic>(m_tensor.to_dense());
+        }
+
+        at::Tensor dense = torch::zeros(
+            {static_cast<int64_t>(m_rows), static_cast<int64_t>(m_cols)},
+            torch::TensorOptions().dtype(value_dtype()).device(DeviceManager::get_default_device()));
+        for (const auto& t : m_triplets) {
+            dense.index_put_({t.row(), t.col()}, dense.index({t.row(), t.col()}) + t.value());
+        }
+        return Matrix<Scalar, Dynamic, Dynamic>(dense);
+    }
+
     // Multiplication Sparse x Dense -> Dense
     template <typename OtherScalar, int OtherRows, int OtherCols>
     Matrix<Scalar, Dynamic, Dynamic> operator*(const Matrix<OtherScalar, OtherRows, OtherCols>& dense) const {
-        if (!m_isCompressed) throw std::runtime_error("SparseMatrix must be compressed before multiplication");
+        if (!m_isCompressed) {
+            throw std::runtime_error("SparseMatrix must be compressed before multiplication");
+        }
         
         // Torch natively dispatches matmul to sparse routine if LHS is sparse.
         at::Tensor result = torch::matmul(m_tensor, dense.tensor());
@@ -102,20 +469,27 @@ public:
     }
     
     // Multiplication Sparse x Sparse -> Sparse
-    SparseMatrix<Scalar> operator*(const SparseMatrix<Scalar>& other) const {
-        if (!m_isCompressed || !other.m_isCompressed) throw std::runtime_error("Both SparseMatrices must be compressed");
+    template <typename OtherScalar, int OtherOptions, typename OtherStorageIndex>
+    SparseMatrix<Scalar, Options_, StorageIndex>
+    operator*(const SparseMatrix<OtherScalar, OtherOptions, OtherStorageIndex>& other) const {
+        if (!m_isCompressed || !other.isCompressed()) {
+            throw std::runtime_error("Both SparseMatrices must be compressed");
+        }
+
         at::Tensor result = torch::matmul(m_tensor, other.tensor());
-        return SparseMatrix<Scalar>(result);
+        if (!result.is_sparse_csr()) {
+            result = result.to_sparse_csr();
+        }
+        return SparseMatrix<Scalar, Options_, StorageIndex>(result);
     }
 };
 
 using SparseMatrixf = SparseMatrix<float>;
 using SparseMatrixd = SparseMatrix<double>;
+using SparseMatrixi = SparseMatrix<int32_t>;
+using SparseMatrixl = SparseMatrix<int64_t>;
 
-template <typename Scalar>
-struct Triplet {
-    int row(), col();
-    Scalar value();
-};
+using SparseRowMatrixf = SparseMatrix<float, RowMajor>;
+using SparseRowMatrixd = SparseMatrix<double, RowMajor>;
 
 } // namespace Eigen

@@ -2,6 +2,7 @@
 #define EIGEN_SPARSECHOLESKY_H
 
 #include "Matrix.h"
+#include "SparseCommon"
 #include "SparseMatrix"
 #include <stdexcept>
 
@@ -14,57 +15,310 @@ public:
     using Scalar = typename MatrixType::ScalarType;
 
 protected:
+    at::Tensor m_system;
     at::Tensor m_l;
-    bool m_info = false;
+
+    ComputationInfo m_info = InvalidInput;
+    bool m_patternAnalyzed = false;
+    bool m_isInitialized = false;
+    bool m_usedDenseFallback = false;
+
+    void factorizeTensor(const at::Tensor& matrix) {
+        at::Tensor work = matrix;
+
+        try {
+            m_l = torch::linalg_cholesky(work);
+            m_usedDenseFallback = false;
+            m_info = Success;
+            m_isInitialized = true;
+            return;
+        } catch (const std::exception&) {
+        }
+
+        try {
+            at::Tensor dense = work.is_sparse() || work.is_sparse_csr() ? work.to_dense() : work;
+            m_l = torch::linalg_cholesky(dense);
+            m_usedDenseFallback = true;
+            m_info = Success;
+            m_isInitialized = true;
+        } catch (const std::exception&) {
+            m_l = at::Tensor();
+            m_info = NumericalIssue;
+            m_isInitialized = false;
+            m_usedDenseFallback = true;
+        }
+    }
 
 public:
     SimplicialLLT() {}
+
     explicit SimplicialLLT(const MatrixType& matrix) {
         compute(matrix);
     }
 
+    SimplicialLLT& analyzePattern(const MatrixType& matrix) {
+        m_system = matrix.tensor();
+        m_patternAnalyzed = true;
+        m_info = Success;
+        return *this;
+    }
+
+    SimplicialLLT& analyzePattern(const at::Tensor& matrix) {
+        m_system = matrix;
+        m_patternAnalyzed = true;
+        m_info = Success;
+        return *this;
+    }
+
+    SimplicialLLT& factorize(const MatrixType& matrix) {
+        m_system = matrix.tensor();
+        m_patternAnalyzed = true;
+        factorizeTensor(m_system);
+        return *this;
+    }
+
+    SimplicialLLT& factorize(const at::Tensor& matrix) {
+        m_system = matrix;
+        m_patternAnalyzed = true;
+        factorizeTensor(m_system);
+        return *this;
+    }
+
     SimplicialLLT& compute(const MatrixType& matrix) {
-        try {
-            // Coerce mapping: SparseMatrix -> Dense -> cholesky
-            at::Tensor dense_mat = matrix.tensor().to_dense();
-            m_l = torch::linalg_cholesky(dense_mat);
-            m_info = true;
-        } catch (...) {
-            m_info = false;
-        }
+        analyzePattern(matrix);
+        factorize(matrix);
+        return *this;
+    }
+
+    SimplicialLLT& compute(const at::Tensor& matrix) {
+        analyzePattern(matrix);
+        factorize(matrix);
         return *this;
     }
 
     template <typename Rhs>
     Rhs solve(const Rhs& b) const {
-        if (!m_info) {
-             throw std::runtime_error("SimplicialLLT is not initialized or decomposition failed.");
+        if (!m_isInitialized) {
+            throw std::runtime_error("SimplicialLLT is not initialized or decomposition failed.");
         }
+
         at::Tensor dense_b;
         if (b.tensor().is_sparse()) {
             dense_b = b.tensor().to_dense();
         } else {
             dense_b = b.tensor();
         }
-        // Use cholesky_solve directly
-        at::Tensor result = torch::cholesky_solve(dense_b, m_l);
+
+        at::Tensor result;
+        try {
+            result = torch::cholesky_solve(dense_b, m_l);
+        } catch (const std::exception&) {
+            at::Tensor dense_system =
+                m_system.defined() && (m_system.is_sparse() || m_system.is_sparse_csr())
+                    ? m_system.to_dense()
+                    : m_system;
+            result = torch::linalg_solve(dense_system, dense_b);
+        }
+
         return Rhs(result);
     }
-    
-    // Expose LLT Status
-    bool info() const { return m_info; }
-    const at::Tensor& matrixL() const { return m_l; }
+
+    ComputationInfo info() const { return m_info; }
+
+    int rows() const {
+        return m_system.defined() ? static_cast<int>(m_system.size(0)) : 0;
+    }
+
+    int cols() const {
+        return m_system.defined() ? static_cast<int>(m_system.size(1)) : 0;
+    }
+
+    Matrix<Scalar, Dynamic, Dynamic> matrixL() const {
+        if (!m_l.defined()) {
+            throw std::runtime_error("SimplicialLLT matrixL() called before factorization");
+        }
+        return Matrix<Scalar, Dynamic, Dynamic>(m_l);
+    }
+
+    Matrix<Scalar, Dynamic, Dynamic> matrixU() const {
+        if (!m_l.defined()) {
+            throw std::runtime_error("SimplicialLLT matrixU() called before factorization");
+        }
+        return Matrix<Scalar, Dynamic, Dynamic>(m_l.transpose(-2, -1).conj());
+    }
+
+    const at::Tensor& matrixLTensor() const { return m_l; }
+    bool usedDenseFallback() const { return m_usedDenseFallback; }
 };
 
 template <typename MatrixType_>
-class SimplicialLDLT : public SimplicialLLT<MatrixType_> {
+class SimplicialLDLT {
 public:
-    // PyTorch lacks a native general LDLT solver (only exposes standard cholesky LLT)
-    // For drop-in compatibility, we route SimplicialLDLT to SimplicialLLT 
-    // unless the target graph actually requires decoupled D diagonal factors.
-    using SimplicialLLT<MatrixType_>::SimplicialLLT;
-    using SimplicialLLT<MatrixType_>::compute;
-    using SimplicialLLT<MatrixType_>::solve;
+    using MatrixType = MatrixType_;
+    using Scalar = typename MatrixType::ScalarType;
+
+protected:
+    at::Tensor m_system;
+    at::Tensor m_chol;
+    at::Tensor m_l;
+    at::Tensor m_d;
+
+    ComputationInfo m_info = InvalidInput;
+    bool m_patternAnalyzed = false;
+    bool m_isInitialized = false;
+    bool m_usedDenseFallback = false;
+
+    void buildLDLFromCholesky() {
+        at::Tensor diag = torch::diagonal(m_chol, 0, -2, -1);
+        at::Tensor safe_diag = torch::where(
+            torch::abs(diag) > 0,
+            diag,
+            torch::ones_like(diag));
+
+        at::Tensor unit_l = m_chol / safe_diag.unsqueeze(0);
+        unit_l = torch::tril(unit_l, -1) + torch::eye(unit_l.size(-1), unit_l.options());
+        m_l = unit_l;
+        m_d = diag * diag.conj();
+    }
+
+    void factorizeTensor(const at::Tensor& matrix) {
+        at::Tensor work = matrix;
+
+        try {
+            m_chol = torch::linalg_cholesky(work);
+            m_usedDenseFallback = false;
+            buildLDLFromCholesky();
+            m_info = Success;
+            m_isInitialized = true;
+            return;
+        } catch (const std::exception&) {
+        }
+
+        try {
+            at::Tensor dense = work.is_sparse() || work.is_sparse_csr() ? work.to_dense() : work;
+            m_chol = torch::linalg_cholesky(dense);
+            m_usedDenseFallback = true;
+            buildLDLFromCholesky();
+            m_info = Success;
+            m_isInitialized = true;
+        } catch (const std::exception&) {
+            m_chol = at::Tensor();
+            m_l = at::Tensor();
+            m_d = at::Tensor();
+            m_info = NumericalIssue;
+            m_isInitialized = false;
+            m_usedDenseFallback = true;
+        }
+    }
+
+public:
+    SimplicialLDLT() {}
+
+    explicit SimplicialLDLT(const MatrixType& matrix) {
+        compute(matrix);
+    }
+
+    SimplicialLDLT& analyzePattern(const MatrixType& matrix) {
+        m_system = matrix.tensor();
+        m_patternAnalyzed = true;
+        m_info = Success;
+        return *this;
+    }
+
+    SimplicialLDLT& analyzePattern(const at::Tensor& matrix) {
+        m_system = matrix;
+        m_patternAnalyzed = true;
+        m_info = Success;
+        return *this;
+    }
+
+    SimplicialLDLT& factorize(const MatrixType& matrix) {
+        m_system = matrix.tensor();
+        m_patternAnalyzed = true;
+        factorizeTensor(m_system);
+        return *this;
+    }
+
+    SimplicialLDLT& factorize(const at::Tensor& matrix) {
+        m_system = matrix;
+        m_patternAnalyzed = true;
+        factorizeTensor(m_system);
+        return *this;
+    }
+
+    SimplicialLDLT& compute(const MatrixType& matrix) {
+        analyzePattern(matrix);
+        factorize(matrix);
+        return *this;
+    }
+
+    SimplicialLDLT& compute(const at::Tensor& matrix) {
+        analyzePattern(matrix);
+        factorize(matrix);
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) const {
+        if (!m_isInitialized) {
+            throw std::runtime_error("SimplicialLDLT is not initialized or decomposition failed.");
+        }
+
+        at::Tensor dense_b;
+        if (b.tensor().is_sparse()) {
+            dense_b = b.tensor().to_dense();
+        } else {
+            dense_b = b.tensor();
+        }
+
+        at::Tensor result;
+        try {
+            result = torch::cholesky_solve(dense_b, m_chol);
+        } catch (const std::exception&) {
+            at::Tensor dense_system =
+                m_system.defined() && (m_system.is_sparse() || m_system.is_sparse_csr())
+                    ? m_system.to_dense()
+                    : m_system;
+            result = torch::linalg_solve(dense_system, dense_b);
+        }
+
+        return Rhs(result);
+    }
+
+    ComputationInfo info() const { return m_info; }
+
+    int rows() const {
+        return m_system.defined() ? static_cast<int>(m_system.size(0)) : 0;
+    }
+
+    int cols() const {
+        return m_system.defined() ? static_cast<int>(m_system.size(1)) : 0;
+    }
+
+    Matrix<Scalar, Dynamic, Dynamic> matrixL() const {
+        if (!m_l.defined()) {
+            throw std::runtime_error("SimplicialLDLT matrixL() called before factorization");
+        }
+        return Matrix<Scalar, Dynamic, Dynamic>(m_l);
+    }
+
+    Matrix<Scalar, Dynamic, Dynamic> matrixU() const {
+        if (!m_l.defined()) {
+            throw std::runtime_error("SimplicialLDLT matrixU() called before factorization");
+        }
+        return Matrix<Scalar, Dynamic, Dynamic>(m_l.transpose(-2, -1).conj());
+    }
+
+    Matrix<Scalar, Dynamic, 1> vectorD() const {
+        if (!m_d.defined()) {
+            throw std::runtime_error("SimplicialLDLT vectorD() called before factorization");
+        }
+        return Matrix<Scalar, Dynamic, 1>(m_d);
+    }
+
+    const at::Tensor& matrixLTensor() const { return m_l; }
+    const at::Tensor& vectorDTensor() const { return m_d; }
+    bool usedDenseFallback() const { return m_usedDenseFallback; }
 };
 
 } // namespace Eigen

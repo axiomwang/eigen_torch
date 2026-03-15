@@ -126,4 +126,26 @@ public:
     }
 };
 
+template <typename MatrixType>
+class CompleteOrthogonalDecomposition {
+protected:
+    ColPivHouseholderQR<MatrixType> m_qr;
+
+public:
+    CompleteOrthogonalDecomposition() {}
+
+    explicit CompleteOrthogonalDecomposition(const MatrixType& matrix)
+        : m_qr(matrix) {}
+
+    CompleteOrthogonalDecomposition& compute(const MatrixType& matrix) {
+        m_qr.compute(matrix);
+        return *this;
+    }
+
+    template <typename Rhs>
+    Rhs solve(const Rhs& b) const {
+        return m_qr.solve(b);
+    }
+};
+
 } // namespace Eigen

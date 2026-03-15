@@ -5,6 +5,7 @@
 #include "QR"
 #include "SVD"
 #include "Eigenvalues"
+#include "Geometry"
 
 // This header is included by the user as:
 // #include <Eigen/Dense>

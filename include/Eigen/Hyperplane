@@ -28,11 +28,41 @@ public:
         m_offset = -dot.template item<Scalar>();
     }
 
+    static Hyperplane Through(const VectorType& p0, const VectorType& p1) {
+        static_assert(Dim == 2, "Through(p0, p1) is intended for 2D hyperplanes");
+        VectorType dir(p1.tensor() - p0.tensor());
+        VectorType n = dir.unitOrthogonal();
+        return Hyperplane(n, p0);
+    }
+
+    static Hyperplane Through(const VectorType& p0, const VectorType& p1, const VectorType& p2) {
+        static_assert(Dim == 3, "Through(p0, p1, p2) is intended for 3D hyperplanes");
+        VectorType v1(p1.tensor() - p0.tensor());
+        VectorType v2(p2.tensor() - p0.tensor());
+        VectorType n = v1.cross(v2);
+        n.normalize();
+        return Hyperplane(n, p0);
+    }
+
     const VectorType& normal() const { return m_normal; }
     VectorType& normal() { return m_normal; }
 
     Scalar offset() const { return m_offset; }
     Scalar& offset() { return m_offset; }
+
+    Hyperplane& normalize() {
+        Scalar n = m_normal.norm();
+        if (n != static_cast<Scalar>(0)) {
+            m_normal = VectorType(m_normal.tensor() / n);
+            m_offset /= n;
+        }
+        return *this;
+    }
+
+    Matrix<Scalar, Dim + 1, 1> coeffs() const {
+        at::Tensor coeff = torch::cat({m_normal.tensor().reshape({Dim}), torch::tensor({m_offset}, m_normal.tensor().options())}, 0);
+        return Matrix<Scalar, Dim + 1, 1>(coeff.unsqueeze(1));
+    }
 
     Scalar signedDistance(const VectorType& p) const {
         at::Tensor dot = torch::sum(m_normal.tensor() * p.tensor());

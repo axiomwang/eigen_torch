@@ -1,0 +1,22 @@
+#pragma once
+
+namespace Eigen {
+
+enum StorageOptions {
+    ColMajor = 0,
+    RowMajor = 1
+};
+
+enum UpLoType {
+    Lower = 0x1,
+    Upper = 0x2
+};
+
+enum ComputationInfo {
+    Success = 0,
+    NumericalIssue = 1,
+    NoConvergence = 2,
+    InvalidInput = 3
+};
+
+} // namespace Eigen

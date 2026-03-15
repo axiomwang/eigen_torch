@@ -27,9 +27,17 @@ public:
 
     const Matrix<Scalar, Dim, 1>& factors() const { return m_factors; }
 
+    Matrix<Scalar, Dim, Dim> toDiagonalMatrix() const {
+        return Matrix<Scalar, Dim, Dim>(torch::diag(m_factors.tensor().squeeze(1)));
+    }
+
     Matrix<Scalar, Dim, Dim> toRotationMatrix() const {
         // Technically this is 'toLinearMatrix', scaling returns diagonal matrix
-        return Matrix<Scalar, Dim, Dim>(torch::diag(m_factors.tensor().squeeze(1)));
+        return toDiagonalMatrix();
+    }
+
+    Matrix<Scalar, Dim, Dim> toDenseMatrix() const {
+        return toDiagonalMatrix();
     }
 
     Matrix<Scalar, Dim, 1> operator*(const Matrix<Scalar, Dim, 1>& vec) const {

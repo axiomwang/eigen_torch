@@ -1,0 +1,97 @@
+#ifndef EIGEN_SPARSEVECTOR_H
+#define EIGEN_SPARSEVECTOR_H
+
+#include "SparseMatrix"
+
+namespace Eigen {
+
+template <typename Scalar_, int Options_ = ColMajor, typename StorageIndex_ = int>
+class SparseVector {
+private:
+    using Scalar = Scalar_;
+    using StorageIndex = StorageIndex_;
+    using MatrixType = SparseMatrix<Scalar, Options_, StorageIndex>;
+    MatrixType m_matrix;
+
+public:
+    class InsertionProxy {
+    private:
+        SparseVector& m_vector;
+        StorageIndex m_index;
+
+    public:
+        InsertionProxy(SparseVector& vector, StorageIndex index)
+            : m_vector(vector), m_index(index) {}
+
+        InsertionProxy& operator=(const Scalar& value) {
+            m_vector.insert(m_index, value);
+            return *this;
+        }
+
+        operator Scalar() const {
+            return m_vector.coeff(m_index);
+        }
+    };
+
+    using ScalarType = Scalar;
+    using StorageIndexType = StorageIndex;
+    static constexpr int Options = Options_;
+
+    SparseVector() : m_matrix() {}
+
+    explicit SparseVector(StorageIndex size)
+        : m_matrix(size, 1) {}
+
+    StorageIndex size() const { return m_matrix.rows(); }
+    StorageIndex nonZeros() const { return m_matrix.nonZeros(); }
+    bool isCompressed() const { return m_matrix.isCompressed(); }
+
+    void resize(StorageIndex size) {
+        m_matrix.resize(size, 1);
+    }
+
+    void reserve(int n) { m_matrix.reserve(n); }
+
+    template <typename SizesType>
+    void reserve(const SizesType& sizes) { m_matrix.reserve(sizes); }
+
+    InsertionProxy insert(StorageIndex index) {
+        return InsertionProxy(*this, index);
+    }
+
+    void insert(StorageIndex index, Scalar value) {
+        m_matrix.insert(index, 0, value);
+    }
+
+    InsertionProxy coeffRef(StorageIndex index) {
+        return InsertionProxy(*this, index);
+    }
+
+    Scalar coeff(StorageIndex index) const {
+        return m_matrix.coeff(index, 0);
+    }
+
+    template <typename InputIterator>
+    void setFromTriplets(InputIterator begin, InputIterator end) {
+        m_matrix.setFromTriplets(begin, end);
+    }
+
+    void setZero() { m_matrix.setZero(); }
+
+    void makeCompressed() { m_matrix.makeCompressed(); }
+
+    const at::Tensor& tensor() const { return m_matrix.tensor(); }
+
+    Matrix<Scalar, Dynamic, 1> toDense() const {
+        return Matrix<Scalar, Dynamic, 1>(m_matrix.toDense().tensor());
+    }
+};
+
+using SparseVectorf = SparseVector<float>;
+using SparseVectord = SparseVector<double>;
+using SparseVectori = SparseVector<int32_t>;
+using SparseVectorl = SparseVector<int64_t>;
+
+} // namespace Eigen
+
+#endif // EIGEN_SPARSEVECTOR_H

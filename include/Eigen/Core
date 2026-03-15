@@ -2,6 +2,8 @@
 
 #include "Device.h"
 #include "Matrix.h"
+#include "Array"
+#include "Map"
 
 // This header is meant to be included by the user as:
 // #include <Eigen/Core>

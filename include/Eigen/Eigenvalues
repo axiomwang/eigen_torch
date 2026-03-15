@@ -28,6 +28,10 @@ public:
         return *this;
     }
 
+    bool info() const {
+        return m_isInitialized;
+    }
+
     // PyTorch's eig values always returns a Complex tensor, we must map this appropriately
     // To match exact Eigen signature, true Eigen::MatrixXcf complex types would be needed.
     // For simplicity, we expose the underlying tensor directly or cast to floats if requested
@@ -48,6 +52,64 @@ public:
     const at::Tensor& complexEigenvalues() const {
         return m_eigenvalues;
     }
+
+    const at::Tensor& complexEigenvectors() const {
+        return m_eigenvectors;
+    }
+};
+
+template <typename MatrixType>
+class SelfAdjointEigenSolver {
+protected:
+    at::Tensor m_eigenvalues;
+    at::Tensor m_eigenvectors;
+    bool m_isInitialized = false;
+
+public:
+    SelfAdjointEigenSolver() {}
+
+    explicit SelfAdjointEigenSolver(const MatrixType& matrix, bool computeEigenvectors = true) {
+        compute(matrix, computeEigenvectors);
+    }
+
+    SelfAdjointEigenSolver& compute(const MatrixType& matrix, bool computeEigenvectors = true) {
+        if (computeEigenvectors) {
+            std::tie(m_eigenvalues, m_eigenvectors) = torch::linalg_eigh(matrix.tensor());
+        } else {
+            m_eigenvalues = std::get<0>(torch::linalg_eigh(matrix.tensor()));
+            m_eigenvectors = at::Tensor();
+        }
+        m_isInitialized = true;
+        return *this;
+    }
+
+    bool info() const {
+        return m_isInitialized;
+    }
+
+    Matrix<typename MatrixType::ScalarType, Dynamic, 1> eigenvalues() const {
+        return Matrix<typename MatrixType::ScalarType, Dynamic, 1>(m_eigenvalues.unsqueeze(1));
+    }
+
+    MatrixType eigenvectors() const {
+        return MatrixType(m_eigenvectors);
+    }
+};
+
+template <typename MatrixType>
+class ComplexEigenSolver : public EigenSolver<MatrixType> {
+public:
+    ComplexEigenSolver() : EigenSolver<MatrixType>() {}
+
+    explicit ComplexEigenSolver(const MatrixType& matrix, bool computeEigenvectors = true)
+        : EigenSolver<MatrixType>(matrix, computeEigenvectors) {}
+
+    using EigenSolver<MatrixType>::compute;
+    using EigenSolver<MatrixType>::info;
+    using EigenSolver<MatrixType>::eigenvalues;
+    using EigenSolver<MatrixType>::eigenvectors;
+    using EigenSolver<MatrixType>::complexEigenvalues;
+    using EigenSolver<MatrixType>::complexEigenvectors;
 };
 
 } // namespace Eigen

@@ -71,6 +71,46 @@ public:
         at::Tensor combined = torch::logical_and(is_ge, is_le);
         return torch::all(combined).template item<bool>();
     }
+
+    bool contains(const AlignedBox& other) const {
+        if (m_isEmpty || other.isEmpty()) return false;
+        return contains(other.min()) && contains(other.max());
+    }
+
+    bool intersects(const AlignedBox& other) const {
+        if (m_isEmpty || other.isEmpty()) return false;
+        at::Tensor lower = torch::maximum(m_min.tensor(), other.min().tensor());
+        at::Tensor upper = torch::minimum(m_max.tensor(), other.max().tensor());
+        return torch::all(torch::le(lower, upper)).template item<bool>();
+    }
+
+    AlignedBox intersection(const AlignedBox& other) const {
+        if (!intersects(other)) {
+            return AlignedBox();
+        }
+        return AlignedBox(
+            VectorType(torch::maximum(m_min.tensor(), other.min().tensor())),
+            VectorType(torch::minimum(m_max.tensor(), other.max().tensor())));
+    }
+
+    AlignedBox merged(const AlignedBox& other) const {
+        if (m_isEmpty) return other;
+        if (other.isEmpty()) return *this;
+        return AlignedBox(
+            VectorType(torch::minimum(m_min.tensor(), other.min().tensor())),
+            VectorType(torch::maximum(m_max.tensor(), other.max().tensor())));
+    }
+
+    VectorType clamp(const VectorType& point) const {
+        if (m_isEmpty) return point;
+        at::Tensor clamped = torch::maximum(m_min.tensor(), torch::minimum(m_max.tensor(), point.tensor()));
+        return VectorType(clamped);
+    }
+
+    Scalar volume() const {
+        if (m_isEmpty) return static_cast<Scalar>(0);
+        return sizes().prod();
+    }
 };
 
 using AlignedBox2f = AlignedBox<float, 2>;

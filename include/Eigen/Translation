@@ -13,6 +13,22 @@ public:
         m_translation = Matrix<Scalar, Dim, 1>::Zero(Dim, 1);
     }
 
+    Translation(Scalar x, Scalar y) {
+        static_assert(Dim == 2, "Translation(x, y) is only valid for 2D translations");
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, Dim, 1>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        m_translation = Matrix<Scalar, Dim, 1>(torch::tensor({x, y}, options).unsqueeze(1));
+    }
+
+    Translation(Scalar x, Scalar y, Scalar z) {
+        static_assert(Dim == 3, "Translation(x, y, z) is only valid for 3D translations");
+        auto options = torch::TensorOptions()
+            .dtype(Matrix<Scalar, Dim, 1>::get_torch_dtype())
+            .device(DeviceManager::get_default_device());
+        m_translation = Matrix<Scalar, Dim, 1>(torch::tensor({x, y, z}, options).unsqueeze(1));
+    }
+
     explicit Translation(const Matrix<Scalar, Dim, 1>& vec) : m_translation(vec) {}
 
     const Matrix<Scalar, Dim, 1>& vector() const { return m_translation; }
@@ -24,6 +40,10 @@ public:
 
     Translation operator*(const Translation& other) const {
         return Translation(m_translation + other.vector());
+    }
+
+    Matrix<Scalar, Dim, 1> operator*(const Matrix<Scalar, Dim, 1>& vec) const {
+        return Matrix<Scalar, Dim, 1>(vec.tensor() + m_translation.tensor());
     }
 
     Translation inverse() const {

@@ -3,6 +3,7 @@
 #include "Quaternion"
 #include "AngleAxis"
 #include "Translation"
+#include "Scaling"
 
 namespace Eigen {
 
@@ -20,7 +21,16 @@ public:
         }
     }
 
+    static Transform Identity() {
+        return Transform();
+    }
+
     explicit Transform(const Matrix<Scalar, Dim + 1, Dim + 1>& matrix) : m_matrix(matrix) {}
+
+    Transform& setIdentity() {
+        m_matrix.setIdentity(Dim + 1, Dim + 1);
+        return *this;
+    }
 
     const Matrix<Scalar, Dim + 1, Dim + 1>& matrix() const { return m_matrix; }
     Matrix<Scalar, Dim + 1, Dim + 1>& matrix() { return m_matrix; }
@@ -30,13 +40,44 @@ public:
         return m_matrix.block(0, 0, Dim, Dim);
     }
 
+    void linear(const Matrix<Scalar, Dim, Dim>& l) {
+        m_matrix.tensor().slice(0, 0, Dim).slice(1, 0, Dim).copy_(l.tensor());
+    }
+
     // Allows T.translation() returning the 3x1 translation block
     Matrix<Scalar, Dim, 1> translation() const {
         return m_matrix.block(0, Dim, Dim, 1);
     }
 
+    void translation(const Matrix<Scalar, Dim, 1>& t) {
+        m_matrix.tensor().slice(0, 0, Dim).slice(1, Dim, Dim + 1).copy_(t.tensor());
+    }
+
     Transform operator*(const Transform& other) const {
         return Transform(m_matrix * other.matrix());
+    }
+
+    Transform operator*(const Translation<Scalar, Dim>& t) const {
+        Transform out(*this);
+        out.translate(t);
+        return out;
+    }
+
+    Transform operator*(const Quaternion<Scalar>& q) const {
+        Transform out(*this);
+        out.rotate(q);
+        return out;
+    }
+
+    Transform operator*(const AngleAxis<Scalar>& aa) const {
+        Transform out(*this);
+        out.rotate(aa);
+        return out;
+    }
+
+    Transform& operator*=(const Transform& other) {
+        m_matrix = m_matrix * other.matrix();
+        return *this;
     }
 
     Matrix<Scalar, Dim, 1> operator*(const Matrix<Scalar, Dim, 1>& vec) const {
@@ -49,6 +90,101 @@ public:
         
         // Return only the Dim components
         return Matrix<Scalar, Dim, 1>(res_hom.slice(0, 0, Dim));
+    }
+
+    Transform& translate(const Translation<Scalar, Dim>& t) {
+        return translate(t.vector());
+    }
+
+    Transform& translate(const Matrix<Scalar, Dim, 1>& v) {
+        // Right-multiply by translation: t_new = t_old + R * v
+        at::Tensor rot = m_matrix.tensor().slice(0, 0, Dim).slice(1, 0, Dim);
+        at::Tensor trans = m_matrix.tensor().slice(0, 0, Dim).slice(1, Dim, Dim + 1);
+        trans.copy_(trans + torch::matmul(rot, v.tensor()));
+        return *this;
+    }
+
+    Transform& pretranslate(const Translation<Scalar, Dim>& t) {
+        return pretranslate(t.vector());
+    }
+
+    Transform& pretranslate(const Matrix<Scalar, Dim, 1>& v) {
+        // Left-multiply by translation: t_new = t_old + v
+        at::Tensor trans = m_matrix.tensor().slice(0, 0, Dim).slice(1, Dim, Dim + 1);
+        trans.copy_(trans + v.tensor());
+        return *this;
+    }
+
+    Transform& rotate(const Quaternion<Scalar>& q) {
+        Matrix<Scalar, Dim, Dim> r = q.toRotationMatrix();
+        return rotate(r);
+    }
+
+    Transform& rotate(const AngleAxis<Scalar>& aa) {
+        Matrix<Scalar, Dim, Dim> r = aa.toRotationMatrix();
+        return rotate(r);
+    }
+
+    Transform& rotate(const Matrix<Scalar, Dim, Dim>& r) {
+        at::Tensor rot = m_matrix.tensor().slice(0, 0, Dim).slice(1, 0, Dim);
+        rot.copy_(torch::matmul(rot, r.tensor()));
+        return *this;
+    }
+
+    Transform& prerotate(const Quaternion<Scalar>& q) {
+        Matrix<Scalar, Dim, Dim> r = q.toRotationMatrix();
+        return prerotate(r);
+    }
+
+    Transform& prerotate(const AngleAxis<Scalar>& aa) {
+        Matrix<Scalar, Dim, Dim> r = aa.toRotationMatrix();
+        return prerotate(r);
+    }
+
+    Transform& prerotate(const Matrix<Scalar, Dim, Dim>& r) {
+        at::Tensor rot = m_matrix.tensor().slice(0, 0, Dim).slice(1, 0, Dim);
+        at::Tensor trans = m_matrix.tensor().slice(0, 0, Dim).slice(1, Dim, Dim + 1);
+        rot.copy_(torch::matmul(r.tensor(), rot));
+        trans.copy_(torch::matmul(r.tensor(), trans));
+        return *this;
+    }
+
+    Transform& scale(Scalar s) {
+        at::Tensor rot = m_matrix.tensor().slice(0, 0, Dim).slice(1, 0, Dim);
+        rot.copy_(rot * s);
+        return *this;
+    }
+
+    Transform& scale(const Matrix<Scalar, Dim, 1>& factors) {
+        at::Tensor rot = m_matrix.tensor().slice(0, 0, Dim).slice(1, 0, Dim);
+        at::Tensor d = torch::diag(factors.tensor().reshape({-1}));
+        rot.copy_(torch::matmul(rot, d));
+        return *this;
+    }
+
+    Transform& scale(const Scaling<Scalar, Dim>& s) {
+        return scale(s.factors());
+    }
+
+    Transform& prescale(Scalar s) {
+        at::Tensor rot = m_matrix.tensor().slice(0, 0, Dim).slice(1, 0, Dim);
+        at::Tensor trans = m_matrix.tensor().slice(0, 0, Dim).slice(1, Dim, Dim + 1);
+        rot.copy_(s * rot);
+        trans.copy_(s * trans);
+        return *this;
+    }
+
+    Transform& prescale(const Matrix<Scalar, Dim, 1>& factors) {
+        at::Tensor rot = m_matrix.tensor().slice(0, 0, Dim).slice(1, 0, Dim);
+        at::Tensor trans = m_matrix.tensor().slice(0, 0, Dim).slice(1, Dim, Dim + 1);
+        at::Tensor d = torch::diag(factors.tensor().reshape({-1}));
+        rot.copy_(torch::matmul(d, rot));
+        trans.copy_(torch::matmul(d, trans));
+        return *this;
+    }
+
+    Transform& prescale(const Scaling<Scalar, Dim>& s) {
+        return prescale(s.factors());
     }
     
     Transform inverse() const {

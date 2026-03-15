@@ -1,0 +1,259 @@
+#pragma once
+
+#include "Matrix.h"
+
+namespace Eigen {
+
+template <typename Scalar_, int RowsAtCompileTime_, int ColsAtCompileTime_>
+class Array : public Matrix<Scalar_, RowsAtCompileTime_, ColsAtCompileTime_> {
+public:
+	using Base = Matrix<Scalar_, RowsAtCompileTime_, ColsAtCompileTime_>;
+	using Scalar = Scalar_;
+	using ScalarType = Scalar_;
+
+	static constexpr int RowsAtCompileTime = RowsAtCompileTime_;
+	static constexpr int ColsAtCompileTime = ColsAtCompileTime_;
+
+	Array() : Base() {}
+	using Base::Base;
+
+	Array(const Base& matrix_view)
+		: Base(matrix_view.tensor()) {}
+
+	Array(const at::Tensor& tensor)
+		: Base(tensor) {}
+
+	template <typename OtherScalar, int OtherRows, int OtherCols>
+	Array(const Matrix<OtherScalar, OtherRows, OtherCols>& other)
+		: Base(other.tensor()) {}
+
+	static Array Random(int rows, int cols) {
+		return Array(Base::Random(rows, cols));
+	}
+
+	static Array Zero(int rows, int cols) {
+		return Array(Base::Zero(rows, cols));
+	}
+
+	static Array Ones(int rows, int cols) {
+		return Array(Base::Ones(rows, cols));
+	}
+
+	static Array Constant(int rows, int cols, Scalar_ value) {
+		return Array(Base::Constant(rows, cols, value));
+	}
+
+	static Array Identity(int rows, int cols) {
+		return Array(Base::Identity(rows, cols));
+	}
+
+	Array& operator=(const Base& matrix_view) {
+		this->m_tensor = matrix_view.tensor();
+		return *this;
+	}
+
+	Base matrix() const {
+		return Base(this->tensor());
+	}
+
+	Array array() const {
+		return *this;
+	}
+
+	template <typename OtherScalar, int OtherRows, int OtherCols>
+	Array<Scalar_, Dynamic, Dynamic> operator*(const Array<OtherScalar, OtherRows, OtherCols>& other) const {
+		return Array<Scalar_, Dynamic, Dynamic>(this->tensor() * other.tensor());
+	}
+
+	template <typename OtherScalar, int OtherRows, int OtherCols>
+	Array<Scalar_, Dynamic, Dynamic> operator/(const Array<OtherScalar, OtherRows, OtherCols>& other) const {
+		return Array<Scalar_, Dynamic, Dynamic>(this->tensor() / other.tensor());
+	}
+
+	template <typename OtherScalar, int OtherRows, int OtherCols>
+	Array<Scalar_, Dynamic, Dynamic> operator+(const Array<OtherScalar, OtherRows, OtherCols>& other) const {
+		return Array<Scalar_, Dynamic, Dynamic>(this->tensor() + other.tensor());
+	}
+
+	template <typename OtherScalar, int OtherRows, int OtherCols>
+	Array<Scalar_, Dynamic, Dynamic> operator-(const Array<OtherScalar, OtherRows, OtherCols>& other) const {
+		return Array<Scalar_, Dynamic, Dynamic>(this->tensor() - other.tensor());
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> operator*(Scalar_ scalar) const {
+		return Array<Scalar_, Dynamic, Dynamic>(this->tensor() * scalar);
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> operator/(Scalar_ scalar) const {
+		return Array<Scalar_, Dynamic, Dynamic>(this->tensor() / scalar);
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> operator+(Scalar_ scalar) const {
+		return Array<Scalar_, Dynamic, Dynamic>(this->tensor() + scalar);
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> operator-(Scalar_ scalar) const {
+		return Array<Scalar_, Dynamic, Dynamic>(this->tensor() - scalar);
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> operator-() const {
+		return Array<Scalar_, Dynamic, Dynamic>(-this->tensor());
+	}
+
+	friend Array<Scalar_, Dynamic, Dynamic> operator*(Scalar_ scalar, const Array& a) {
+		return Array<Scalar_, Dynamic, Dynamic>(scalar * a.tensor());
+	}
+
+	template <typename OtherScalar, int OtherRows, int OtherCols>
+	Array& operator*=(const Array<OtherScalar, OtherRows, OtherCols>& other) {
+		this->m_tensor = this->tensor() * other.tensor();
+		return *this;
+	}
+
+	template <typename OtherScalar, int OtherRows, int OtherCols>
+	Array& operator/=(const Array<OtherScalar, OtherRows, OtherCols>& other) {
+		this->m_tensor = this->tensor() / other.tensor();
+		return *this;
+	}
+
+	Array& operator*=(Scalar_ scalar) {
+		this->m_tensor = this->tensor() * scalar;
+		return *this;
+	}
+
+	Array& operator/=(Scalar_ scalar) {
+		this->m_tensor = this->tensor() / scalar;
+		return *this;
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> abs() const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::abs(this->tensor()));
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> abs2() const {
+		at::Tensor a = torch::abs(this->tensor());
+		return Array<Scalar_, Dynamic, Dynamic>(a * a);
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> sqrt() const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::sqrt(this->tensor()));
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> log() const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::log(this->tensor()));
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> log10() const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::log10(this->tensor()));
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> exp() const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::exp(this->tensor()));
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> sin() const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::sin(this->tensor()));
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> cos() const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::cos(this->tensor()));
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> tan() const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::tan(this->tensor()));
+	}
+
+	template <typename OtherScalar, int OtherRows, int OtherCols>
+	Array<Scalar_, Dynamic, Dynamic> min(const Array<OtherScalar, OtherRows, OtherCols>& other) const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::minimum(this->tensor(), other.tensor()));
+	}
+
+	template <typename OtherScalar, int OtherRows, int OtherCols>
+	Array<Scalar_, Dynamic, Dynamic> max(const Array<OtherScalar, OtherRows, OtherCols>& other) const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::maximum(this->tensor(), other.tensor()));
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> min(Scalar_ scalar) const {
+		return Array<Scalar_, Dynamic, Dynamic>(
+			torch::minimum(this->tensor(), torch::full_like(this->tensor(), scalar)));
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> max(Scalar_ scalar) const {
+		return Array<Scalar_, Dynamic, Dynamic>(
+			torch::maximum(this->tensor(), torch::full_like(this->tensor(), scalar)));
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> square() const {
+		return Array<Scalar_, Dynamic, Dynamic>(this->tensor() * this->tensor());
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> cube() const {
+		return Array<Scalar_, Dynamic, Dynamic>(this->tensor() * this->tensor() * this->tensor());
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> inverse() const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::reciprocal(this->tensor()));
+	}
+
+	template <typename OtherScalar, int OtherRows, int OtherCols>
+	Array<Scalar_, Dynamic, Dynamic> pow(const Array<OtherScalar, OtherRows, OtherCols>& other) const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::pow(this->tensor(), other.tensor()));
+	}
+
+	Array<Scalar_, Dynamic, Dynamic> pow(Scalar_ exponent) const {
+		return Array<Scalar_, Dynamic, Dynamic>(torch::pow(this->tensor(), exponent));
+	}
+};
+
+template <typename Scalar, int RowsAtCompileTime, int ColsAtCompileTime>
+inline Array<Scalar, RowsAtCompileTime, ColsAtCompileTime>
+Matrix<Scalar, RowsAtCompileTime, ColsAtCompileTime>::array() {
+	return Array<Scalar, RowsAtCompileTime, ColsAtCompileTime>(this->tensor());
+}
+
+template <typename Scalar, int RowsAtCompileTime, int ColsAtCompileTime>
+inline const Array<Scalar, RowsAtCompileTime, ColsAtCompileTime>
+Matrix<Scalar, RowsAtCompileTime, ColsAtCompileTime>::array() const {
+	return Array<Scalar, RowsAtCompileTime, ColsAtCompileTime>(this->tensor());
+}
+
+using ArrayXXf = Array<float, Dynamic, Dynamic>;
+using ArrayXXd = Array<double, Dynamic, Dynamic>;
+using ArrayXXi = Array<int32_t, Dynamic, Dynamic>;
+
+using ArrayXf = Array<float, Dynamic, 1>;
+using ArrayXd = Array<double, Dynamic, 1>;
+using ArrayXi = Array<int32_t, Dynamic, 1>;
+
+using ArrayXcf = Array<std::complex<float>, Dynamic, 1>;
+using ArrayXcd = Array<std::complex<double>, Dynamic, 1>;
+
+using Array2f = Array<float, 2, 1>;
+using Array3f = Array<float, 3, 1>;
+using Array4f = Array<float, 4, 1>;
+
+using Array22f = Array<float, 2, 2>;
+using Array33f = Array<float, 3, 3>;
+using Array44f = Array<float, 4, 4>;
+
+using Array2d = Array<double, 2, 1>;
+using Array3d = Array<double, 3, 1>;
+using Array4d = Array<double, 4, 1>;
+
+using Array22d = Array<double, 2, 2>;
+using Array33d = Array<double, 3, 3>;
+using Array44d = Array<double, 4, 4>;
+
+using RowArrayXf = Array<float, 1, Dynamic>;
+using RowArrayXd = Array<double, 1, Dynamic>;
+using RowArrayXi = Array<int32_t, 1, Dynamic>;
+
+using RowArray2f = Array<float, 1, 2>;
+using RowArray3f = Array<float, 1, 3>;
+using RowArray4f = Array<float, 1, 4>;
+
+using RowArray2d = Array<double, 1, 2>;
+using RowArray3d = Array<double, 1, 3>;
+using RowArray4d = Array<double, 1, 4>;
+
+} // namespace Eigen

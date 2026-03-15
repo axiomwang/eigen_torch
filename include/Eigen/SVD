@@ -50,7 +50,7 @@ public:
     }
 
     Matrix<typename MatrixType::ScalarType, Dynamic, 1> singularValues() const {
-        return Matrix<typename MatrixType::Scalar, Dynamic, 1>(m_s.unsqueeze(1));
+        return Matrix<typename MatrixType::ScalarType, Dynamic, 1>(m_s.unsqueeze(1));
     }
 
     MatrixType matrixU() const {
@@ -60,6 +60,21 @@ public:
     MatrixType matrixV() const {
         return MatrixType(m_vh.adjoint());
     }
+};
+
+template <typename MatrixType>
+class BDCSVD : public JacobiSVD<MatrixType> {
+public:
+    BDCSVD() : JacobiSVD<MatrixType>() {}
+
+    explicit BDCSVD(const MatrixType& matrix, unsigned int computationOptions = 0)
+        : JacobiSVD<MatrixType>(matrix, computationOptions) {}
+
+    using JacobiSVD<MatrixType>::compute;
+    using JacobiSVD<MatrixType>::solve;
+    using JacobiSVD<MatrixType>::singularValues;
+    using JacobiSVD<MatrixType>::matrixU;
+    using JacobiSVD<MatrixType>::matrixV;
 };
 
 } // namespace Eigen
